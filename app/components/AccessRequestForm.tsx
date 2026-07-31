@@ -20,10 +20,11 @@ export function AccessRequestForm({ mode }: { mode: AccessMode }) {
     const form = new FormData(formElement);
 
     try {
-      const response = await fetch("/api/access-requests", {
+      const response = await fetch("/submit.php", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
+          type: "access-request",
           fullName: form.get("fullName"),
           email: form.get("email"),
           phone: form.get("phone"),

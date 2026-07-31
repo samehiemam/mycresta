@@ -38,6 +38,8 @@ dev.log
 # typescript
 next-env.d.ts
 /dist/
+/dist-static/
+preview.log
 
 # cloudflare / wrangler / miniflare
 /.wrangler/

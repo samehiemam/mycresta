@@ -174,10 +174,11 @@ export function Configurator() {
     setStatus("sending");
 
     try {
-      const response = await fetch("/api/leads", {
+      const response = await fetch("/submit.php", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
+          type: "lead",
           name: form.get("name"),
           email: form.get("email"),
           phone: form.get("phone"),
