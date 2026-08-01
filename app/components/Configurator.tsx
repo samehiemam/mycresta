@@ -70,6 +70,50 @@ function HullVisual({
   );
 }
 
+/**
+ * Top-down deck view. Until the factory top renders exist, the reserved space
+ * shows the chosen interior materials so it stays useful rather than empty.
+ */
+function DeckPreview({
+  image,
+  alt,
+  materials,
+}: {
+  image?: string;
+  alt: string;
+  materials: { label: string; name: string; tone: string }[];
+}) {
+  return (
+    <div className="deck-preview">
+      {image ? (
+        <img className="deck-preview-image" src={image} alt={alt} />
+      ) : (
+        <div className="deck-preview-materials">
+          <div className="deck-preview-heading">
+            <span className="eyebrow eyebrow--light">Deck &amp; interior</span>
+            <small>Top view render coming soon</small>
+          </div>
+          <ul>
+            {materials.map((material) => (
+              <li key={material.label}>
+                <span
+                  className="deck-swatch"
+                  style={{ background: material.tone }}
+                  aria-hidden="true"
+                />
+                <span className="deck-swatch-copy">
+                  <strong>{material.name}</strong>
+                  <small>{material.label}</small>
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+}
+
 const initialFinishes: Record<FinishKey, string> = {
   gelcoat: "white",
   vinyl: "white",
@@ -255,6 +299,18 @@ export function Configurator() {
     "White";
   const visual = visualColour(finishes.gelcoat);
 
+  // Materials shown in the deck panel while the top-view render is pending.
+  const deckMaterials = (
+    ["upholstery", "flooring", "teak", "furniture"] as FinishKey[]
+  ).map((key) => {
+    const option = finishOptions[key].find((item) => item.id === finishes[key]);
+    return {
+      label: finishLabels[key],
+      name: option?.label ?? finishes[key],
+      tone: option?.tone ?? "transparent",
+    };
+  });
+
   return (
     <>
       <main className="configurator">
@@ -268,6 +324,11 @@ export function Configurator() {
             src={current.images[visual]}
             alt={`${current.name} configured in ${gelcoat}`}
             tint={visualTint(finishes.gelcoat)}
+          />
+          <DeckPreview
+            image={current.topImages?.[visual]}
+            alt={`${current.name} deck seen from above`}
+            materials={deckMaterials}
           />
           <div className="config-stage-footer">
             <span>{gelcoat} gelcoat · {engine.propulsion}</span>

@@ -32,6 +32,12 @@ type ModelConfiguration = {
   spec: string;
   basePrice: number;
   images: Record<"white" | "blue" | "antracite", string>;
+  /**
+   * Optional top-down deck render used to preview upholstery, flooring and
+   * teak. Not supplied yet — the configurator shows a materials panel in the
+   * reserved space until these are added.
+   */
+  topImages?: Partial<Record<"white" | "blue" | "antracite", string>>;
   engines: EngineOption[];
   includedEquipment: string[];
   equipment: EquipmentOption[];
