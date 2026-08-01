@@ -1,5 +1,13 @@
 export type ModelKey = "34" | "36" | "43";
 
+/** Gelcoat colours, each with its own studio render. */
+export type GelcoatKey =
+  | "white"
+  | "telegrey"
+  | "sportive-grey"
+  | "antracite"
+  | "elegant-blue";
+
 export type FinishOption = {
   id: string;
   label: string;
@@ -31,13 +39,14 @@ type ModelConfiguration = {
   name: string;
   spec: string;
   basePrice: number;
-  images: Record<"white" | "blue" | "antracite", string>;
+  /** One studio render per gelcoat colour. */
+  images: Record<GelcoatKey, string>;
   /**
    * Optional top-down deck render used to preview upholstery, flooring and
    * teak. Not supplied yet — the configurator shows a materials panel in the
    * reserved space until these are added.
    */
-  topImages?: Partial<Record<"white" | "blue" | "antracite", string>>;
+  topImages?: Partial<Record<GelcoatKey, string>>;
   engines: EngineOption[];
   includedEquipment: string[];
   equipment: EquipmentOption[];
@@ -675,9 +684,11 @@ export const modelOptions: Record<ModelKey, ModelConfiguration> = {
       { id: "34-volvo-320", label: "2 × Volvo Penta V8 320 hp", family: "Volvo", propulsion: "Inboard", price: 94500 },
     ],
     images: {
-      white: "/images/kumbra-34-config-white-clean-i39J1gHM.png",
-      blue: "/images/kumbra-34-config-blue-clean-D80Jclvr.png",
-      antracite: "/images/kumbra-34-config-antracite-clean-iuKJbUEt.png",
+      white: "/images/config/kumbra-34-white.png",
+      telegrey: "/images/config/kumbra-34-telegrey.png",
+      "sportive-grey": "/images/config/kumbra-34-sportive-grey.png",
+      antracite: "/images/config/kumbra-34-antracite.png",
+      "elegant-blue": "/images/config/kumbra-34-elegant-blue.png",
     },
     includedEquipment: standardEquipment34,
     equipment: [...model34Only, ...shared34and36],
@@ -695,9 +706,11 @@ export const modelOptions: Record<ModelKey, ModelConfiguration> = {
       { id: "36-volvo-350", label: "2 × Volvo V8 350 hp", family: "Volvo", propulsion: "Inboard", price: 110900 },
     ],
     images: {
-      white: "/images/k36-white-MY7-V9YH.png",
-      blue: "/images/k36-blue-B5XScDbO.png",
-      antracite: "/images/k36-antracite-DKZ8lkbi.png",
+      white: "/images/config/kumbra-36-white.png",
+      telegrey: "/images/config/kumbra-36-telegrey.png",
+      "sportive-grey": "/images/config/kumbra-36-sportive-grey.png",
+      antracite: "/images/config/kumbra-36-antracite.png",
+      "elegant-blue": "/images/config/kumbra-36-elegant-blue.png",
     },
     includedEquipment: standardEquipment36,
     equipment: [...model36Only, ...shared34and36],
@@ -723,9 +736,11 @@ export const modelOptions: Record<ModelKey, ModelConfiguration> = {
       { id: "43-volvo-d6-440", label: "2 × Volvo Penta D6 440 hp", family: "Volvo", propulsion: "Inboard", price: 203900 },
     ],
     images: {
-      white: "/images/k43-white-BYl-9VSX.png",
-      blue: "/images/k43-blue-CYylCqls.png",
-      antracite: "/images/k43-antracite-D4h5PNjW.png",
+      white: "/images/config/kumbra-43-white.png",
+      telegrey: "/images/config/kumbra-43-telegrey.png",
+      "sportive-grey": "/images/config/kumbra-43-sportive-grey.png",
+      antracite: "/images/config/kumbra-43-antracite.png",
+      "elegant-blue": "/images/config/kumbra-43-elegant-blue.png",
     },
     includedEquipment: standardEquipment43,
     equipment: model43Equipment,
@@ -742,20 +757,17 @@ export const finishLabels: Record<keyof typeof finishOptions, string> = {
   teak: "Teak",
 };
 
-export function visualColour(gelcoat: string): "white" | "blue" | "antracite" {
-  if (gelcoat === "elegant-blue") return "blue";
-  if (gelcoat === "antracite") return "antracite";
-  // Telegrey and Sportive Grey have no factory render of their own; they are
-  // shaded from the white hull so the highlights and reflections stay correct.
-  return "white";
-}
+const gelcoatKeys: GelcoatKey[] = [
+  "white",
+  "telegrey",
+  "sportive-grey",
+  "antracite",
+  "elegant-blue",
+];
 
-/**
- * Grade the base render towards a gelcoat that has no dedicated photograph.
- * Returns a CSS filter fragment, or null when the render already matches.
- */
-export function visualTint(gelcoat: string): string | null {
-  if (gelcoat === "telegrey") return "brightness(0.86) saturate(0.85)";
-  if (gelcoat === "sportive-grey") return "brightness(0.55) saturate(0.8)";
-  return null;
+/** Every gelcoat has its own render, so this just validates the id. */
+export function visualColour(gelcoat: string): GelcoatKey {
+  return gelcoatKeys.includes(gelcoat as GelcoatKey)
+    ? (gelcoat as GelcoatKey)
+    : "white";
 }
