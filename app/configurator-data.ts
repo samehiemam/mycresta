@@ -11,7 +11,10 @@ export type GelcoatKey =
 export type FinishOption = {
   id: string;
   label: string;
+  /** Fallback colour, used before the material photo loads. */
   tone: string;
+  /** Photograph of the actual material from the Kumbra materials guide. */
+  image?: string;
   note?: string;
 };
 
@@ -618,56 +621,64 @@ const model43Equipment: EquipmentOption[] = [
 
 export const finishOptions = {
   gelcoat: [
-    { id: "white", label: "White", tone: "#eceee9", note: "Standard" },
-    { id: "telegrey", label: "Telegrey", tone: "#c7c7c0" },
-    { id: "sportive-grey", label: "Sportive Grey", tone: "#626b68" },
-    { id: "antracite", label: "Antracite", tone: "#263638" },
-    { id: "elegant-blue", label: "Elegant Blue", tone: "#1595ca" },
+    { id: "white", label: "White", tone: "#eceee9", image: "/images/materials/gelcoat-white.png", note: "Standard" },
+    { id: "telegrey", label: "Telegrey", tone: "#c7c7c0", image: "/images/materials/gelcoat-telegrey.png" },
+    { id: "sportive-grey", label: "Sportive Grey", tone: "#626b68", image: "/images/materials/gelcoat-sportive-grey.png" },
+    { id: "antracite", label: "Antracite", tone: "#263638", image: "/images/materials/gelcoat-antracite.png" },
+    { id: "elegant-blue", label: "Elegant Blue", tone: "#1595ca", image: "/images/materials/gelcoat-elegant-blue.png" },
   ] satisfies FinishOption[],
   vinyl: [
-    { id: "black", label: "Black", tone: "#101010" },
-    { id: "white", label: "White", tone: "#eef4f2", note: "Standard" },
+    { id: "black", label: "Black", tone: "#101010", image: "/images/materials/vinyl-black.png" },
+    { id: "white", label: "White", tone: "#eef4f2", image: "/images/materials/vinyl-white.png", note: "Standard" },
   ] satisfies FinishOption[],
   upholstery: [
-    { id: "grey", label: "Grey", tone: "#777a77", note: "Standard" },
-    { id: "white", label: "White", tone: "#dedbd3" },
-    { id: "fossil", label: "Fossil", tone: "#aaa7a4" },
-    { id: "october", label: "October", tone: "#ad2d1f" },
-    { id: "cayenne", label: "Cayenne", tone: "#b1132a" },
-    { id: "submarine", label: "Submarine", tone: "#435a61" },
-    { id: "storm", label: "Storm", tone: "#5d6264" },
-    {
-      id: "diamonds",
-      label: "Diamonds Design",
-      tone: "linear-gradient(135deg, #aaa 25%, #d1d1d1 25% 50%, #999 50% 75%, #c7c7c7 75%)",
-      note: "Premium",
-    },
+    { id: "grey", label: "Grey", tone: "#777a77", image: "/images/materials/upholstery-grey.png", note: "Standard" },
+    { id: "white", label: "White", tone: "#dedbd3", image: "/images/materials/upholstery-white.png" },
+    { id: "fossil", label: "Fossil", tone: "#aaa7a4", image: "/images/materials/upholstery-fossil.png" },
+    { id: "october", label: "October", tone: "#ad2d1f", image: "/images/materials/upholstery-october.png" },
+    { id: "cayenne", label: "Cayenne", tone: "#b1132a", image: "/images/materials/upholstery-cayenne.png" },
+    { id: "submarine", label: "Submarine", tone: "#435a61", image: "/images/materials/upholstery-submarine.png" },
+    { id: "storm", label: "Storm", tone: "#5d6264", image: "/images/materials/upholstery-storm.png" },
   ] satisfies FinishOption[],
   furniture: [
-    { id: "wenge", label: "Wenge", tone: "#6d635c", note: "Standard" },
-    { id: "multiplis-nature", label: "Multiplis Nature", tone: "#817b72" },
-    { id: "pin-iceberg", label: "Pin Iceberg", tone: "#d8d6cf" },
-    { id: "chene-topia", label: "Chene Topia", tone: "#6c5945" },
+    { id: "wenge", label: "Wenge", tone: "#6d635c", image: "/images/materials/furniture-wenge.png", note: "Standard" },
+    { id: "multiplis-nature", label: "Multiplis Nature", tone: "#817b72", image: "/images/materials/furniture-multiplis-nature.png" },
+    { id: "pin-iceberg", label: "Pin Iceberg", tone: "#d8d6cf", image: "/images/materials/furniture-pin-iceberg.png" },
+    { id: "chene-topia", label: "Chene Topia", tone: "#6c5945", image: "/images/materials/furniture-chene-topia.png" },
   ] satisfies FinishOption[],
   flooring: [
-    { id: "chene-topia", label: "Chene Topia", tone: "#6c5945", note: "Standard" },
-    { id: "wenge", label: "Wenge", tone: "#6d635c" },
-    { id: "multiplis-nature", label: "Multiplis Nature", tone: "#817b72" },
-    { id: "pin-iceberg", label: "Pin Iceberg", tone: "#d8d6cf" },
+    { id: "chene-topia", label: "Chene Topia", tone: "#6c5945", image: "/images/materials/flooring-chene-topia.png", note: "Standard" },
+    { id: "wenge", label: "Wenge", tone: "#6d635c", image: "/images/materials/flooring-wenge.png" },
+    { id: "multiplis-nature", label: "Multiplis Nature", tone: "#817b72", image: "/images/materials/flooring-multiplis-nature.png" },
+    { id: "pin-iceberg", label: "Pin Iceberg", tone: "#d8d6cf", image: "/images/materials/flooring-pin-iceberg.png" },
   ] satisfies FinishOption[],
   countertop: [
-    { id: "multiplis-nature", label: "Multiplis Nature", tone: "#dce2e3", note: "Standard" },
-    { id: "carbon-concrete", label: "Carbon concrete", tone: "#242829" },
+    { id: "multiplis-nature", label: "Multiplis Nature", tone: "#dce2e3", image: "/images/materials/countertop-multiplis-nature.png", note: "Standard" },
+    { id: "carbon-concrete", label: "Carbon concrete", tone: "#242829", image: "/images/materials/countertop-carbon-concrete.png" },
   ] satisfies FinishOption[],
   teak: [
-    { id: "bleached", label: "Bleached", tone: "#c79d63", note: "Standard" },
-    { id: "scrubbed", label: "Scrubbed", tone: "#c3914c" },
-    { id: "weathered", label: "Weathered", tone: "#756f63" },
-    { id: "biscuit", label: "Biscuit", tone: "#b59b76", note: "Premium" },
-    { id: "platinum", label: "Platinum", tone: "#c9c5b8", note: "Premium" },
-    { id: "blanc-des-blancs", label: "Blanc des Blancs", tone: "#ebe8dc", note: "Premium" },
-    { id: "natural-teak", label: "Natural teak", tone: "#9f692b", note: "Natural" },
+    { id: "bleached", label: "Bleached", tone: "#c79d63", image: "/images/materials/teak-bleached.png", note: "Standard" },
+    { id: "scrubbed", label: "Scrubbed", tone: "#c3914c", image: "/images/materials/teak-scrubbed.png" },
+    { id: "weathered", label: "Weathered", tone: "#756f63", image: "/images/materials/teak-weathered.png" },
+    { id: "biscuit", label: "Biscuit", tone: "#b59b76", image: "/images/materials/teak-biscuit.png", note: "Premium" },
+    { id: "platinum", label: "Platinum", tone: "#c9c5b8", image: "/images/materials/teak-platinum.png", note: "Premium" },
+    { id: "blanc-des-blancs", label: "Blanc des Blancs", tone: "#ebe8dc", image: "/images/materials/teak-blanc-des-blancs.png", note: "Premium" },
+    { id: "natural-teak", label: "Natural teak", tone: "#9f692b", image: "/images/materials/teak-natural-teak.png", note: "Natural" },
   ] satisfies FinishOption[],
+};
+
+/**
+ * Diamonds Design is a premium quilted stitching upgrade applied to the chosen
+ * upholstery colour — not a colour of its own, and it is charged as an extra.
+ */
+export const upholsteryStitching = {
+  id: "diamonds",
+  label: "Diamonds Design stitching",
+  image: "/images/materials/upholstery-diamonds.png",
+  note: "Premium",
+  description:
+    "Quilted diamond stitching applied to your selected upholstery colour.",
+  price: "on-request" as const,
 };
 
 export const modelOptions: Record<ModelKey, ModelConfiguration> = {

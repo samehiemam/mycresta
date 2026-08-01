@@ -8,6 +8,7 @@ import {
   finishOptions,
   modelOptions,
   ModelKey,
+  upholsteryStitching,
   visualColour,
 } from "../configurator-data";
 
@@ -57,7 +58,7 @@ function DeckPreview({
 }: {
   image?: string;
   alt: string;
-  materials: { label: string; name: string; tone: string }[];
+  materials: { label: string; name: string; tone: string; image?: string }[];
 }) {
   return (
     <div className="deck-preview">
@@ -76,7 +77,11 @@ function DeckPreview({
                   className="deck-swatch"
                   style={{ background: material.tone }}
                   aria-hidden="true"
-                />
+                >
+                  {material.image && (
+                    <img src={material.image} alt="" loading="lazy" />
+                  )}
+                </span>
                 <span className="deck-swatch-copy">
                   <strong>{material.name}</strong>
                   <small>{material.label}</small>
@@ -114,6 +119,7 @@ export function Configurator() {
   const [finishes, setFinishes] =
     useState<Record<FinishKey, string>>(initialFinishes);
   const [ownership, setOwnership] = useState("Full ownership");
+  const [diamondStitching, setDiamondStitching] = useState(false);
   const [selectedEquipment, setSelectedEquipment] = useState<string[]>([]);
   const [activeCategory, setActiveCategory] = useState("Control & manoeuvring");
   const [propulsionTab, setPropulsionTab] = useState<
@@ -243,6 +249,9 @@ export function Configurator() {
 
   const summary = {
     model: current.name,
+    upholsteryStitching: diamondStitching
+      ? { label: upholsteryStitching.label, quotedPrice: upholsteryStitching.price }
+      : null,
     engine: engine.label,
     propulsion: engine.propulsion,
     ownership,
@@ -304,6 +313,7 @@ export function Configurator() {
       label: finishLabels[key],
       name: option?.label ?? finishes[key],
       tone: option?.tone ?? "transparent",
+      image: option?.image,
     };
   });
 
@@ -488,7 +498,11 @@ export function Configurator() {
                           className="material-swatch"
                           style={{ background: item.tone }}
                           aria-hidden="true"
-                        />
+                        >
+                          {item.image && (
+                            <img src={item.image} alt="" loading="lazy" />
+                          )}
+                        </span>
                         <span className="material-name">{item.label}</span>
                         {item.note && <small>{item.note}</small>}
                       </button>
@@ -497,6 +511,25 @@ export function Configurator() {
                 </div>
               ))}
             </div>
+
+            <label className="stitching-upgrade">
+              <input
+                type="checkbox"
+                checked={diamondStitching}
+                onChange={(event) => setDiamondStitching(event.target.checked)}
+              />
+              <span className="stitching-swatch" aria-hidden="true">
+                <img src={upholsteryStitching.image} alt="" loading="lazy" />
+              </span>
+              <span className="stitching-copy">
+                <strong>
+                  {upholsteryStitching.label}
+                  <em>{upholsteryStitching.note}</em>
+                </strong>
+                <small>{upholsteryStitching.description}</small>
+              </span>
+              <span className="stitching-check" aria-hidden="true" />
+            </label>
           </fieldset>
 
           <fieldset className="config-group">

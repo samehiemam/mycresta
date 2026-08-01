@@ -5661,6 +5661,143 @@ p {
   border-radius: 6px;
   display: block;
   height: 42px;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+
+/* Material photograph sits over the flat tone, which acts as the loading
+   placeholder and the fallback if an image is ever missing. */
+.material-swatch img {
+  display: block;
+  height: 100%;
+  object-fit: cover;
+  width: 100%;
+}
+
+/* ---- premium stitching upgrade ---------------------------------------- */
+.stitching-upgrade {
+  align-items: center;
+  background: var(--warm-50);
+  border: 1px solid var(--warm-200);
+  border-radius: 12px;
+  cursor: pointer;
+  display: flex;
+  gap: 14px;
+  margin-top: 22px;
+  padding: 12px 14px;
+  transition:
+    border-color 160ms ease,
+    background 160ms ease;
+}
+
+.stitching-upgrade:hover {
+  border-color: var(--navy-300);
+}
+
+.stitching-upgrade input {
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+.stitching-upgrade:has(input:checked) {
+  background: var(--navy-50);
+  border-color: var(--navy-700);
+}
+
+.stitching-swatch {
+  border: 1px solid rgba(8, 29, 51, 0.12);
+  border-radius: 8px;
+  flex: 0 0 auto;
+  height: 52px;
+  overflow: hidden;
+  width: 68px;
+}
+
+.stitching-swatch img {
+  display: block;
+  height: 100%;
+  object-fit: cover;
+  width: 100%;
+}
+
+.stitching-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.stitching-copy strong {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 0.8rem;
+  font-weight: 500;
+  gap: 8px;
+}
+
+.stitching-copy em {
+  background: var(--sand-100);
+  border-radius: 999px;
+  color: var(--warm-700);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.5rem;
+  font-style: normal;
+  letter-spacing: 0.06em;
+  padding: 3px 7px;
+  text-transform: uppercase;
+}
+
+.stitching-copy small {
+  color: var(--warm-500);
+  font-size: 0.68rem;
+  line-height: 1.45;
+}
+
+.stitching-check {
+  border: 1px solid var(--warm-300);
+  border-radius: 6px;
+  flex: 0 0 auto;
+  height: 22px;
+  margin-left: auto;
+  position: relative;
+  width: 22px;
+}
+
+.stitching-upgrade:has(input:checked) .stitching-check {
+  background: var(--teal-600);
+  border-color: var(--teal-600);
+}
+
+.stitching-upgrade:has(input:checked) .stitching-check::after {
+  border-bottom: 2px solid var(--white);
+  border-left: 2px solid var(--white);
+  content: "";
+  height: 5px;
+  left: 5px;
+  position: absolute;
+  top: 6px;
+  transform: rotate(-45deg);
+  width: 10px;
+}
+
+.stitching-upgrade input:focus-visible ~ .stitching-check {
+  outline: 2px solid var(--navy-700);
+  outline-offset: 2px;
+}
+
+/* deck panel swatches also show the material photo */
+.deck-swatch {
+  overflow: hidden;
+  position: relative;
+}
+
+.deck-swatch img {
+  display: block;
+  height: 100%;
+  object-fit: cover;
   width: 100%;
 }
 
