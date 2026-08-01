@@ -6463,6 +6463,28 @@ p {
   gap: 6px;
 }
 
+/* The consent row is a checkbox beside its text, not a stacked field — the
+   column rule above would otherwise push the box onto its own line. */
+.portal-form .access-consent {
+  align-items: flex-start;
+  flex-direction: row;
+  font-size: 0.76rem;
+  font-weight: 400;
+  gap: 10px;
+  line-height: 1.45;
+}
+
+.portal-form .access-consent input {
+  flex: 0 0 auto;
+  height: 16px;
+  margin-top: 2px;
+  width: 16px;
+}
+
+.portal-form .access-consent span {
+  color: var(--warm-700);
+}
+
 .portal-form input,
 .portal-form textarea,
 .portal-form select {

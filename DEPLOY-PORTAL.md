@@ -6,26 +6,32 @@ approving it. Runs on the same Hostinger MySQL database as the lead forms.
 
 ---
 
-## 1. File layout on the server
+## 1. Where the portal library goes
+
+The build now **ships `portal/` inside the output**, so a git-based deploy
+carries it to the server automatically. You end up with:
 
 ```
-/home/uXXXXXXX/
-├── public_html/            ← the website (upload the build output here)
-│   └── api/
-│       ├── auth.php        ← login, register, verify, reset
-│       └── accounts.php    ← approvals, role changes, staff creation
-└── portal/                 ← NOT web-accessible. Upload the repo's portal/ here.
-    ├── config.php          ← you create this from config.example.php
-    ├── lib/
-    ├── scripts/
-    └── storage/            ← invoices and documents (phase 2)
+public_html/
+├── index.html, assets/, images/   ← the website
+├── api/auth.php, api/accounts.php ← the endpoints
+└── portal/                        ← library, shipped by the build
+    ├── .htaccess                  ← denies all web access
+    ├── config.php                 ← YOU create this on the server (never in git)
+    ├── lib/  scripts/  sql/
+    └── storage/                   ← invoices and documents (phase 2)
 ```
 
-**`portal/` must sit next to `public_html`, not inside it.** That is what keeps
-your database password and customer documents off the public web. The API files
-look for the library one level above the web root automatically.
+`config.php` and `storage/` are deliberately excluded from the build, so your
+database password and customer documents never travel through the repository.
 
----
+**More secure option:** move `portal/` up one level so it sits *beside*
+`public_html` instead of inside it, and delete the copy in the web root. The API
+looks in both places. Do this if you upload by FTP/File Manager rather than git.
+
+Either way the folder is protected: `.htaccess` denies every request, and PHP
+files are executed rather than shown, so `config.php` returns nothing to a
+browser.
 
 ## 2. Create the tables
 
@@ -38,7 +44,8 @@ It is safe to run more than once.
 
 ## 3. Configure
 
-Copy `portal/config.example.php` to `portal/config.php` and fill in:
+In hPanel → **File Manager**, copy `public_html/portal/config.example.php` to
+`public_html/portal/config.php` and fill in:
 
 ```php
 'db' => [
@@ -66,7 +73,7 @@ Copy `portal/config.example.php` to `portal/config.php` and fill in:
 Over SSH (hPanel → Advanced → SSH Access):
 
 ```bash
-php ~/portal/scripts/seed-admin.php "you@crestamarine.com" "Your Name" "+201001234567"
+php ~/public_html/portal/scripts/seed-admin.php "you@crestamarine.com" "Your Name" "+201001234567"
 ```
 
 It prints a **one-time link**. Open it within 2 hours to choose your password.
@@ -75,7 +82,7 @@ No password is ever typed into the script, stored in the repo, or written to a
 log. When you are done, delete the script from the server:
 
 ```bash
-rm ~/portal/scripts/seed-admin.php
+rm ~/public_html/portal/scripts/seed-admin.php
 ```
 
 ---

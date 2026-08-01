@@ -6,7 +6,12 @@
 
 declare(strict_types=1);
 
-foreach ([__DIR__ . '/../../portal/lib', __DIR__ . '/../../../portal/lib'] as $lib) {
+$libCandidates = [
+    __DIR__ . '/../../portal/lib',    // portal/ beside the project root (dev)
+    __DIR__ . '/../../../portal/lib', // portal/ beside public_html (most secure)
+    __DIR__ . '/../portal/lib',       // portal/ inside the web root (deployed by the build)
+];
+foreach ($libCandidates as $lib) {
     if (is_dir($lib)) {
         require_once $lib . '/bootstrap.php';
         break;
@@ -15,7 +20,11 @@ foreach ([__DIR__ . '/../../portal/lib', __DIR__ . '/../../../portal/lib'] as $l
 if (!function_exists('db')) {
     http_response_code(500);
     header('Content-Type: application/json');
-    echo json_encode(['ok' => false, 'error' => 'Portal library not found.']);
+    echo json_encode([
+        'ok' => false,
+        'error' => 'The portal is not installed on this server yet. '
+            . 'Upload the portal folder and create portal/config.php — see DEPLOY-PORTAL.md.',
+    ]);
     exit;
 }
 

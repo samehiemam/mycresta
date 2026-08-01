@@ -1,0 +1,24 @@
+# The portal library must never be reachable over the web.
+#
+# It is safest to keep this folder OUTSIDE public_html. When the host's deploy
+# can only publish the build output, it ends up inside the web root instead —
+# this file denies every request to it, so config.php (database password) and
+# storage/ (customer invoices) stay private either way.
+
+# Apache 2.4 / LiteSpeed
+<IfModule mod_authz_core.c>
+  Require all denied
+</IfModule>
+
+# Apache 2.2 fallback
+<IfModule !mod_authz_core.c>
+  Order deny,allow
+  Deny from all
+</IfModule>
+
+# Belt and braces: never serve these as downloadable files.
+<FilesMatch "\.(php|sql|md|log|json|env)$">
+  <IfModule mod_authz_core.c>
+    Require all denied
+  </IfModule>
+</FilesMatch>

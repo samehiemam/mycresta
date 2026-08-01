@@ -11,8 +11,9 @@ declare(strict_types=1);
 // portal/ sits next to public_html on the server. Both layouts are tried so
 // the same file works locally and on Hostinger.
 $libCandidates = [
-    __DIR__ . '/../../portal/lib',   // repo layout (public/ + portal/)
-    __DIR__ . '/../../../portal/lib', // server layout (public_html/ + portal/)
+    __DIR__ . '/../../portal/lib',    // portal/ beside the project root (dev)
+    __DIR__ . '/../../../portal/lib', // portal/ beside public_html (most secure)
+    __DIR__ . '/../portal/lib',       // portal/ inside the web root (deployed by the build)
 ];
 foreach ($libCandidates as $lib) {
     if (is_dir($lib)) {
@@ -23,7 +24,11 @@ foreach ($libCandidates as $lib) {
 if (!function_exists('db')) {
     http_response_code(500);
     header('Content-Type: application/json');
-    echo json_encode(['ok' => false, 'error' => 'Portal library not found.']);
+    echo json_encode([
+        'ok' => false,
+        'error' => 'The portal is not installed on this server yet. '
+            . 'Upload the portal folder and create portal/config.php — see DEPLOY-PORTAL.md.',
+    ]);
     exit;
 }
 
