@@ -4427,8 +4427,10 @@ p {
     padding: 0 22px;
   }
 
+  /* Sized so the emblem reads level with the 46px menu button beside it
+     (the lockup is 4.44:1, so 210px gives a ~47px mark). */
   .brand-link img {
-    width: 170px;
+    width: 210px;
   }
 
   .menu-button {
