@@ -6,13 +6,16 @@
     "node": ">=22.13.0"
   },
   "scripts": {
-    "dev": "WRANGLER_LOG_PATH=.wrangler/wrangler.log vinext dev",
-    "build": "WRANGLER_LOG_PATH=.wrangler/wrangler.log vinext build",
-    "start": "WRANGLER_LOG_PATH=.wrangler/wrangler.log vinext start",
-    "dev:static": "vite --config vite.config.static.ts",
+    "build": "vite build --config vite.config.static.ts",
+    "dev": "vite --config vite.config.static.ts",
+    "preview": "vite preview --config vite.config.static.ts",
     "build:static": "vite build --config vite.config.static.ts",
+    "dev:static": "vite --config vite.config.static.ts",
     "preview:static": "vite preview --config vite.config.static.ts",
-    "test": "pnpm run build && node --test tests/rendered-html.test.mjs",
+    "build:cloudflare": "WRANGLER_LOG_PATH=.wrangler/wrangler.log vinext build",
+    "dev:cloudflare": "WRANGLER_LOG_PATH=.wrangler/wrangler.log vinext dev",
+    "start:cloudflare": "WRANGLER_LOG_PATH=.wrangler/wrangler.log vinext start",
+    "test": "npm run build:cloudflare && node --test tests/rendered-html.test.mjs",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
     "db:generate": "drizzle-kit generate"
   },

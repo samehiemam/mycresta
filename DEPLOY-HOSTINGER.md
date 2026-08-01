@@ -6,13 +6,31 @@ handled by `submit.php` writing to a MySQL database on the same host.
 
 ---
 
+## 0. Hostinger build settings (Git deploy)
+
+If Hostinger builds from the GitHub repo, set these in **Build configuration**:
+
+| Setting | Value |
+| --- | --- |
+| Framework preset | **Vite** (or **None / Static** — anything except Next.js) |
+| Build command | `npm run build` |
+| Output directory | `dist-static` |
+| Branch | `main` |
+| Node version | `22.x` |
+| Package manager | `npm` |
+
+`npm run build` produces the static site, so the default command works. The
+Cloudflare/vinext build still exists as `npm run build:cloudflare` — do **not**
+use it for Hostinger: it emits a Cloudflare Worker (`dist/server`) that shared
+hosting cannot run, and it never creates `.next` or `dist/standalone`.
+
 ## 1. Build the site
 
 On your machine, in the project folder:
 
 ```bash
 npm install
-npm run build:static
+npm run build
 ```
 
 This creates a `dist-static/` folder containing the whole website:
@@ -100,7 +118,7 @@ Using hPanel **File Manager** (or FTP / FileZilla):
 Every time you change the site:
 
 ```bash
-npm run build:static
+npm run build
 ```
 
 Then re-upload the contents of `dist-static/` to `public_html` (you can keep
