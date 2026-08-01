@@ -809,6 +809,136 @@ p {
   display: none;
 }
 
+/* ---- fleet / configurator dropdowns ----------------------------------- */
+.nav-menu {
+  position: relative;
+}
+
+.nav-menu-head {
+  align-items: center;
+  display: flex;
+  gap: 3px;
+}
+
+.nav-menu-toggle {
+  align-items: center;
+  background: none;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  padding: 4px;
+}
+
+.nav-menu-chevron {
+  border-bottom: 1.5px solid currentColor;
+  border-right: 1.5px solid currentColor;
+  display: block;
+  height: 6px;
+  transform: rotate(45deg) translate(-1px, -1px);
+  transition: transform 180ms ease;
+  width: 6px;
+}
+
+.nav-menu--open .nav-menu-chevron {
+  transform: rotate(-135deg) translate(-2px, -2px);
+}
+
+.nav-menu-panel {
+  background: var(--white);
+  border: 1px solid var(--warm-200);
+  border-radius: 14px;
+  box-shadow: var(--shadow-md);
+  left: 50%;
+  min-width: 292px;
+  padding: 18px;
+  position: absolute;
+  top: calc(100% + 14px);
+  transform: translateX(-50%);
+  z-index: 30;
+}
+
+.nav-menu-panel[hidden] {
+  display: none;
+}
+
+/* keeps the pointer path from the label to the panel hoverable */
+.nav-menu-panel::before {
+  content: "";
+  height: 16px;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: -16px;
+}
+
+.nav-brand + .nav-brand {
+  border-top: 1px solid var(--warm-200);
+  margin-top: 14px;
+  padding-top: 14px;
+}
+
+.nav-brand-name {
+  color: var(--teal-700);
+  display: flex;
+  flex-direction: column;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.58rem;
+  gap: 2px;
+  letter-spacing: 0.08em;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+}
+
+.nav-brand-name small {
+  color: var(--warm-500);
+  font-size: 0.52rem;
+  letter-spacing: 0.04em;
+}
+
+.nav-brand ul {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.site-nav .nav-brand a {
+  border-radius: 9px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 9px 10px;
+  transition: background 150ms ease;
+}
+
+.site-nav .nav-brand a:hover {
+  background: var(--navy-50);
+}
+
+.site-nav .nav-brand strong {
+  color: var(--navy-900);
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.site-nav .nav-brand small {
+  color: var(--warm-500);
+  font-size: 0.66rem;
+}
+
+.site-nav .nav-menu-all {
+  border-top: 1px solid var(--warm-200);
+  color: var(--navy-700);
+  display: block;
+  font-size: 0.7rem;
+  margin-top: 14px;
+  padding: 12px 10px 2px;
+}
+
 .instagram-icon {
   border: 1.7px solid currentColor;
   border-radius: 5px;
@@ -4505,7 +4635,7 @@ p {
 
   .site-nav {
     align-items: stretch;
-    background: rgba(8, 29, 51, 0.9);
+    background: rgba(8, 29, 51, 0.95);
     border: 1px solid rgba(255, 255, 255, 0.16);
     border-radius: 18px;
     box-shadow: 0 28px 70px rgba(8, 29, 51, 0.3);
@@ -4515,7 +4645,10 @@ p {
     flex-direction: column;
     gap: 0;
     left: 14px;
-    overflow: hidden;
+    /* scrolls rather than clipping once a models panel is expanded */
+    max-height: calc(100dvh - 100px);
+    overflow-x: hidden;
+    overflow-y: auto;
     padding: 14px 22px 18px;
     position: absolute;
     right: 14px;
@@ -4531,6 +4664,75 @@ p {
     color: var(--white);
     font-size: 0.88rem;
     padding: 14px 2px;
+  }
+
+  /* the menu clips overflow, so panels expand in place instead of floating */
+  .nav-menu-head {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+    justify-content: space-between;
+  }
+
+  .site-nav .nav-menu-head a {
+    border-bottom: 0;
+    flex: 1;
+  }
+
+  .nav-menu-toggle {
+    color: var(--white);
+    padding: 14px 2px 14px 14px;
+  }
+
+  .nav-menu-panel {
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    left: auto;
+    min-width: 0;
+    padding: 6px 0 10px 10px;
+    position: static;
+    top: auto;
+    transform: none;
+  }
+
+  .nav-menu-panel::before {
+    display: none;
+  }
+
+  .nav-brand + .nav-brand {
+    border-top-color: rgba(255, 255, 255, 0.14);
+  }
+
+  .nav-brand-name {
+    color: rgba(255, 255, 255, 0.62);
+  }
+
+  .nav-brand-name small {
+    color: rgba(255, 255, 255, 0.42);
+  }
+
+  .site-nav .nav-brand a {
+    border-bottom: 0;
+    padding: 10px 8px;
+  }
+
+  .site-nav .nav-brand a:hover {
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .site-nav .nav-brand strong {
+    color: var(--white);
+    font-size: 0.82rem;
+  }
+
+  .site-nav .nav-brand small {
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  .site-nav .nav-menu-all {
+    border-top: 1px solid rgba(255, 255, 255, 0.14);
+    color: rgba(255, 255, 255, 0.85);
+    padding: 11px 8px 2px;
   }
 
   .site-nav .instagram-link,

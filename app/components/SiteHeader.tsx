@@ -1,7 +1,64 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { boatsByBrand } from "../data";
+
+type MenuId = "fleet" | "configure";
+
+/**
+ * Top-level nav item with a brand-grouped panel of models. On desktop the panel
+ * opens on hover or focus; on the mobile menu it expands in place.
+ */
+function NavMenu({
+  id,
+  label,
+  href,
+  openMenu,
+  setOpenMenu,
+  onNavigate,
+  hoverable,
+  children,
+}: {
+  id: MenuId;
+  label: string;
+  href: string;
+  openMenu: MenuId | null;
+  setOpenMenu: (menu: MenuId | null) => void;
+  onNavigate: () => void;
+  hoverable: boolean;
+  children: React.ReactNode;
+}) {
+  const open = openMenu === id;
+
+  return (
+    <div
+      className={`nav-menu ${open ? "nav-menu--open" : ""}`}
+      // Only hover-open with a real pointer; on touch the chevron toggles it.
+      onMouseEnter={hoverable ? () => setOpenMenu(id) : undefined}
+      onMouseLeave={hoverable ? () => setOpenMenu(null) : undefined}
+    >
+      <div className="nav-menu-head">
+        <Link href={href} onClick={onNavigate}>
+          {label}
+        </Link>
+        <button
+          type="button"
+          className="nav-menu-toggle"
+          aria-expanded={open}
+          aria-controls={`nav-panel-${id}`}
+          aria-label={`${open ? "Hide" : "Show"} ${label.toLowerCase()} models`}
+          onClick={() => setOpenMenu(open ? null : id)}
+        >
+          <span className="nav-menu-chevron" aria-hidden="true" />
+        </button>
+      </div>
+      <div className="nav-menu-panel" id={`nav-panel-${id}`} hidden={!open}>
+        {children}
+      </div>
+    </div>
+  );
+}
 
 export function SiteHeader({
   inverse = false,
@@ -12,6 +69,14 @@ export function SiteHeader({
 }) {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [openMenu, setOpenMenu] = useState<MenuId | null>(null);
+  const [hoverable, setHoverable] = useState(false);
+  const headerRef = useRef<HTMLElement>(null);
+  const fleet = boatsByBrand();
+
+  useEffect(() => {
+    setHoverable(window.matchMedia("(hover: hover) and (pointer: fine)").matches);
+  }, []);
 
   useEffect(() => {
     function onScroll() {
@@ -22,8 +87,31 @@ export function SiteHeader({
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // Close the panels on Escape or a click outside the header.
+  useEffect(() => {
+    if (!openMenu) return;
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") setOpenMenu(null);
+    }
+    function onPointerDown(event: PointerEvent) {
+      if (!headerRef.current?.contains(event.target as Node)) setOpenMenu(null);
+    }
+    window.addEventListener("keydown", onKeyDown);
+    window.addEventListener("pointerdown", onPointerDown);
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("pointerdown", onPointerDown);
+    };
+  }, [openMenu]);
+
+  function closeAll() {
+    setOpenMenu(null);
+    setOpen(false);
+  }
+
   return (
     <header
+      ref={headerRef}
       className={[
         "site-header",
         inverse ? "site-header--inverse" : "",
@@ -55,11 +143,86 @@ export function SiteHeader({
         <span />
       </button>
       <nav className={`site-nav ${open ? "site-nav--open" : ""}`}>
-        <Link href="/fleet">Fleet</Link>
-        <Link href="/configure">Configurator</Link>
-        <Link href="/services">Ownership</Link>
-        <Link href="/about">Cresta Marine</Link>
-        <Link href="/my-cresta">My Cresta</Link>
+        <NavMenu
+          id="fleet"
+          label="Fleet"
+          href="/fleet"
+          openMenu={openMenu}
+          setOpenMenu={setOpenMenu}
+          onNavigate={closeAll}
+          hoverable={hoverable}
+        >
+          {fleet.map(({ brand, models }) => (
+            <div className="nav-brand" key={brand.id}>
+              <span className="nav-brand-name">
+                {brand.name}
+                <small>{brand.tagline}</small>
+              </span>
+              <ul>
+                {models.map((boat) => (
+                  <li key={boat.slug}>
+                    <Link href={`/fleet/${boat.slug}`} onClick={closeAll}>
+                      <strong>{boat.name}</strong>
+                      <small>{boat.eyebrow}</small>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+          <Link className="nav-menu-all" href="/fleet" onClick={closeAll}>
+            View the whole fleet →
+          </Link>
+        </NavMenu>
+
+        <NavMenu
+          id="configure"
+          label="Configurator"
+          href="/configure"
+          openMenu={openMenu}
+          setOpenMenu={setOpenMenu}
+          onNavigate={closeAll}
+          hoverable={hoverable}
+        >
+          {fleet.map(({ brand, models }) => {
+            const configurable = models.filter((boat) => boat.configuratorModel);
+            if (configurable.length === 0) return null;
+            return (
+              <div className="nav-brand" key={brand.id}>
+                <span className="nav-brand-name">
+                  {brand.name}
+                  <small>Build your specification</small>
+                </span>
+                <ul>
+                  {configurable.map((boat) => (
+                    <li key={boat.slug}>
+                      <Link
+                        href={`/configure?model=${boat.configuratorModel}`}
+                        onClick={closeAll}
+                      >
+                        <strong>{boat.name}</strong>
+                        <small>{boat.length}</small>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            );
+          })}
+          <Link className="nav-menu-all" href="/configure" onClick={closeAll}>
+            Open the configurator →
+          </Link>
+        </NavMenu>
+
+        <Link href="/services" onClick={closeAll}>
+          Ownership
+        </Link>
+        <Link href="/about" onClick={closeAll}>
+          Cresta Marine
+        </Link>
+        <Link href="/my-cresta" onClick={closeAll}>
+          My Cresta
+        </Link>
         <a
           className="whatsapp-link"
           href="https://wa.me/201224212222"

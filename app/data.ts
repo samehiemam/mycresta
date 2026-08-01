@@ -22,8 +22,29 @@ export type BoatGalleryItem = {
   alt: string;
 };
 
+export type BrandId = "kumbra";
+
+export type Brand = {
+  id: BrandId;
+  name: string;
+  tagline: string;
+};
+
+/** Builders Cresta represents. Adding one here surfaces it across the nav. */
+export const brands: Brand[] = [
+  {
+    id: "kumbra",
+    name: "Kumbra Yachts",
+    tagline: "Built in Barcelona",
+  },
+];
+
 export type Boat = {
   slug: string;
+  /** Builder this model belongs to; groups the fleet and the nav menus. */
+  brand: BrandId;
+  /** Model key in the configurator, when that brand is configurable. */
+  configuratorModel?: string;
   name: string;
   eyebrow: string;
   description: string;
@@ -56,6 +77,8 @@ export type Boat = {
 export const boats: Boat[] = [
   {
     slug: "kumbra-34",
+    brand: "kumbra",
+    configuratorModel: "34",
     name: "Kumbra 34",
     eyebrow: "Agile walkaround dayboat",
     description:
@@ -264,6 +287,8 @@ export const boats: Boat[] = [
   },
   {
     slug: "kumbra-36",
+    brand: "kumbra",
+    configuratorModel: "36",
     name: "Kumbra 36",
     eyebrow: "New-generation hardtop",
     description:
@@ -486,6 +511,8 @@ export const boats: Boat[] = [
   },
   {
     slug: "kumbra-43",
+    brand: "kumbra",
+    configuratorModel: "43",
     name: "Kumbra 43",
     eyebrow: "The new reference",
     description:
@@ -702,4 +729,14 @@ export const boats: Boat[] = [
 
 export function getBoat(slug: string) {
   return boats.find((boat) => boat.slug === slug);
+}
+
+/** Fleet grouped by builder, in brand order — used by the header menus. */
+export function boatsByBrand() {
+  return brands
+    .map((brand) => ({
+      brand,
+      models: boats.filter((boat) => boat.brand === brand.id),
+    }))
+    .filter((group) => group.models.length > 0);
 }
