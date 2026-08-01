@@ -2705,8 +2705,9 @@ p {
 
 .configurator {
   background: var(--navy-50);
-  display: grid;
-  grid-template-columns: 1fr;
+  /* Block flow (not grid) so the stage can stay stuck past its own row while
+     the options below scroll. */
+  display: block;
   min-height: 100vh;
   padding-top: 88px;
 }
@@ -2720,10 +2721,30 @@ p {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  min-height: 760px;
+  /* Compact and pinned: the boat stays on screen while colours, engines and
+     equipment are chosen below. */
+  height: 58vh;
+  min-height: 340px;
+  max-height: 640px;
   overflow: hidden;
-  padding: 52px 5vw 26px;
-  position: relative;
+  padding: 32px 5vw 20px;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+/* Let the visual take the leftover height without overflowing the pinned stage. */
+.configurator-stage .boat-visual {
+  min-height: 0;
+}
+
+.configurator-stage .boat-visual img {
+  max-height: 100%;
+}
+
+.configurator-stage .configurator-stage-copy h1 {
+  font-size: clamp(2.2rem, 3.2vw, 3.4rem);
+  margin: 6px 0 4px;
 }
 
 .configurator-stage-copy {
@@ -4249,13 +4270,8 @@ p {
     gap: 28px;
   }
 
-  .configurator {
-    grid-template-columns: 1fr;
-  }
-
   .configurator-stage {
-    min-height: 740px;
-    position: relative;
+    max-height: 560px;
   }
 
   .portal-shell {
@@ -4784,8 +4800,7 @@ p {
   }
 
   .configurator-stage {
-    min-height: 660px;
-    padding: 42px 24px 24px;
+    padding: 26px 24px 18px;
   }
 
   .configurator-controls {
@@ -5740,10 +5755,6 @@ p {
 }
 
 @media (max-width: 1100px) {
-  .configurator-stage {
-    min-height: 650px;
-  }
-
   .configurator-controls {
     margin: 0 auto;
     max-width: 820px;
@@ -5753,12 +5764,14 @@ p {
 
 @media (max-width: 820px) {
   .configurator-stage {
-    min-height: 520px;
-    padding-top: 34px;
+    height: 46vh;
+    min-height: 260px;
+    max-height: 380px;
+    padding-top: 22px;
   }
 
-  .configurator-stage-copy h1 {
-    font-size: 3.8rem;
+  .configurator-stage .configurator-stage-copy h1 {
+    font-size: 2.2rem;
   }
 
   .boat-visual img {
@@ -5776,11 +5789,13 @@ p {
 
 @media (max-width: 560px) {
   .configurator-stage {
-    min-height: 430px;
+    height: 40vh;
+    min-height: 230px;
+    max-height: 320px;
   }
 
-  .configurator-stage-copy h1 {
-    font-size: 3.15rem;
+  .configurator-stage .configurator-stage-copy h1 {
+    font-size: 1.9rem;
   }
 
   .boat-visual {
