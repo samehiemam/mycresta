@@ -37,7 +37,7 @@ export default function MyCresta() {
           </div>
         </section>
 
-        <section className="my-cresta-benefits" aria-label="My Cresta benefits">
+        <section className="my-cresta-benefits" aria-label="My Cresta benefits" data-reveal data-reveal-stagger>
           <article>
             <span>01</span>
             <h2>Build & quote</h2>
@@ -72,7 +72,7 @@ export default function MyCresta() {
           </article>
         </section>
 
-        <section className="my-cresta-access" id="account-access">
+        <section className="my-cresta-access" id="account-access" data-reveal>
           <div className="my-cresta-access-heading">
             <span className="eyebrow">Your account</span>
             <h2>Come aboard.</h2>
@@ -118,7 +118,7 @@ export default function MyCresta() {
           </div>
         </section>
 
-        <section className="my-cresta-mobile-preview">
+        <section className="my-cresta-mobile-preview" data-reveal>
           <div>
             <span className="eyebrow eyebrow--light">
               My Cresta App · Coming Soon
@@ -205,7 +205,7 @@ export default function MyCresta() {
           </div>
         </section>
 
-        <section className="my-cresta-team-access">
+        <section className="my-cresta-team-access" data-reveal>
           <details id="team-access">
             <summary>Employee or ambassador? Request approved access.</summary>
             <div className="my-cresta-team-panel">

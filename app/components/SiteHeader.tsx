@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export function SiteHeader({
   inverse = false,
@@ -11,6 +11,16 @@ export function SiteHeader({
   solid?: boolean;
 }) {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    function onScroll() {
+      setScrolled(window.scrollY > 24);
+    }
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
     <header
@@ -18,6 +28,7 @@ export function SiteHeader({
         "site-header",
         inverse ? "site-header--inverse" : "",
         solid ? "site-header--solid" : "",
+        scrolled ? "is-scrolled" : "",
       ]
         .filter(Boolean)
         .join(" ")}

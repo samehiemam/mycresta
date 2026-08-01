@@ -10,7 +10,7 @@ export default function Fleet() {
     <>
       <SiteHeader />
       <main>
-        <section className="page-intro">
+        <section className="page-intro" data-reveal>
           <span className="eyebrow">Kumbra Yachts · Egypt</span>
           <h1>Three ways to own the sea.</h1>
           <p>
@@ -20,7 +20,7 @@ export default function Fleet() {
         </section>
         <section className="fleet-list">
           {boats.map((boat, index) => (
-            <article className="fleet-row" key={boat.slug}>
+            <article className="fleet-row" key={boat.slug} data-reveal>
               <div className="fleet-row-image fleet-row-image--studio">
                 <span className="fleet-row-watermark" aria-hidden="true">
                   {boat.name.replace("Kumbra ", "")}
@@ -56,7 +56,7 @@ export default function Fleet() {
             </article>
           ))}
         </section>
-        <section className="future-brands">
+        <section className="future-brands" data-reveal>
           <span className="eyebrow eyebrow--light">Built to expand</span>
           <h2>Kumbra leads the fleet today. The platform is ready for more.</h2>
           <p>

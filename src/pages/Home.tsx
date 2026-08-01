@@ -3,6 +3,7 @@ import { SiteFooter } from "../../app/components/SiteFooter";
 import { SiteHeader } from "../../app/components/SiteHeader";
 import { boats } from "../../app/data";
 import { useTitle } from "../lib/useTitle";
+import { useScrollOffset } from "../lib/motion";
 
 const homeFleetImages: Record<string, string> = {
   "kumbra-34": "/images/home/kumbra-34-featured.jpg",
@@ -12,6 +13,12 @@ const homeFleetImages: Record<string, string> = {
 
 export default function Home() {
   useTitle("Cresta Marine | Peak Boating Experience");
+  const scrollY = useScrollOffset();
+  // Hero copy lags the page slightly for depth, then fades before it can reach
+  // the hero footer strip.
+  const heroParallax = Math.min(scrollY, 520) * 0.08;
+  const heroFade = Math.max(0, 1 - scrollY / 520);
+
   return (
     <>
       <div className="home-header">
@@ -24,7 +31,13 @@ export default function Home() {
             alt="Kumbra 43 underway"
           />
           <div className="home-hero-overlay" />
-          <div className="home-hero-copy">
+          <div
+            className="home-hero-copy cresta-parallax"
+            style={{
+              transform: `translate3d(0, ${heroParallax}px, 0)`,
+              opacity: heroFade,
+            }}
+          >
             <span className="eyebrow eyebrow--light">
               Peak Boating Experience
             </span>
@@ -57,7 +70,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="home-thesis">
+        <section className="home-thesis" data-reveal>
           <span className="eyebrow">Peak Boating Experience</span>
           <h2>
             The peak is not a place.
@@ -72,14 +85,14 @@ export default function Home() {
         </section>
 
         <section className="home-fleet">
-          <div className="section-heading">
+          <div className="section-heading" data-reveal>
             <div>
               <span className="eyebrow">Featured fleet · Kumbra Yachts</span>
               <h2>Distinctive by design. Selected to meet the Cresta standard.</h2>
             </div>
             <Link href="/fleet">View all models →</Link>
           </div>
-          <div className="boat-card-grid">
+          <div className="boat-card-grid" data-reveal data-reveal-stagger>
             {boats.map((boat) => (
               <article className="boat-card" key={boat.slug}>
                 <Link href={`/fleet/${boat.slug}`}>
@@ -120,7 +133,7 @@ export default function Home() {
         </section>
 
         <section className="studio-teaser">
-          <div className="studio-copy">
+          <div className="studio-copy" data-reveal>
             <span className="eyebrow">Cresta Studio</span>
             <h2>Your specification, before the quotation.</h2>
             <p>
@@ -143,7 +156,7 @@ export default function Home() {
         </section>
 
         <section className="platform-section">
-          <div className="platform-copy">
+          <div className="platform-copy" data-reveal>
             <span className="eyebrow eyebrow--light">My Cresta</span>
             <h2>Your boating life. One connected experience.</h2>
             <p>
@@ -162,7 +175,7 @@ export default function Home() {
               My Cresta
             </Link>
           </div>
-          <div className="home-app-showcase">
+          <div className="home-app-showcase" data-reveal>
             <div className="home-app-showcase-copy">
               <span className="eyebrow eyebrow--light">
                 My Cresta App · Coming Soon
@@ -199,7 +212,7 @@ export default function Home() {
               />
             </div>
           </div>
-          <div className="role-stack">
+          <div className="role-stack" data-reveal data-reveal-stagger>
             <article>
               <span>Build your boat</span>
               <strong>
@@ -229,7 +242,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="home-contact">
+        <section className="home-contact" data-reveal>
           <span className="eyebrow">Peak Boating Experience</span>
           <h2>Your next chapter starts with the right boat.</h2>
           <p>

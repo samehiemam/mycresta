@@ -5,6 +5,22 @@ import { SiteFooter } from "../../app/components/SiteFooter";
 import { SiteHeader } from "../../app/components/SiteHeader";
 import { getBoat } from "../../app/data";
 import { useTitle } from "../lib/useTitle";
+import { useCountUp } from "../lib/motion";
+
+// A single key-spec figure that counts up when scrolled into view.
+function SpecFigure({ label, value }: { label: string; value: string }) {
+  const { ref, display } = useCountUp(value);
+  return (
+    <div>
+      <span>{label}</span>
+      <strong>
+        <span className="cresta-count" ref={ref}>
+          {display}
+        </span>
+      </strong>
+    </div>
+  );
+}
 
 export default function BoatDetail() {
   const { slug } = useParams();
@@ -66,7 +82,7 @@ export default function BoatDetail() {
           </div>
         </section>
 
-        <section className="boat-specs" aria-label={`${boat.name} key specifications`}>
+        <section className="boat-specs" aria-label={`${boat.name} key specifications`} data-reveal data-reveal-stagger>
           {[
             ["Overall length", boat.length],
             ["Beam", boat.beam],
@@ -75,14 +91,11 @@ export default function BoatDetail() {
             ["Maximum speed", boat.speed],
             ["Accommodation", boat.cabins],
           ].map(([label, value]) => (
-            <div key={label}>
-              <span>{label}</span>
-              <strong>{value}</strong>
-            </div>
+            <SpecFigure key={label} label={label} value={value} />
           ))}
         </section>
 
-        <section className="boat-story">
+        <section className="boat-story" data-reveal>
           <div>
             <span className="eyebrow">Model overview</span>
             <h2>{boat.storyTitle}</h2>
@@ -90,12 +103,12 @@ export default function BoatDetail() {
           <p>{boat.story}</p>
         </section>
 
-        <section className="model-highlights">
+        <section className="model-highlights" data-reveal>
           <div className="model-section-heading">
             <span className="eyebrow">Design &amp; comfort</span>
             <h2>Made for a full day on the water.</h2>
           </div>
-          <div className="model-feature-grid">
+          <div className="model-feature-grid" data-reveal data-reveal-stagger>
             {boat.highlights.map((feature, index) => (
               <article key={feature.title}>
                 <span>{String(index + 1).padStart(2, "0")}</span>
@@ -108,7 +121,7 @@ export default function BoatDetail() {
 
         <FeatureCarousel boatName={boat.name} items={boat.gallery} />
 
-        <section className="boat-gallery">
+        <section className="boat-gallery" data-reveal>
           <img src={boat.secondary} alt={`${boat.name} profile`} />
           <div className="gallery-caption">
             <span className="eyebrow">Built in Spain</span>
@@ -126,7 +139,7 @@ export default function BoatDetail() {
           </div>
         </section>
 
-        <section className="model-interior">
+        <section className="model-interior" data-reveal>
           <div className="model-section-heading model-section-heading--light">
             <span className="eyebrow eyebrow--light">Below deck</span>
             <h2>{boat.interiorTitle}</h2>
@@ -142,7 +155,7 @@ export default function BoatDetail() {
           </div>
         </section>
 
-        <section className="model-performance">
+        <section className="model-performance" data-reveal>
           <div className="model-section-heading">
             <span className="eyebrow">Performance</span>
             <h2>Confidence from rest to cruise.</h2>
@@ -157,7 +170,7 @@ export default function BoatDetail() {
           </div>
         </section>
 
-        <section className="model-layouts">
+        <section className="model-layouts" data-reveal>
           <div className="model-layouts-heading">
             <div>
               <span className="eyebrow">Plans &amp; arrangements</span>
@@ -191,7 +204,7 @@ export default function BoatDetail() {
           </div>
         </section>
 
-        <section className="model-technical">
+        <section className="model-technical" data-reveal>
           <div className="model-technical-heading">
             <div>
               <span className="eyebrow eyebrow--light">
@@ -237,7 +250,7 @@ export default function BoatDetail() {
           </section>
         )}
 
-        <section className="model-cta">
+        <section className="model-cta" data-reveal>
           <div>
             <span className="eyebrow">Your next boat starts here</span>
             <h2>Build the specification. We will prepare the quote.</h2>

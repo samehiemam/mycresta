@@ -1,0 +1,277 @@
+/* ==========================================================================
+   Cresta Marine — motion layer
+   Purely additive: no existing rule is overridden, so the base design is
+   untouched if this file is removed. Everything is disabled under
+   prefers-reduced-motion (see the bottom of this file).
+   ========================================================================== */
+
+/* --------------------------------------------------- reveal on scroll --- */
+[data-reveal] {
+  opacity: 0;
+  transform: translate3d(0, 26px, 0);
+  transition:
+    opacity 0.85s cubic-bezier(0.22, 0.61, 0.36, 1),
+    transform 0.85s cubic-bezier(0.22, 0.61, 0.36, 1);
+  will-change: opacity, transform;
+}
+
+[data-reveal].is-visible {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+/* Stagger children for grids/lists. */
+[data-reveal-stagger] > * {
+  opacity: 0;
+  transform: translate3d(0, 24px, 0);
+  transition:
+    opacity 0.8s cubic-bezier(0.22, 0.61, 0.36, 1),
+    transform 0.8s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+[data-reveal-stagger].is-visible > * {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+[data-reveal-stagger].is-visible > *:nth-child(1) { transition-delay: 0.05s; }
+[data-reveal-stagger].is-visible > *:nth-child(2) { transition-delay: 0.15s; }
+[data-reveal-stagger].is-visible > *:nth-child(3) { transition-delay: 0.25s; }
+[data-reveal-stagger].is-visible > *:nth-child(4) { transition-delay: 0.35s; }
+[data-reveal-stagger].is-visible > *:nth-child(5) { transition-delay: 0.45s; }
+[data-reveal-stagger].is-visible > *:nth-child(6) { transition-delay: 0.55s; }
+
+/* ------------------------------------------------------- hero cinema --- */
+/* Slow Ken Burns drift on the home hero photograph. */
+@keyframes cresta-ken-burns {
+  0%   { transform: scale(1.04) translate3d(0, 0, 0); }
+  100% { transform: scale(1.14) translate3d(-1.2%, -1.4%, 0); }
+}
+
+.home-hero > img {
+  animation: cresta-ken-burns 26s ease-out forwards;
+  will-change: transform;
+}
+
+/* Hero copy lifts in after the image settles. */
+@keyframes cresta-hero-rise {
+  from { opacity: 0; transform: translate3d(0, 34px, 0); }
+  to   { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+.home-hero-copy > * {
+  animation: cresta-hero-rise 1s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+.home-hero-copy > *:nth-child(1) { animation-delay: 0.15s; }
+.home-hero-copy > *:nth-child(2) { animation-delay: 0.3s; }
+.home-hero-copy > *:nth-child(3) { animation-delay: 0.45s; }
+.home-hero-copy > *:nth-child(4) { animation-delay: 0.6s; }
+
+.hero-foot {
+  animation: cresta-hero-rise 1s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+  animation-delay: 0.75s;
+}
+
+/* Parallax target — the offset is supplied inline by the page. */
+.cresta-parallax {
+  will-change: transform;
+}
+
+/* ------------------------------------------------------ intro curtain --- */
+.cresta-intro {
+  align-items: center;
+  background: linear-gradient(150deg, var(--navy-900), var(--navy-800));
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  position: fixed;
+  z-index: 200;
+  animation: cresta-intro-out 0.65s ease-in-out 1.15s forwards;
+}
+
+.cresta-intro img {
+  width: min(280px, 56vw);
+  animation: cresta-intro-mark 1.5s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+@keyframes cresta-intro-mark {
+  0%   { opacity: 0; transform: scale(0.94); filter: blur(6px); }
+  45%  { opacity: 1; transform: scale(1); filter: blur(0); }
+  100% { opacity: 1; transform: scale(1); filter: blur(0); }
+}
+
+@keyframes cresta-intro-out {
+  to { opacity: 0; visibility: hidden; }
+}
+
+/* --------------------------------------------------- route transition --- */
+@keyframes cresta-page-in {
+  from { opacity: 0; transform: translate3d(0, 10px, 0); }
+  to   { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+.cresta-page {
+  animation: cresta-page-in 0.5s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+/* ------------------------------------------------------ scroll progress --- */
+.cresta-progress {
+  background: linear-gradient(90deg, var(--teal-400), var(--teal-600));
+  height: 2px;
+  left: 0;
+  position: fixed;
+  top: 0;
+  transform-origin: 0 50%;
+  transition: transform 0.1s linear;
+  width: 100%;
+  z-index: 60;
+}
+
+/* ------------------------------------------------------- header state --- */
+.site-header {
+  transition: box-shadow 0.4s ease, backdrop-filter 0.4s ease;
+}
+
+.site-header.is-scrolled {
+  backdrop-filter: saturate(140%) blur(10px);
+  box-shadow: 0 12px 34px rgba(8, 29, 51, 0.16);
+}
+
+/* --------------------------------------------------- micro-interactions --- */
+/* Boat card: image breathes on hover. */
+.boat-card-image img {
+  transition: transform 0.9s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.boat-card:hover .boat-card-image img,
+.boat-card:focus-within .boat-card-image img {
+  transform: scale(1.06);
+}
+
+/* Fleet row studio shots lift slightly. */
+.fleet-row-image img {
+  transition: transform 0.9s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.fleet-row:hover .fleet-row-image img {
+  transform: translate3d(0, -6px, 0) scale(1.03);
+}
+
+/* Light sweep across primary buttons. */
+.button--primary,
+.button--light {
+  overflow: hidden;
+  position: relative;
+}
+
+.button--primary::after,
+.button--light::after {
+  background: linear-gradient(
+    100deg,
+    transparent 20%,
+    rgba(255, 255, 255, 0.42) 50%,
+    transparent 80%
+  );
+  content: "";
+  inset: 0 auto 0 -60%;
+  position: absolute;
+  transform: translate3d(-40%, 0, 0);
+  transition: transform 0.75s ease;
+  width: 60%;
+  pointer-events: none;
+}
+
+.button--primary:hover::after,
+.button--light:hover::after {
+  transform: translate3d(360%, 0, 0);
+}
+
+/* Keep button labels above the sweep. */
+.button--primary > *,
+.button--light > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Spec figures tick up in a tabular rhythm (no width jitter). */
+.cresta-count {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ------------------------------------------- configurator hull dissolve --- */
+.boat-visual {
+  position: relative;
+}
+
+/* The outgoing hull is stacked over the incoming one and fades away, so the
+   colour change reads as a dissolve rather than a snap. */
+@keyframes cresta-hull-out {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+
+@keyframes cresta-hull-in {
+  from { opacity: 0; transform: scale(0.988); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.boat-visual .cresta-hull--in {
+  animation: cresta-hull-in 0.6s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+.boat-visual .cresta-hull--out {
+  animation: cresta-hull-out 0.55s ease forwards;
+  height: 100%;
+  inset: 0;
+  object-fit: contain;
+  pointer-events: none;
+  position: absolute;
+  width: 100%;
+}
+
+/* ------------------------------------------------------ reduced motion --- */
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal],
+  [data-reveal-stagger] > * {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  .home-hero > img,
+  .home-hero-copy > *,
+  .hero-foot,
+  .cresta-page,
+  .cresta-intro,
+  .cresta-intro img {
+    animation: none !important;
+  }
+
+  .cresta-intro {
+    display: none;
+  }
+
+  .cresta-parallax {
+    transform: none !important;
+  }
+
+  .boat-card:hover .boat-card-image img,
+  .fleet-row:hover .fleet-row-image img {
+    transform: none;
+    transition: none;
+  }
+
+  .boat-visual .cresta-hull--in {
+    animation: none !important;
+  }
+
+  .boat-visual .cresta-hull--out {
+    display: none;
+  }
+
+  .button--primary::after,
+  .button--light::after {
+    display: none;
+  }
+}

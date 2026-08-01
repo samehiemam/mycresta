@@ -9,7 +9,7 @@ export default function About() {
     <>
       <SiteHeader />
       <main>
-        <section className="page-intro page-intro--wide">
+        <section className="page-intro page-intro--wide" data-reveal>
           <span className="eyebrow">Born from a love of boating</span>
           <h1>We live for the sea—and everything it makes possible.</h1>
           <p>
@@ -20,13 +20,13 @@ export default function About() {
             and genuine Peak Boating Experiences.
           </p>
         </section>
-        <section className="about-image">
+        <section className="about-image" data-reveal>
           <img
             src="/images/hero-home-k43-side-Dk6eFIXz.jpg"
             alt="Kumbra 43 on the water"
           />
         </section>
-        <section className="about-story">
+        <section className="about-story" data-reveal>
           <div>
             <span className="eyebrow">The boat is only the beginning</span>
             <h2>Adventure, nature and the people you share them with.</h2>
@@ -46,7 +46,7 @@ export default function About() {
             </p>
           </div>
         </section>
-        <section className="values-grid">
+        <section className="values-grid" data-reveal data-reveal-stagger>
           <article>
             <span>01</span>
             <h2>Explore freely</h2>
@@ -72,7 +72,7 @@ export default function About() {
             </p>
           </article>
         </section>
-        <section className="connected-experience">
+        <section className="connected-experience" data-reveal>
           <div>
             <span className="eyebrow eyebrow--light">
               Connected boating · Coming Soon
@@ -97,7 +97,7 @@ export default function About() {
             </Link>
           </div>
         </section>
-        <section className="model-cta">
+        <section className="model-cta" data-reveal>
           <div>
             <span className="eyebrow">Peak Boating Experience, delivered</span>
             <h2>From choosing the right boat to every service after delivery.</h2>

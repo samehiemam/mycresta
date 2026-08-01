@@ -9,7 +9,7 @@ export default function Services() {
     <>
       <SiteHeader />
       <main>
-        <section className="page-intro">
+        <section className="page-intro" data-reveal>
           <span className="eyebrow">Ownership, organised</span>
           <h1>More time on the water. Less marina administration.</h1>
           <p>
@@ -17,7 +17,7 @@ export default function Services() {
             connected through My Cresta.
           </p>
         </section>
-        <section className="service-grid">
+        <section className="service-grid" data-reveal data-reveal-stagger>
           <article className="service-feature">
             <span className="eyebrow eyebrow--light">Full ownership</span>
             <h2>Your boat. One Cresta standard.</h2>
@@ -56,7 +56,7 @@ export default function Services() {
             </p>
           </article>
         </section>
-        <section className="financing-section">
+        <section className="financing-section" data-reveal>
           <div className="financing-copy">
             <span className="eyebrow">Financing options</span>
             <h2>A clearer path to owning your boat.</h2>
@@ -85,7 +85,7 @@ export default function Services() {
             </p>
           </div>
         </section>
-        <section className="portal-preview-strip">
+        <section className="portal-preview-strip" data-reveal>
           <div>
             <span className="eyebrow eyebrow--light">The Cresta platform</span>
             <h2>One account follows the full ownership journey.</h2>

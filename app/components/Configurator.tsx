@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import {
   EquipmentOption,
@@ -12,6 +12,39 @@ import {
 } from "../configurator-data";
 
 type FinishKey = keyof typeof finishOptions;
+
+/**
+ * Hull preview that dissolves between images when the model or gelcoat colour
+ * changes: the previous frame stays stacked on top and fades out.
+ */
+function HullVisual({ src, alt }: { src: string; alt: string }) {
+  const [previous, setPrevious] = useState<string | null>(null);
+  const currentSrc = useRef(src);
+
+  useEffect(() => {
+    if (currentSrc.current === src) return;
+    const outgoing = currentSrc.current;
+    currentSrc.current = src;
+    setPrevious(outgoing);
+    const timer = window.setTimeout(() => setPrevious(null), 600);
+    return () => window.clearTimeout(timer);
+  }, [src]);
+
+  return (
+    <div className="boat-visual">
+      {previous && (
+        <img
+          key={previous}
+          className="cresta-hull cresta-hull--out"
+          src={previous}
+          alt=""
+          aria-hidden="true"
+        />
+      )}
+      <img key={src} className="cresta-hull cresta-hull--in" src={src} alt={alt} />
+    </div>
+  );
+}
 
 const initialFinishes: Record<FinishKey, string> = {
   gelcoat: "white",
@@ -207,12 +240,10 @@ export function Configurator() {
             <h1>{current.name}</h1>
             <p>{current.spec}</p>
           </div>
-          <div className="boat-visual">
-            <img
-              src={current.images[visual]}
-              alt={`${current.name} configured in ${gelcoat}`}
-            />
-          </div>
+          <HullVisual
+            src={current.images[visual]}
+            alt={`${current.name} configured in ${gelcoat}`}
+          />
           <div className="config-stage-footer">
             <span>{gelcoat} gelcoat · {engine.propulsion}</span>
             <span>Finish visual is indicative; your advisor confirms samples.</span>
