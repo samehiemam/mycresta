@@ -1,6 +1,13 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import {
+  CSSProperties,
+  FormEvent,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useSearchParams } from "next/navigation";
 import {
   EquipmentOption,
@@ -9,6 +16,7 @@ import {
   modelOptions,
   ModelKey,
   visualColour,
+  visualTint,
 } from "../configurator-data";
 
 type FinishKey = keyof typeof finishOptions;
@@ -17,9 +25,18 @@ type FinishKey = keyof typeof finishOptions;
  * Hull preview that dissolves between images when the model or gelcoat colour
  * changes: the previous frame stays stacked on top and fades out.
  */
-function HullVisual({ src, alt }: { src: string; alt: string }) {
+function HullVisual({
+  src,
+  alt,
+  tint,
+}: {
+  src: string;
+  alt: string;
+  tint: string | null;
+}) {
   const [previous, setPrevious] = useState<string | null>(null);
   const currentSrc = useRef(src);
+  const tintStyle = { "--hull-tint": tint ?? "" } as CSSProperties;
 
   useEffect(() => {
     if (currentSrc.current === src) return;
@@ -39,9 +56,16 @@ function HullVisual({ src, alt }: { src: string; alt: string }) {
           src={previous}
           alt=""
           aria-hidden="true"
+          style={tintStyle}
         />
       )}
-      <img key={src} className="cresta-hull cresta-hull--in" src={src} alt={alt} />
+      <img
+        key={src}
+        className="cresta-hull cresta-hull--in"
+        src={src}
+        alt={alt}
+        style={tintStyle}
+      />
     </div>
   );
 }
@@ -243,6 +267,7 @@ export function Configurator() {
           <HullVisual
             src={current.images[visual]}
             alt={`${current.name} configured in ${gelcoat}`}
+            tint={visualTint(finishes.gelcoat)}
           />
           <div className="config-stage-footer">
             <span>{gelcoat} gelcoat · {engine.propulsion}</span>

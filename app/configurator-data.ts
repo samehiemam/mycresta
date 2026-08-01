@@ -738,6 +738,18 @@ export const finishLabels: Record<keyof typeof finishOptions, string> = {
 
 export function visualColour(gelcoat: string): "white" | "blue" | "antracite" {
   if (gelcoat === "elegant-blue") return "blue";
-  if (gelcoat === "antracite" || gelcoat === "sportive-grey") return "antracite";
+  if (gelcoat === "antracite") return "antracite";
+  // Telegrey and Sportive Grey have no factory render of their own; they are
+  // shaded from the white hull so the highlights and reflections stay correct.
   return "white";
+}
+
+/**
+ * Grade the base render towards a gelcoat that has no dedicated photograph.
+ * Returns a CSS filter fragment, or null when the render already matches.
+ */
+export function visualTint(gelcoat: string): string | null {
+  if (gelcoat === "telegrey") return "brightness(0.86) saturate(0.85)";
+  if (gelcoat === "sportive-grey") return "brightness(0.55) saturate(0.8)";
+  return null;
 }

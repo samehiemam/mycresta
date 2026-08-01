@@ -2776,7 +2776,9 @@ p {
 }
 
 .boat-visual img {
-  filter: drop-shadow(0 25px 35px rgba(0, 0, 0, 0.35));
+  /* --hull-tint grades the render towards gelcoats without their own photo. */
+  filter: drop-shadow(0 25px 35px rgba(0, 0, 0, 0.35)) var(--hull-tint, );
+  transition: filter 0.5s ease;
   max-height: 58vh;
   object-fit: contain;
   width: 100%;
