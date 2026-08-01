@@ -49,3 +49,6 @@ preview.log
 # project setup artifacts (extraction leftovers, not part of the app)
 /cresta-source/
 /cresta-source.zip
+
+# typescript incremental build cache
+tsconfig.tsbuildinfo
