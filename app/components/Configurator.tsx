@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   EquipmentOption,
   finishLabels,
@@ -106,6 +106,7 @@ const initialFinishes: Record<FinishKey, string> = {
 };
 
 export function Configurator() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const requestedModel = searchParams.get("model");
   const initialModel: ModelKey =
@@ -183,7 +184,9 @@ export function Configurator() {
     return null;
   }
 
-  function selectModel(next: ModelKey) {
+  // Reset everything that is model-specific. Kept separate from selectModel so
+  // the URL sync below can reuse it without writing the URL again.
+  function applyModel(next: ModelKey) {
     setModel(next);
     setEngineId(modelOptions[next].engines[0].id);
     setSelectedEquipment([]);
@@ -192,6 +195,25 @@ export function Configurator() {
     setShowIncludedEquipment(false);
     setPropulsionTab(null);
   }
+
+  function selectModel(next: ModelKey) {
+    applyModel(next);
+    // Keep ?model= in step so the header menu and this panel never disagree.
+    router.replace(`/configure?model=${next}`);
+  }
+
+  // The header's Configurator menu links to /configure?model=…; without this the
+  // page would keep the model it mounted with.
+  useEffect(() => {
+    if (
+      requestedModel === "34" ||
+      requestedModel === "36" ||
+      requestedModel === "43"
+    ) {
+      if (requestedModel !== model) applyModel(requestedModel);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [requestedModel]);
 
   function selectEngine(nextEngineId: string) {
     const nextEngine = current.engines.find((item) => item.id === nextEngineId);
