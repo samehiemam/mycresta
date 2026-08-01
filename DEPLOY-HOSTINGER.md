@@ -12,17 +12,25 @@ If Hostinger builds from the GitHub repo, set these in **Build configuration**:
 
 | Setting | Value |
 | --- | --- |
-| Framework preset | **Vite** (or **None / Static** — anything except Next.js) |
+| Framework preset | Next.js (works as-is) — or Vite / None |
 | Build command | `npm run build` |
-| Output directory | `dist-static` |
+| Output directory | `.next` |
 | Branch | `main` |
 | Node version | `22.x` |
 | Package manager | `npm` |
 
-`npm run build` produces the static site, so the default command works. The
-Cloudflare/vinext build still exists as `npm run build:cloudflare` — do **not**
-use it for Hostinger: it emits a Cloudflare Worker (`dist/server`) that shared
-hosting cannot run, and it never creates `.next` or `dist/standalone`.
+`npm run build` runs a plain static Vite build that **outputs to `.next`**, purely
+so it matches the directory Hostinger's Next.js preset expects. There is nothing
+Next.js about the output — it is static HTML/CSS/JS plus `submit.php` and
+`.htaccess`. For a clearer folder name locally, run:
+
+```bash
+BUILD_OUT_DIR=dist-static npm run build
+```
+
+The Cloudflare/vinext build still exists as `npm run build:cloudflare` — do
+**not** use it for Hostinger: it emits a Cloudflare Worker that shared hosting
+cannot run.
 
 ## 1. Build the site
 
@@ -33,11 +41,11 @@ npm install
 npm run build
 ```
 
-This creates a `dist-static/` folder containing the whole website:
+This creates the output folder (`.next/` by default) containing the whole website:
 `index.html`, an `assets/` folder, all the `images/` and `brochures/`,
 `.htaccess`, and `submit.php`.
 
-> Everything you upload to Hostinger comes from `dist-static/`.
+> Everything you upload to Hostinger comes from that output folder.
 
 ---
 
@@ -59,7 +67,7 @@ the first time a form is submitted (`leads`, `boat_configurations`,
 
 ## 3. Put your database details into submit.php
 
-Open `dist-static/submit.php` (edit it locally before uploading, or in
+Open `submit.php` inside the output folder (edit it locally before uploading, or in
 Hostinger's File Manager after uploading) and fill in the CONFIG block:
 
 ```php
@@ -87,11 +95,11 @@ Using hPanel **File Manager** (or FTP / FileZilla):
 1. Open **File Manager → `public_html`**.
 2. If there's an old/placeholder site there, remove it first (keep any existing
    email or system folders — only clear the web files).
-3. Upload the **contents of `dist-static/`** into `public_html` — the files
+3. Upload the **contents of the output folder** into `public_html` — the files
    should sit directly in `public_html` (so you have
    `public_html/index.html`, `public_html/submit.php`, `public_html/assets/…`,
-   `public_html/.htaccess`, etc.), **not** inside a `dist-static` subfolder.
-   - Fastest way: zip the contents of `dist-static`, upload the zip, then
+   `public_html/.htaccess`, etc.), **not** inside a subfolder.
+   - Fastest way: zip the contents of the output folder, upload the zip, then
      "Extract" it inside `public_html`.
 4. Make sure the hidden **`.htaccess`** made it across (enable "show hidden
    files" in File Manager). It powers deep links like `/fleet/kumbra-36`.
@@ -121,7 +129,7 @@ Every time you change the site:
 npm run build
 ```
 
-Then re-upload the contents of `dist-static/` to `public_html` (you can keep
+Then re-upload the contents of the output folder to `public_html` (you can keep
 your already-configured `submit.php` on the server, or re-enter the DB details).
 
 ---

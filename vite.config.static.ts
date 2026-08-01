@@ -20,7 +20,11 @@ export default defineConfig({
     ],
   },
   build: {
-    outDir: "dist-static",
+    // Hostinger's "Next.js" preset hard-codes the output directory to `.next`,
+    // so that is the default here and the deploy works with no dashboard
+    // changes. It is still a plain static Vite build — nothing Next.js about it.
+    // Override when you want the clearer name: BUILD_OUT_DIR=dist-static npm run build
+    outDir: process.env.BUILD_OUT_DIR || ".next",
     emptyOutDir: true,
   },
 });
