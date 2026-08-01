@@ -3,19 +3,70 @@
 
 declare(strict_types=1);
 
+/**
+ * Portal settings, from portal/config.php or from environment variables.
+ *
+ * The environment route exists so the database password can be typed into the
+ * host's own control panel instead of a file — nothing secret then lives in the
+ * repository, the build, or a file anyone has to edit by hand. config.php still
+ * wins when it is present.
+ */
 function cresta_config(): array
 {
     static $config = null;
-    if ($config === null) {
-        $path = __DIR__ . '/../config.php';
-        if (!is_file($path)) {
-            http_response_code(500);
-            header('Content-Type: application/json');
-            echo json_encode(['error' => 'Portal is not configured yet.']);
-            exit;
-        }
-        $config = require $path;
+    if ($config !== null) {
+        return $config;
     }
+
+    $path = __DIR__ . '/../config.php';
+    $file = is_file($path) ? require $path : [];
+
+    $env = static function (string $key, ?string $fallback = null): ?string {
+        $value = getenv($key);
+        if ($value === false || $value === '') {
+            $value = $_ENV[$key] ?? $_SERVER[$key] ?? null;
+        }
+        return ($value === false || $value === null || $value === '') ? $fallback : (string) $value;
+    };
+
+    $db = $file['db'] ?? [];
+    $config = [
+        'db' => [
+            'host' => $env('CRESTA_DB_HOST', $db['host'] ?? 'localhost'),
+            'name' => $env('CRESTA_DB_NAME', $db['name'] ?? ''),
+            'user' => $env('CRESTA_DB_USER', $db['user'] ?? ''),
+            'pass' => $env('CRESTA_DB_PASS', $db['pass'] ?? ''),
+        ],
+        'storage_path' => $file['storage_path'] ?? __DIR__ . '/../storage',
+        'mail' => [
+            'from'      => $env('CRESTA_MAIL_FROM', $file['mail']['from'] ?? 'no-reply@localhost'),
+            'from_name' => $file['mail']['from_name'] ?? 'Cresta Marine',
+            'admin'     => $env('CRESTA_MAIL_ADMIN', $file['mail']['admin'] ?? ''),
+        ],
+        'sms' => [
+            'driver'   => $env('CRESTA_SMS_DRIVER', $file['sms']['driver'] ?? 'manual'),
+            'endpoint' => $env('CRESTA_SMS_ENDPOINT', $file['sms']['endpoint'] ?? ''),
+            'token'    => $env('CRESTA_SMS_TOKEN', $file['sms']['token'] ?? ''),
+            'sender'   => $env('CRESTA_SMS_SENDER', $file['sms']['sender'] ?? 'CrestaMarine'),
+        ],
+        'admin_emails' => array_filter(array_map(
+            'trim',
+            explode(',', $env('CRESTA_ADMIN_EMAILS', implode(',', $file['admin_emails'] ?? [])) ?? '')
+        )),
+        'site_url' => $env('CRESTA_SITE_URL', $file['site_url'] ?? ''),
+    ];
+
+    if ($config['db']['name'] === '' || $config['db']['user'] === '') {
+        http_response_code(500);
+        header('Content-Type: application/json');
+        echo json_encode([
+            'ok' => false,
+            'error' => 'The portal has no database settings yet. Add CRESTA_DB_NAME, '
+                . 'CRESTA_DB_USER and CRESTA_DB_PASS in your hosting panel, or create portal/config.php.',
+        ]);
+        exit;
+    }
+
     return $config;
 }
 

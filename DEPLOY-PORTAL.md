@@ -43,27 +43,33 @@ run it by hand in phpMyAdmin.)
 
 ## 3. Configure
 
-In hPanel → **File Manager**, copy `public_html/portal/config.example.php` to
-`public_html/portal/config.php` and fill in:
+Two ways. **Environment variables are easier** — the password is typed into the
+hosting panel and never exists in a file.
 
-```php
-'db' => [
-    'host' => 'localhost',
-    'name' => 'u123456789_cresta',
-    'user' => 'u123456789_cresta',
-    'pass' => 'your database password',
-],
-'mail' => [
-    'from'  => 'no-reply@crestamarine.com',
-    'admin' => 'your@email.com',        // where new registrations are announced
-],
-'site_url' => 'https://www.crestamarine.com',
-```
+### Option A — hosting panel (recommended)
 
-> Create `no-reply@crestamarine.com` in hPanel → **Emails** first. Codes and
-> reset links sent "from" an address that does not exist usually land in spam.
+hPanel → your website → **Environment variables** → add:
 
-`config.php` is gitignored — it must never be committed.
+| Name | Value |
+| --- | --- |
+| `CRESTA_DB_HOST` | `localhost` |
+| `CRESTA_DB_NAME` | your database name |
+| `CRESTA_DB_USER` | your database user |
+| `CRESTA_DB_PASS` | your database password |
+| `CRESTA_ADMIN_EMAILS` | your email — this address becomes admin |
+| `CRESTA_SITE_URL` | `https://yourdomain.com` |
+| `CRESTA_MAIL_FROM` | `no-reply@yourdomain.com` |
+| `CRESTA_MAIL_ADMIN` | where new registrations are announced |
+
+Optional once you have an SMS gateway: `CRESTA_SMS_DRIVER=http`,
+`CRESTA_SMS_ENDPOINT`, `CRESTA_SMS_TOKEN`, `CRESTA_SMS_SENDER`.
+
+Redeploy after adding them so the app picks them up.
+
+### Option B — config file
+
+Copy `public_html/portal/config.example.php` to `config.php` and fill it in.
+It takes priority over the environment when present.
 
 ---
 
