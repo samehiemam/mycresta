@@ -67,12 +67,7 @@ export function SiteHeader({
           rel="noreferrer"
           aria-label="Chat with Cresta Marine on WhatsApp at +20 122 421 2222"
         >
-          <img
-            className="whatsapp-icon"
-            src="/images/whatsapp-mark-menu.svg"
-            alt=""
-            aria-hidden="true"
-          />
+          <span className="whatsapp-icon" aria-hidden="true" />
           <span className="whatsapp-handle">WhatsApp</span>
         </a>
         <a

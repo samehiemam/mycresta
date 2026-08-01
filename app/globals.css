@@ -790,18 +790,16 @@ p {
   gap: 7px;
 }
 
+/* Masked so the mark takes currentColor, matching the Instagram glyph and the
+   menu text on both the light and inverse headers. */
 .whatsapp-icon {
-  height: 17px;
-  max-width: none;
-  object-fit: contain;
+  background-color: currentColor;
+  display: inline-block;
   flex: 0 0 auto;
+  height: 17px;
+  mask: url("/images/whatsapp-mark-menu.svg") center / contain no-repeat;
+  -webkit-mask: url("/images/whatsapp-mark-menu.svg") center / contain no-repeat;
   width: 17px;
-}
-
-@media (min-width: 821px) {
-  .site-header--inverse .whatsapp-icon {
-    filter: brightness(0) invert(1);
-  }
 }
 
 .instagram-handle,
@@ -4538,10 +4536,11 @@ p {
     margin-top: 7px;
   }
 
-  .site-nav .whatsapp-icon {
-    filter: brightness(0) invert(1);
-    height: 20px;
-    width: 20px;
+  /* keep both social marks the same size in the mobile menu */
+  .site-nav .whatsapp-icon,
+  .site-nav .instagram-icon {
+    height: 19px;
+    width: 19px;
   }
 
   .site-nav .instagram-link::after,
