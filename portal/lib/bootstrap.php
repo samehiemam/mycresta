@@ -17,6 +17,9 @@ require_once __DIR__ . '/http.php';
 require_once __DIR__ . '/auth.php';
 require_once __DIR__ . '/notify.php';
 
+// Install the tables on first use so a fresh deploy needs no manual SQL.
+ensure_schema();
+
 set_exception_handler(static function (Throwable $e): void {
     error_log('Cresta portal error: ' . $e->getMessage() . ' @ ' . $e->getFile() . ':' . $e->getLine());
     if (!headers_sent()) {

@@ -105,3 +105,51 @@ function audit(?string $actorId, string $action, ?string $entity = null, ?string
         ]
     );
 }
+
+/**
+ * Creates the portal tables on first use.
+ *
+ * Saves the operator a manual phpMyAdmin step, and keeps a fresh install from
+ * failing with a confusing SQL error. The check is a cheap lookup; the schema
+ * only runs when the tables are genuinely absent.
+ */
+function ensure_schema(): void
+{
+    static $checked = false;
+    if ($checked) {
+        return;
+    }
+    $checked = true;
+
+    try {
+        db()->query('SELECT 1 FROM users LIMIT 1');
+        return; // already installed
+    } catch (Throwable) {
+        // table missing — fall through and install
+    }
+
+    $sql = file_get_contents(__DIR__ . '/../sql/001_auth.sql');
+    if ($sql === false) {
+        return;
+    }
+
+    // Strip comment lines FIRST, then split. Splitting first would attach each
+    // heading comment to the statement below it and discard the pair.
+    $withoutComments = implode("\n", array_filter(
+        preg_split('/\R/', $sql) ?: [],
+        static fn(string $line): bool => !str_starts_with(ltrim($line), '--')
+    ));
+
+    $statements = array_filter(
+        array_map('trim', explode(';', $withoutComments)),
+        static fn(string $s): bool => $s !== ''
+    );
+
+    foreach ($statements as $statement) {
+        try {
+            db()->exec($statement);
+        } catch (Throwable $e) {
+            error_log('Cresta portal schema statement failed: ' . $e->getMessage());
+        }
+    }
+}

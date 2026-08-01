@@ -45,8 +45,9 @@ return [
         'sender'   => 'CrestaMarine',
     ],
 
-    // Seeded once by scripts/seed-admin.php. Only these addresses get the
-    // admin role; everything else is granted by an admin in the portal.
+    // Register at /register with one of these addresses and confirm the emailed
+    // code — the account is then promoted to admin automatically. Every other
+    // role is granted by an admin inside the portal.
     'admin_emails' => ['admin@crestamarine.com'],
 
     // Public site origin, used to build links in emails.

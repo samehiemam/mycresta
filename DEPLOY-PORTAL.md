@@ -33,12 +33,11 @@ Either way the folder is protected: `.htaccess` denies every request, and PHP
 files are executed rather than shown, so `config.php` returns nothing to a
 browser.
 
-## 2. Create the tables
+## 2. Create the tables — nothing to do
 
-hPanel → **Databases → phpMyAdmin** → select your database → **SQL** tab →
-paste the contents of `portal/sql/001_auth.sql` → **Go**.
-
-It is safe to run more than once.
+The portal installs its own tables the first time the API is called, so there
+is no SQL step. (`portal/sql/001_auth.sql` is still there if you ever want to
+run it by hand in phpMyAdmin.)
 
 ---
 
@@ -68,22 +67,23 @@ In hPanel → **File Manager**, copy `public_html/portal/config.example.php` to
 
 ---
 
-## 4. Create your admin account
+## 4. Create your admin account — no SSH needed
 
-Over SSH (hPanel → Advanced → SSH Access):
+Put your own address in `admin_emails` in `config.php`:
 
-```bash
-php ~/public_html/portal/scripts/seed-admin.php "you@crestamarine.com" "Your Name" "+201001234567"
+```php
+'admin_emails' => ['you@crestamarine.com'],
 ```
 
-It prints a **one-time link**. Open it within 2 hours to choose your password.
+Then just **register normally at `/register`** with that address. When you enter
+the code emailed to you, the account is promoted to admin and approved
+automatically.
 
-No password is ever typed into the script, stored in the repo, or written to a
-log. When you are done, delete the script from the server:
+Registering with that address is *not* enough on its own — the emailed code has
+to be entered — so nobody who does not control the mailbox can claim it.
 
-```bash
-rm ~/public_html/portal/scripts/seed-admin.php
-```
+> An SSH alternative still exists if you prefer it:
+> `php ~/public_html/portal/scripts/seed-admin.php "you@..." "Your Name" "+20..."`
 
 ---
 

@@ -239,5 +239,37 @@ function consume_code(string $userId, string $channel, string $code): bool
     db_run('UPDATE verifications SET used_at = ? WHERE id = ?', [now(), $row['id']]);
     $column = $channel === 'email' ? 'email_verified_at' : 'phone_verified_at';
     db_run("UPDATE users SET {$column} = ?, updated_at = ? WHERE id = ?", [now(), now(), $userId]);
+
+    if ($channel === 'email') {
+        promote_configured_admin($userId);
+    }
     return true;
+}
+
+/**
+ * Grants admin to the address listed in config `admin_emails`, but only once
+ * that address has proved it controls the mailbox. Registering as the admin
+ * email is not enough on its own — the emailed code has to be entered — so a
+ * stranger cannot claim the account.
+ */
+function promote_configured_admin(string $userId): void
+{
+    $user = find_user($userId);
+    if (!$user || empty($user['email_verified_at']) || $user['role'] === 'admin') {
+        return;
+    }
+
+    $configured = array_map(
+        static fn($email) => mb_strtolower(trim((string) $email)),
+        cresta_config()['admin_emails'] ?? []
+    );
+    if (!in_array(mb_strtolower($user['email']), $configured, true)) {
+        return;
+    }
+
+    db_run(
+        "UPDATE users SET role = 'admin', status = 'approved', updated_at = ? WHERE id = ?",
+        [now(), $userId]
+    );
+    audit($userId, 'admin_granted_from_config', 'user', $userId);
 }
