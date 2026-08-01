@@ -2883,11 +2883,19 @@ p {
 
 .boat-visual {
   align-items: center;
-  display: flex;
+  /* Grid so both crossfade layers share one cell and line up exactly; with
+     the outgoing layer absolutely positioned they sat ~70px apart and the
+     hull appeared to drop into place on every colour change. */
+  display: grid;
   flex: 1;
-  justify-content: center;
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: center;
   margin: 0 -14%;
   width: 128%;
+}
+
+.boat-visual > img {
+  grid-area: 1 / 1;
 }
 
 .boat-visual img {
