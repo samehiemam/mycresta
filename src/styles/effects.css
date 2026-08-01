@@ -108,11 +108,14 @@
 /* --------------------------------------------------- route transition --- */
 @keyframes cresta-page-in {
   from { opacity: 0; transform: translate3d(0, 10px, 0); }
-  to   { opacity: 1; transform: translate3d(0, 0, 0); }
+  to   { opacity: 1; transform: none; }
 }
 
+/* `backwards`, never `both`: a retained transform (even an identity one) makes
+   this element the containing block for position: fixed children, which sized
+   the lightbox and dialogs to the whole page instead of the viewport. */
 .cresta-page {
-  animation: cresta-page-in 0.5s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+  animation: cresta-page-in 0.5s cubic-bezier(0.22, 0.61, 0.36, 1) backwards;
 }
 
 /* ------------------------------------------------------ scroll progress --- */
