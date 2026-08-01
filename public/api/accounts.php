@@ -86,6 +86,14 @@ switch ($action) {
              WHERE id = ?',
             [$decision, $role, $actor['id'], now(), now(), $id]
         );
+
+        // Without an SMS gateway the customer cannot receive a code, so staff
+        // confirm the number out of band. Approving records that check.
+        $smsDriver = cresta_config()['sms']['driver'] ?? 'manual';
+        if ($decision === 'approved' && $smsDriver !== 'http' && empty($target['phone_verified_at'])) {
+            db_run('UPDATE users SET phone_verified_at = ? WHERE id = ?', [now(), $id]);
+            audit($actor['id'], 'phone_confirmed_manually', 'user', $id, ['phone' => $target['phone']]);
+        }
         audit($actor['id'], 'account_' . $decision, 'user', $id, ['role' => $role]);
 
         if ($decision === 'approved') {

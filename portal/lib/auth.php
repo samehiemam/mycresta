@@ -267,9 +267,13 @@ function promote_configured_admin(string $userId): void
         return;
     }
 
+    // The mobile is confirmed here too: with no SMS gateway configured there is
+    // no way to receive a code, and whoever edits config.php already controls
+    // the server. Without this the first admin could never finish signing in.
     db_run(
-        "UPDATE users SET role = 'admin', status = 'approved', updated_at = ? WHERE id = ?",
-        [now(), $userId]
+        "UPDATE users SET role = 'admin', status = 'approved',
+         phone_verified_at = COALESCE(phone_verified_at, ?), updated_at = ? WHERE id = ?",
+        [now(), now(), $userId]
     );
     audit($userId, 'admin_granted_from_config', 'user', $userId);
 }

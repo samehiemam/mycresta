@@ -56,7 +56,9 @@ export default function Accounts() {
             <span className="eyebrow">Cresta team</span>
             <h1>Account requests</h1>
             <p>
-              Approve access for customers and ambassadors.
+              Approve access for customers and ambassadors. Until an SMS
+              gateway is connected, confirm the mobile number by WhatsApp or a
+              call first — approving records that check.
               {isAdmin
                 ? " As an admin you can also change roles."
                 : " Only an admin can change a role."}
@@ -87,7 +89,7 @@ export default function Accounts() {
                   email {row.emailVerified ? "confirmed" : "unconfirmed"}
                 </span>
                 <span className={row.phoneVerified ? "verified" : "unverified"}>
-                  mobile {row.phoneVerified ? "confirmed" : "unconfirmed"}
+                  mobile {row.phoneVerified ? "confirmed" : "confirm by WhatsApp"}
                 </span>
               </div>
               <div className="account-row-actions">
