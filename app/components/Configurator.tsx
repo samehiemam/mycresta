@@ -116,6 +116,9 @@ export function Configurator() {
   const [ownership, setOwnership] = useState("Full ownership");
   const [selectedEquipment, setSelectedEquipment] = useState<string[]>([]);
   const [activeCategory, setActiveCategory] = useState("Control & manoeuvring");
+  const [propulsionTab, setPropulsionTab] = useState<
+    EngineOption["propulsion"] | null
+  >(null);
   const [equipmentSearch, setEquipmentSearch] = useState("");
   const [showIncludedEquipment, setShowIncludedEquipment] = useState(false);
   const [dialog, setDialog] = useState(false);
@@ -130,6 +133,22 @@ export function Configurator() {
   const categories = useMemo(
     () => [...new Set(current.equipment.map((item) => item.category))],
     [current.equipment],
+  );
+
+  // Engines are grouped by propulsion: it is the choice that actually changes
+  // the boat (and gates equipment), and it keeps the list short per view.
+  const propulsions = useMemo(
+    () => [...new Set(current.engines.map((item) => item.propulsion))],
+    [current.engines],
+  );
+  // Defaults to the selected engine's group, and falls back to it whenever the
+  // model changes and the previous group no longer exists.
+  const activePropulsion =
+    propulsionTab && propulsions.includes(propulsionTab)
+      ? propulsionTab
+      : engine.propulsion;
+  const visibleEngines = current.engines.filter(
+    (item) => item.propulsion === activePropulsion,
   );
 
   const visibleEquipment = useMemo(() => {
@@ -165,6 +184,7 @@ export function Configurator() {
     setActiveCategory("Control & manoeuvring");
     setEquipmentSearch("");
     setShowIncludedEquipment(false);
+    setPropulsionTab(null);
   }
 
   function selectEngine(nextEngineId: string) {
@@ -377,8 +397,37 @@ export function Configurator() {
 
           <fieldset className="config-group">
             <legend>03 · Power</legend>
-            <div className="engine-list">
-              {current.engines.map((item) => (
+            <p className="config-group-intro">
+              Choose the propulsion first — it decides how the boat is driven
+              and which equipment is available. One engine package is selected.
+            </p>
+
+            <div className="category-tabs" aria-label="Propulsion type">
+              {propulsions.map((propulsion) => {
+                const count = current.engines.filter(
+                  (item) => item.propulsion === propulsion,
+                ).length;
+                return (
+                  <button
+                    type="button"
+                    key={propulsion}
+                    className={activePropulsion === propulsion ? "is-selected" : ""}
+                    aria-pressed={activePropulsion === propulsion}
+                    onClick={() => setPropulsionTab(propulsion)}
+                  >
+                    {propulsion}
+                    <span className="tab-count">{count}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            <div
+              className="engine-list"
+              role="radiogroup"
+              aria-label={`${activePropulsion} engine packages`}
+            >
+              {visibleEngines.map((item) => (
                 <label key={item.id}>
                   <input
                     type="radio"
@@ -387,12 +436,21 @@ export function Configurator() {
                     onChange={() => selectEngine(item.id)}
                   />
                   <span>
-                    <strong>{item.label}</strong>
-                    <small>{item.propulsion}</small>
+                    <strong>
+                      {/* the propulsion is already the group heading */}
+                      {item.label.split(" — ")[0]}
+                    </strong>
+                    <small>{item.family}</small>
                   </span>
                 </label>
               ))}
             </div>
+
+            <p className="engine-selected-note">
+              <span>Selected</span>
+              <strong>{engine.label.split(" — ")[0]}</strong>
+              <small>{engine.propulsion}</small>
+            </p>
           </fieldset>
 
           <fieldset className="config-group">
