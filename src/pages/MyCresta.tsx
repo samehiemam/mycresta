@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { AccessRequestForm } from "../../app/components/AccessRequestForm";
 import { SiteFooter } from "../../app/components/SiteFooter";
 import { SiteHeader } from "../../app/components/SiteHeader";
 import { useTitle } from "../lib/useTitle";
@@ -84,24 +83,17 @@ export default function MyCresta() {
 
           <div className="my-cresta-access-grid">
             <aside className="my-cresta-signin">
-              <span className="eyebrow eyebrow--light">Account sign-in</span>
-              <h2>Secure accounts · Coming Soon</h2>
+              <span className="eyebrow eyebrow--light">Existing account</span>
+              <h2>Sign in.</h2>
               <p>
-                Personal My Cresta account sign-in is on the way. In the
-                meantime, register below and a Cresta advisor will be in touch
-                to set up your profile.
+                Reach your saved configurations, your boat and your Cresta
+                services.
               </p>
-              <a
-                className="button button--light button--full"
-                href="https://wa.me/201224212222"
-                target="_blank"
-                rel="noreferrer"
-              >
-                Talk to Cresta on WhatsApp
-              </a>
+              <Link className="button button--light button--full" href="/login">
+                Sign in to My Cresta
+              </Link>
               <small>
-                Prefer email? Reach us at{" "}
-                <a href="mailto:info@crestamarine.com">info@crestamarine.com</a>.
+                <Link href="/forgot-password">Forgot your password?</Link>
               </small>
             </aside>
 
@@ -113,7 +105,13 @@ export default function MyCresta() {
                 profile to future configurations, quotations and ownership
                 support.
               </p>
-              <AccessRequestForm mode="customer" />
+              <Link className="button button--primary button--full" href="/register">
+                Create my account
+              </Link>
+              <small className="portal-hint">
+                You will confirm your email address and mobile number, then a
+                Cresta advisor activates your account.
+              </small>
             </article>
           </div>
         </section>
@@ -217,7 +215,16 @@ export default function MyCresta() {
                   access is granted.
                 </p>
               </div>
-              <AccessRequestForm mode="team" />
+              <Link
+                className="button button--primary button--full"
+                href="/register?role=ambassador"
+              >
+                Apply as an ambassador
+              </Link>
+              <small className="portal-hint">
+                Cresta employees do not register here — your administrator
+                creates staff accounts.
+              </small>
             </div>
           </details>
         </section>

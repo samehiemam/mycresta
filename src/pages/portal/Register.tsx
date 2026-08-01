@@ -1,5 +1,6 @@
 import { FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { SiteHeader } from "../../../app/components/SiteHeader";
 import { SiteFooter } from "../../../app/components/SiteFooter";
@@ -10,7 +11,11 @@ export default function Register() {
   useTitle("Create your account | My Cresta");
   const { api } = useAuth();
   const navigate = useNavigate();
-  const [role, setRole] = useState<"customer" | "ambassador">("customer");
+  const searchParams = useSearchParams();
+  // /register?role=ambassador arrives from the My Cresta page.
+  const [role, setRole] = useState<"customer" | "ambassador">(
+    searchParams.get("role") === "ambassador" ? "ambassador" : "customer",
+  );
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
