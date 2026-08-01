@@ -8,6 +8,17 @@ import About from "./pages/About";
 import Configure from "./pages/Configure";
 import MyCresta from "./pages/MyCresta";
 import NotFound from "./pages/NotFound";
+import Login from "./pages/portal/Login";
+import Register from "./pages/portal/Register";
+import Verify from "./pages/portal/Verify";
+import Accounts from "./pages/portal/Accounts";
+import { ForgotPassword, ResetPassword } from "./pages/portal/ResetPassword";
+import {
+  RequireAuth,
+  CustomerPortal,
+  TeamPortal,
+  AmbassadorPortal,
+} from "./pages/portal/Portal";
 import { IntroCurtain, ScrollProgress } from "./components/Chrome";
 import { useRevealOnScroll } from "./lib/motion";
 
@@ -48,7 +59,45 @@ export default function App() {
           <Route path="/about" element={<About />} />
           <Route path="/configure" element={<Configure />} />
           <Route path="/my-cresta" element={<MyCresta />} />
-          <Route path="*" element={<NotFound />} />
+          {/* My Cresta portal */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/verify" element={<Verify />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route
+          path="/portal"
+          element={
+            <RequireAuth roles={["customer", "employee", "ambassador", "admin"]}>
+              <CustomerPortal />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/portal/team"
+          element={
+            <RequireAuth roles={["employee", "admin"]}>
+              <TeamPortal />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/portal/accounts"
+          element={
+            <RequireAuth roles={["employee", "admin"]}>
+              <Accounts />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/portal/ambassador"
+          element={
+            <RequireAuth roles={["ambassador", "admin"]}>
+              <AmbassadorPortal />
+            </RequireAuth>
+          }
+        />
+        <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
     </>

@@ -52,3 +52,7 @@ preview.log
 
 # typescript incremental build cache
 tsconfig.tsbuildinfo
+
+# portal secrets and private storage (never commit)
+/portal/config.php
+/portal/storage/
