@@ -40,6 +40,21 @@ function writePortalConfig(portalDir: string): void {
     .map((entry) => entry.trim())
     .filter(Boolean);
 
+  // Only settings that actually have a value are written. An empty entry is
+  // not the same as an absent one: the reader treats a present-but-empty key
+  // as a deliberate blank so that clearing a setting sticks, which means an
+  // empty 'host' here would silently override the default in code.
+  const smtpEntries = Object.entries({
+    host:   env.CRESTA_SMTP_HOST,
+    port:   env.CRESTA_SMTP_PORT,
+    user:   env.CRESTA_SMTP_USER,
+    pass:   env.CRESTA_SMTP_PASS,
+    secure: env.CRESTA_SMTP_SECURE,
+  })
+    .filter(([, value]) => value !== undefined && value !== "")
+    .map(([key, value]) => `        '${key}' => ${php(value)},\n`)
+    .join("");
+
   const contents = `<?php
 // Generated at build time from the hosting panel's environment variables.
 // Do not edit by hand — the next deploy overwrites it.
@@ -63,12 +78,7 @@ return [
         'sender'   => ${php(env.CRESTA_SMS_SENDER || "CrestaMarine")},
     ],
     'smtp' => [
-        'host'   => ${php(env.CRESTA_SMTP_HOST)},
-        'port'   => ${php(env.CRESTA_SMTP_PORT || "587")},
-        'user'   => ${php(env.CRESTA_SMTP_USER)},
-        'pass'   => ${php(env.CRESTA_SMTP_PASS)},
-        'secure' => ${php(env.CRESTA_SMTP_SECURE || "tls")},
-    ],
+${smtpEntries}    ],
     'admin_emails' => [${adminEmails.map(php).join(", ")}],
     'admin_autoconfirm' => ${env.CRESTA_ADMIN_AUTOCONFIRM ? "true" : "false"},
     // Read from here rather than getenv(): this host freezes PHP's copy of the
