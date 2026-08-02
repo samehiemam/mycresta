@@ -64,6 +64,10 @@ return [
     ],
     'admin_emails' => [${adminEmails.map(php).join(", ")}],
     'admin_autoconfirm' => ${env.CRESTA_ADMIN_AUTOCONFIRM ? "true" : "false"},
+    // Read from here rather than getenv(): this host freezes PHP's copy of the
+    // environment at first boot, so a token added in the panel never reaches
+    // the runtime. The build regenerates this file on every deploy.
+    'demo_token' => ${php(env.CRESTA_DEMO_TOKEN)},
     'site_url' => ${php(env.CRESTA_SITE_URL)},
 ];
 `;

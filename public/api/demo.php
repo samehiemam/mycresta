@@ -44,8 +44,11 @@ $action = $_GET['action'] ?? 'status';
  */
 function demo_actor(): array
 {
-    $expected = (string) (getenv('CRESTA_DEMO_TOKEN')
-        ?: ($_ENV['CRESTA_DEMO_TOKEN'] ?? $_SERVER['CRESTA_DEMO_TOKEN'] ?? ''));
+    // Through cresta_config(), not getenv(): this host hands PHP an
+    // environment captured once and never refreshed, so a variable added in
+    // the panel is invisible to the runtime until the build writes it to a
+    // file. Same reason the database settings go the same way.
+    $expected = (string) (cresta_config()['demo_token'] ?? '');
     $sent = (string) ($_SERVER['HTTP_X_DEMO_TOKEN'] ?? '');
 
     if ($expected !== '' && $sent !== '' && hash_equals($expected, $sent)) {

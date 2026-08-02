@@ -81,6 +81,8 @@ function cresta_config(): array
         // Temporary bootstrap — see autoconfirm_admin_if_enabled(). The file
         // stores a real boolean, so it is read directly rather than through
         // $pick(), which deals in strings.
+        // Seeding demo accounts before anyone can sign in to do it.
+        'demo_token' => $pick($file, 'demo_token', 'CRESTA_DEMO_TOKEN'),
         'admin_autoconfirm' => array_key_exists('admin_autoconfirm', $file)
             ? (bool) $file['admin_autoconfirm']
             : (bool) $env('CRESTA_ADMIN_AUTOCONFIRM', ''),
