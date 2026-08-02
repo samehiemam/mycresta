@@ -26,7 +26,11 @@ export function RequireAuth({
     );
   }
   if (!user) return <Navigate to="/login" replace />;
-  if (!user.emailVerified || !user.phoneVerified) {
+  // Email only. The phone check is a leftover from the SMS codes we dropped in
+  // favour of the emailed link: the server stopped requiring it, but this did
+  // not, so any account whose number was never ticked off — including a
+  // Founder let in by the admin bootstrap — was sent back to /verify forever.
+  if (!user.emailVerified) {
     return <Navigate to="/verify" replace />;
   }
   if (!active) return <PendingApproval />;

@@ -44,9 +44,21 @@ const AuthContext = createContext<AuthState | null>(null);
 /** Thrown for a non-2xx reply so callers can show the server's message. */
 export class ApiError extends Error {
   status: number;
-  constructor(message: string, status: number) {
+  /**
+   * Anything else the server sent with the refusal — the configurator returns
+   * a `problems` list explaining which rule a combination broke, and that is
+   * the useful part, not the generic message.
+   */
+  details: Record<string, unknown>;
+  problems?: string[];
+
+  constructor(message: string, status: number, details: Record<string, unknown> = {}) {
     super(message);
     this.status = status;
+    this.details = details;
+    if (Array.isArray(details.problems)) {
+      this.problems = details.problems as string[];
+    }
   }
 }
 
@@ -108,6 +120,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         throw new ApiError(
           data.error ?? "Something went wrong. Please try again.",
           response.status,
+          data,
         );
       }
 

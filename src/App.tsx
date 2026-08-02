@@ -13,6 +13,7 @@ import Register from "./pages/portal/Register";
 import Verify from "./pages/portal/Verify";
 import ConfirmEmail from "./pages/portal/ConfirmEmail";
 import Accounts from "./pages/portal/Accounts";
+import { StudioModels, StudioBuilder } from "./pages/portal/Studio";
 import { ForgotPassword, ResetPassword } from "./pages/portal/ResetPassword";
 import {
   RequireAuth,
@@ -96,6 +97,22 @@ export default function App() {
           element={
             <RequireAuth roles={["ambassador", "admin"]}>
               <AmbassadorPortal />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/portal/studio"
+          element={
+            <RequireAuth roles={["ambassador", "employee", "admin"]}>
+              <StudioModels />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/portal/studio/:id"
+          element={
+            <RequireAuth roles={["customer", "ambassador", "employee", "admin"]}>
+              <StudioBuilder />
             </RequireAuth>
           }
         />

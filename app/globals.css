@@ -6921,3 +6921,250 @@ p {
     font-size: 16px;
   }
 }
+
+/* ---- Cresta Studio: catalog and configurator ---------------------------- */
+
+.portal-page {
+  margin: 0 auto;
+  max-width: 1100px;
+  padding: 140px 22px 90px;
+}
+
+.studio-model-grid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  margin-top: 28px;
+}
+
+.studio-model-card {
+  background: var(--white);
+  border: 1px solid var(--warm-200);
+  border-radius: 16px;
+  padding: 22px;
+}
+
+.studio-model-brand {
+  color: var(--teal-700);
+  font-size: 0.66rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.studio-model-card h2 { margin: 6px 0 2px; }
+
+.studio-model-price {
+  color: var(--warm-700);
+  font-size: 0.82rem;
+  margin-bottom: 16px;
+}
+
+.studio-flag {
+  color: var(--warm-500);
+  font-size: 0.7rem;
+  text-transform: capitalize;
+}
+
+/* Options on the left, the running total on the right. The summary is sticky
+   because the decision being made is always "what does this cost now". */
+.studio {
+  display: grid;
+  gap: 32px;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  margin: 0 auto;
+  max-width: 1180px;
+  padding: 140px 22px 90px;
+}
+
+.studio-subject { color: var(--warm-700); margin-top: -6px; }
+
+.studio-locked,
+.studio-problems {
+  border-radius: 12px;
+  font-size: 0.82rem;
+  margin: 16px 0;
+  padding: 14px 16px;
+}
+
+.studio-locked { background: var(--warm-100); color: var(--warm-700); }
+
+/* A refused combination is the rulebook working, not a system error, so it
+   reads as guidance rather than as a failure. */
+.studio-problems {
+  background: rgba(176, 90, 20, 0.08);
+  border: 1px solid rgba(176, 90, 20, 0.3);
+  color: #7a3d0c;
+}
+
+.studio-problems ul { margin: 8px 0 0; padding-left: 18px; }
+.studio-problems li { margin-bottom: 4px; }
+
+.studio-group { margin-top: 32px; }
+
+.studio-group h2 {
+  align-items: center;
+  border-bottom: 1px solid var(--warm-200);
+  display: flex;
+  font-size: 1.05rem;
+  gap: 10px;
+  padding-bottom: 8px;
+}
+
+.studio-badge {
+  background: var(--navy-50);
+  border-radius: 999px;
+  color: var(--navy-700);
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  padding: 3px 9px;
+  text-transform: uppercase;
+}
+
+.studio-option-list {
+  display: grid;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.studio-option {
+  align-items: center;
+  background: var(--white);
+  border: 1px solid var(--warm-200);
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  padding: 12px 14px;
+  text-align: left;
+  transition: border-color 0.15s ease, background 0.15s ease;
+  width: 100%;
+}
+
+.studio-option:hover:not(:disabled) { border-color: var(--navy-700); }
+.studio-option:disabled { cursor: default; opacity: 0.55; }
+
+.studio-option.is-chosen {
+  background: var(--navy-50);
+  border-color: var(--navy-700);
+}
+
+.studio-option-name { display: flex; flex-direction: column; font-size: 0.86rem; }
+
+.studio-option-sub {
+  color: var(--teal-700);
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.studio-option-price {
+  color: var(--warm-700);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.78rem;
+  white-space: nowrap;
+}
+
+.studio-summary {
+  align-self: start;
+  background: var(--white);
+  border: 1px solid var(--warm-200);
+  border-radius: 16px;
+  padding: 22px;
+  position: sticky;
+  top: 100px;
+}
+
+.studio-total-block + .studio-total-block {
+  border-top: 1px solid var(--warm-200);
+  margin-top: 14px;
+  padding-top: 14px;
+}
+
+.studio-total-block h3 {
+  color: var(--teal-700);
+  font-size: 0.66rem;
+  letter-spacing: 0.16em;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.studio-total-block dl { display: grid; gap: 6px; }
+
+.studio-total-block dl > div {
+  display: flex;
+  font-size: 0.8rem;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.studio-total-block dd {
+  font-family: "JetBrains Mono", monospace;
+  margin: 0;
+}
+
+.studio-total-block .is-discount dd { color: var(--teal-700); }
+
+.studio-total-block .is-total {
+  border-top: 1px solid var(--warm-200);
+  font-weight: 500;
+  margin-top: 6px;
+  padding-top: 8px;
+}
+
+/* Says out loud that a figure is not the final word. */
+.studio-provisional {
+  background: var(--warm-100);
+  border-radius: 10px;
+  color: var(--warm-700);
+  font-size: 0.72rem;
+  margin-top: 14px;
+  padding: 10px 12px;
+}
+
+.studio-commission {
+  color: var(--warm-700);
+  font-size: 0.72rem;
+  margin-top: 10px;
+}
+
+.studio-founder {
+  border-top: 1px solid var(--warm-200);
+  margin-top: 18px;
+  padding-top: 16px;
+}
+
+.studio-founder h3 { font-size: 0.8rem; margin-bottom: 10px; }
+
+.studio-founder label {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.72rem;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+
+.studio-founder input {
+  background: var(--warm-50);
+  border: 1px solid var(--warm-200);
+  border-radius: 8px;
+  font: inherit;
+  font-size: 0.82rem;
+  padding: 9px 11px;
+}
+
+.studio-summary .button { margin-top: 12px; }
+
+@media (max-width: 900px) {
+  .studio {
+    grid-template-columns: minmax(0, 1fr);
+    padding-top: 110px;
+  }
+
+  /* On a phone the summary belongs above the options: the total is the thing
+     being watched, and a sticky panel would eat the screen. */
+  .studio-summary {
+    order: -1;
+    position: static;
+  }
+}
