@@ -200,12 +200,29 @@ function audit(?string $actorId, string $action, ?string $entity = null, ?string
     );
 }
 
+/** Splits a migration file into executable statements. */
+function sql_statements(string $sql): array
+{
+    // Strip comment lines FIRST, then split. Splitting first would attach each
+    // heading comment to the statement below it and discard the pair.
+    $withoutComments = implode("\n", array_filter(
+        preg_split('/\R/', $sql) ?: [],
+        static fn(string $line): bool => !str_starts_with(ltrim($line), '--')
+    ));
+
+    return array_values(array_filter(
+        array_map('trim', explode(';', $withoutComments)),
+        static fn(string $s): bool => $s !== ''
+    ));
+}
+
 /**
- * Creates the portal tables on first use.
+ * Brings the database up to date on first use.
  *
- * Saves the operator a manual phpMyAdmin step, and keeps a fresh install from
- * failing with a confusing SQL error. The check is a cheap lookup; the schema
- * only runs when the tables are genuinely absent.
+ * Shared hosting gives us no shell and no migration step in the deploy, so the
+ * application applies its own schema. Every file in sql/ runs once, in name
+ * order, and is recorded — a new module ships a new file rather than editing an
+ * old one, which is what makes it safe to re-run on every request.
  */
 function ensure_schema(): void
 {
@@ -216,34 +233,70 @@ function ensure_schema(): void
     $checked = true;
 
     try {
-        db()->query('SELECT 1 FROM users LIMIT 1');
-        return; // already installed
-    } catch (Throwable) {
-        // table missing — fall through and install
-    }
-
-    $sql = file_get_contents(__DIR__ . '/../sql/001_auth.sql');
-    if ($sql === false) {
+        db()->exec(
+            'CREATE TABLE IF NOT EXISTS schema_migrations (
+               filename    VARCHAR(128) NOT NULL PRIMARY KEY,
+               applied_at  DATETIME     NOT NULL
+             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci'
+        );
+    } catch (Throwable $e) {
+        error_log('Cresta portal: cannot create schema_migrations: ' . $e->getMessage());
         return;
     }
 
-    // Strip comment lines FIRST, then split. Splitting first would attach each
-    // heading comment to the statement below it and discard the pair.
-    $withoutComments = implode("\n", array_filter(
-        preg_split('/\R/', $sql) ?: [],
-        static fn(string $line): bool => !str_starts_with(ltrim($line), '--')
-    ));
+    $applied = [];
+    foreach (db_all('SELECT filename FROM schema_migrations') as $row) {
+        $applied[$row['filename']] = true;
+    }
 
-    $statements = array_filter(
-        array_map('trim', explode(';', $withoutComments)),
-        static fn(string $s): bool => $s !== ''
-    );
-
-    foreach ($statements as $statement) {
+    // The first release installed 001 without recording it. Adopt that history
+    // rather than replaying it: the statements are IF NOT EXISTS, but a replay
+    // would still log a page of pointless errors on a live database.
+    if (!$applied) {
         try {
-            db()->exec($statement);
-        } catch (Throwable $e) {
-            error_log('Cresta portal schema statement failed: ' . $e->getMessage());
+            db()->query('SELECT 1 FROM users LIMIT 1');
+            db_run(
+                'INSERT IGNORE INTO schema_migrations (filename, applied_at) VALUES (?, ?)',
+                ['001_auth.sql', now()]
+            );
+            $applied['001_auth.sql'] = true;
+        } catch (Throwable) {
+            // Genuinely empty database — let 001 run below like any other.
+        }
+    }
+
+    $files = glob(__DIR__ . '/../sql/*.sql') ?: [];
+    sort($files, SORT_STRING);
+
+    foreach ($files as $path) {
+        $name = basename($path);
+        if (isset($applied[$name])) {
+            continue;
+        }
+        $sql = file_get_contents($path);
+        if ($sql === false) {
+            continue;
+        }
+
+        $failed = false;
+        foreach (sql_statements($sql) as $statement) {
+            try {
+                db()->exec($statement);
+            } catch (Throwable $e) {
+                $failed = true;
+                error_log("Cresta portal: {$name} statement failed: " . $e->getMessage());
+            }
+        }
+
+        // Recorded even on partial failure: the statements are idempotent, and
+        // re-running a broken migration on every single request would bury the
+        // one useful line in the error log.
+        db_run(
+            'INSERT IGNORE INTO schema_migrations (filename, applied_at) VALUES (?, ?)',
+            [$name, now()]
+        );
+        if ($failed) {
+            error_log("Cresta portal: {$name} applied with errors — review the log.");
         }
     }
 }

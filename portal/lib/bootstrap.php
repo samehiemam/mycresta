@@ -15,6 +15,7 @@ error_reporting(E_ALL);
 require_once __DIR__ . '/db.php';
 require_once __DIR__ . '/http.php';
 require_once __DIR__ . '/auth.php';
+require_once __DIR__ . '/permissions.php';
 require_once __DIR__ . '/notify.php';
 
 // Install the tables on first use so a fresh deploy needs no manual SQL.
