@@ -195,3 +195,39 @@ function notify_build_received(string $buildId, string $modelKey, string $email)
         . "\nOpen it with prices in My Cresta:\n{$link}\n\nCresta Marine"
     );
 }
+
+/**
+ * FR-NOTIF-020: tells the owning ambassador that their lead moved.
+ *
+ * Silent for a house lead — there is nobody whose deal it is — and silent for
+ * a stage nobody needs woken up about.
+ */
+function notify_lead_stage(array $lead, string $stage): void
+{
+    if (empty($lead['ambassador_id'])) {
+        return;
+    }
+    $watched = ['config_shared', 'quote_sent', 'reserved', 'contract_signed', 'delivered', 'closed_lost'];
+    if (!in_array($stage, $watched, true)) {
+        return;
+    }
+
+    $ambassador = find_user($lead['ambassador_id']);
+    if (!$ambassador) {
+        return;
+    }
+
+    $label = LEAD_STAGES[$stage] ?? $stage;
+    $site = rtrim(cresta_config()['site_url'], '/');
+
+    send_email(
+        $ambassador['email'],
+        "{$lead['full_name']} — {$label}",
+        "Hello {$ambassador['full_name']},\n\n"
+        . "Your lead {$lead['full_name']} has moved to: {$label}.\n\n"
+        . ($stage === 'delivered'
+            ? "This deal has been delivered, so your commission is now pending review.\n\n"
+            : '')
+        . "See it in My Cresta:\n{$site}/portal/leads/{$lead['id']}\n\nCresta Marine"
+    );
+}
