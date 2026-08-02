@@ -244,6 +244,33 @@ switch ($action) {
         json_out(['ok' => true]);
     }
 
+    case 'mail-test': {
+        // Sends one message and reports the transport and the server's own
+        // words. Delivery problems here have twice been invisible because a
+        // boolean was all we had to go on.
+        $to = normalise_email(field($data, 'to'));
+        if (!valid_email($to)) {
+            fail('Enter a valid address to test.', 422);
+        }
+        throttle('mail_test', $admin['id'], 10, 30);
+        record_attempt('mail_test', $admin['id'], true);
+
+        $result = send_email_detailed(
+            $to,
+            'My Cresta delivery test',
+            "This is a delivery test from My Cresta.\n\nIf you are reading it, "
+            . "email from the portal reaches this address.\n\nCresta Marine"
+        );
+
+        json_out([
+            'ok'         => true,
+            'delivered'  => $result['ok'],
+            'transport'  => $result['transport'],
+            'error'      => $result['error'],
+            'transcript' => $result['transcript'],
+        ]);
+    }
+
     default:
         fail('Unknown action.', 404);
 }

@@ -13,16 +13,76 @@ require_once __DIR__ . '/db.php';
 
 function send_email(string $to, string $subject, string $body): bool
 {
-    $mail = cresta_config()['mail'];
-    $from = $mail['from'];
-    $name = $mail['from_name'];
+    return send_email_detailed($to, $subject, $body)['ok'];
+}
 
-    $headers = "From: {$name} <{$from}>\r\n"
-        . "Reply-To: {$from}\r\n"
-        . "Content-Type: text/plain; charset=utf-8\r\n"
-        . "MIME-Version: 1.0\r\n";
+/**
+ * Sends a message and says exactly what happened.
+ *
+ * Delivery failures used to be invisible: mail() returns a bare boolean, and
+ * "true" only means the local mail system took the message — not that anyone
+ * received it. Every send is now recorded with its transport and outcome, so a
+ * missing email is a question the audit log can answer.
+ *
+ * @return array{ok:bool,transport:string,error:?string,transcript:string[]}
+ */
+function send_email_detailed(string $to, string $subject, string $body): array
+{
+    $config = cresta_config();
+    $mail = $config['mail'];
+    $smtp = $config['smtp'] ?? [];
 
-    return @mail($to, $subject, $body, $headers);
+    if (!empty($smtp['host'])) {
+        foreach ([__DIR__ . '/smtp.php'] as $lib) {
+            if (is_file($lib)) {
+                require_once $lib;
+            }
+        }
+        $result = smtp_send(
+            $smtp + [
+                'from'      => $mail['from'],
+                'from_name' => $mail['from_name'],
+                'site_url'  => $config['site_url'],
+            ],
+            $to,
+            $subject,
+            $body
+        );
+        $out = [
+            'ok'         => $result['ok'],
+            'transport'  => 'smtp:' . $smtp['host'],
+            'error'      => $result['error'],
+            'transcript' => $result['transcript'],
+        ];
+    } else {
+        // The fallback. Fine for external addresses; unreliable for the site's
+        // own domain, which the local mail system may claim as its own.
+        $headers = "From: {$mail['from_name']} <{$mail['from']}>\r\n"
+            . "Reply-To: {$mail['from']}\r\n"
+            . "Content-Type: text/plain; charset=utf-8\r\n"
+            . "MIME-Version: 1.0\r\n";
+        $accepted = @mail($to, $subject, $body, $headers);
+        $out = [
+            'ok'         => $accepted,
+            'transport'  => 'php-mail',
+            'error'      => $accepted ? null : 'The local mail system refused the message.',
+            'transcript' => [],
+        ];
+    }
+
+    // Recorded whichever way it went, so "did it even try?" is answerable.
+    try {
+        audit(null, $out['ok'] ? 'email_sent' : 'email_failed', 'email', null, [
+            'to'        => $to,
+            'subject'   => $subject,
+            'transport' => $out['transport'],
+            'error'     => $out['error'],
+        ]);
+    } catch (Throwable) {
+        // Never let logging a send break the send.
+    }
+
+    return $out;
 }
 
 function send_confirmation_link(array $user, string $token): void

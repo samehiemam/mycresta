@@ -62,6 +62,13 @@ return [
         'token'    => ${php(env.CRESTA_SMS_TOKEN)},
         'sender'   => ${php(env.CRESTA_SMS_SENDER || "CrestaMarine")},
     ],
+    'smtp' => [
+        'host'   => ${php(env.CRESTA_SMTP_HOST)},
+        'port'   => ${php(env.CRESTA_SMTP_PORT || "587")},
+        'user'   => ${php(env.CRESTA_SMTP_USER)},
+        'pass'   => ${php(env.CRESTA_SMTP_PASS)},
+        'secure' => ${php(env.CRESTA_SMTP_SECURE || "tls")},
+    ],
     'admin_emails' => [${adminEmails.map(php).join(", ")}],
     'admin_autoconfirm' => ${env.CRESTA_ADMIN_AUTOCONFIRM ? "true" : "false"},
     // Read from here rather than getenv(): this host freezes PHP's copy of the

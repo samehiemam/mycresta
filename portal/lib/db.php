@@ -71,6 +71,15 @@ function cresta_config(): array
             'token'    => $pick($file['sms'] ?? [], 'token', 'CRESTA_SMS_TOKEN'),
             'sender'   => $pick($file['sms'] ?? [], 'sender', 'CRESTA_SMS_SENDER', 'CrestaMarine'),
         ],
+        // Speaking SMTP to a named server, rather than handing the message to
+        // whatever the shared host runs locally. Empty host means fall back.
+        'smtp' => [
+            'host'   => $pick($file['smtp'] ?? [], 'host', 'CRESTA_SMTP_HOST'),
+            'port'   => (int) ($pick($file['smtp'] ?? [], 'port', 'CRESTA_SMTP_PORT', '587')),
+            'user'   => $pick($file['smtp'] ?? [], 'user', 'CRESTA_SMTP_USER'),
+            'pass'   => $pick($file['smtp'] ?? [], 'pass', 'CRESTA_SMTP_PASS'),
+            'secure' => $pick($file['smtp'] ?? [], 'secure', 'CRESTA_SMTP_SECURE', 'tls'),
+        ],
         'admin_emails' => array_values(array_filter(array_map(
             'trim',
             explode(',', array_key_exists('admin_emails', $file)
