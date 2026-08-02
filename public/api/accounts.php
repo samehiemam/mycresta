@@ -28,10 +28,34 @@ if (!function_exists('db')) {
     exit;
 }
 
+/**
+ * Admins, and Advisors — employees holding the sales scope.
+ *
+ * Deliberately narrower than "any employee": this list carries the name, email
+ * and phone number of every customer on the platform, which Finance and Boat
+ * Staff have no business reading.
+ */
+function require_account_reviewer(): array
+{
+    $user = require_user();
+    if (can($user, 'user_management', 'full')) {
+        return $user;
+    }
+    if ($user['role'] === 'employee' && in_array('sales', user_scopes($user['id']), true)) {
+        return $user;
+    }
+    audit($user['id'], 'permission_denied', 'module', 'user_management');
+    fail('You do not have access to that.', 403);
+}
+
 $action = $_GET['action'] ?? 'list';
 
 if ($action === 'list') {
-    require_role(['employee', 'admin']);
+    // Section 3.2 puts User Management at Admin-only. Approving a new
+    // registration is the one part an Advisor genuinely needs, so it is opened
+    // to the sales scope and to nobody else — Finance and Boat Staff have no
+    // business reading every customer's contact details.
+    require_account_reviewer();
     $rows = db_all(
         "SELECT * FROM users
          ORDER BY CASE status WHEN 'pending' THEN 0 WHEN 'approved' THEN 1 ELSE 2 END,
@@ -49,7 +73,7 @@ switch ($action) {
 
     /** Approve or reject a pending registration, optionally granting a role. */
     case 'review': {
-        $actor = require_role(['employee', 'admin']);
+        $actor = require_account_reviewer();
         $id = field($data, 'id', 32);
         $decision = field($data, 'decision', 20);
         $grantRole = field($data, 'role', 20);
