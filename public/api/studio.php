@@ -40,6 +40,15 @@ if (in_array($action, $writes, true)) {
     require_csrf();
 }
 
+// Saving a build from the public site is deliberately anonymous: the visitor
+// has no portal session, and a CSRF token guards actions taken with someone
+// else's credentials — there are none here. It is rate limited instead, since
+// the real risk is a flood of junk rather than a forged request.
+if ($action === 'save-build') {
+    require_method('POST');
+    throttle('save_build', client_ip() ?? 'unknown', 20, 60);
+}
+
 $data = body();
 
 /** Reads accept their parameters from the query string or the JSON body, so
@@ -211,6 +220,87 @@ switch ($action) {
                 [$id]
             ),
         ]);
+    }
+
+    // ------------------------------------------------- client-built quotes ---
+    case 'save-build': {
+        // Deliberately open: a visitor builds a boat before they have an
+        // account, and losing that to a sign-up wall loses the lead.
+        $modelKey = field($data, 'model', 8);
+        if (!in_array($modelKey, ['34', '36', '43'], true)) {
+            fail('Unknown model.', 422);
+        }
+
+        $email = normalise_email(field($data, 'email'));
+        $existing = $email === '' ? null : find_user_by_email($email);
+
+        $id = new_id();
+        db_run(
+            'INSERT INTO public_builds
+               (id, full_name, email, phone, user_id, model_key, engine_id, ownership,
+                diamond_stitching, finishes, equipment, estimate_minor, currency,
+                status, created_at, updated_at)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            [
+                $id,
+                field($data, 'fullName') ?: null,
+                $email ?: null,
+                field($data, 'phone', 64) ?: null,
+                $existing['id'] ?? null,
+                $modelKey,
+                field($data, 'engineId', 64),
+                field($data, 'ownership', 64) ?: null,
+                !empty($data['diamondStitching']) ? 1 : 0,
+                json_encode($data['finishes'] ?? new stdClass(), JSON_UNESCAPED_UNICODE),
+                json_encode(array_values(array_filter(
+                    (array) ($data['equipment'] ?? []),
+                    'is_string'
+                )), JSON_UNESCAPED_UNICODE),
+                (int) round(((float) ($data['estimate'] ?? 0)) * 100),
+                'EUR',
+                'new', now(), now(),
+            ]
+        );
+
+        record_attempt('save_build', client_ip() ?? 'unknown', true);
+        audit($existing['id'] ?? null, 'public_build_saved', 'public_build', $id, ['model' => $modelKey]);
+
+        // FR-LEAD-030: with no ambassador attached this is a house lead, so
+        // the people who work them are told straight away.
+        notify_build_received($id, $modelKey, $email);
+
+        json_out(['ok' => true, 'id' => $id]);
+    }
+
+    case 'builds': {
+        // Staff see every client build; a customer sees only their own.
+        $user = require_can('pipeline', 'own');
+        $sql = 'SELECT id, full_name, email, phone, model_key, engine_id, status,
+                       estimate_minor, currency, created_at
+                FROM public_builds';
+        $params = [];
+        if (!can_see_all($user, 'pipeline')) {
+            $sql .= ' WHERE user_id = ?';
+            $params = [$user['id']];
+        }
+        json_out(['ok' => true, 'builds' => db_all($sql . ' ORDER BY created_at DESC LIMIT 200', $params)]);
+    }
+
+    case 'build': {
+        $user = require_can('pipeline', 'own');
+        $build = db_one('SELECT * FROM public_builds WHERE id = ?', [$param('id', 32)]);
+        if (!$build) {
+            fail('That configuration does not exist.', 404);
+        }
+        if (!can_see_all($user, 'pipeline') && $build['user_id'] !== $user['id']) {
+            fail('That configuration does not exist.', 404);
+        }
+
+        $build['finishes'] = json_decode((string) $build['finishes'], true) ?: [];
+        $build['equipment'] = json_decode((string) $build['equipment'], true) ?: [];
+        $build['diamond_stitching'] = (bool) $build['diamond_stitching'];
+        $build['estimate_minor'] = (int) $build['estimate_minor'];
+        json_out(['ok' => true, 'build' => $build]);
     }
 
     default:

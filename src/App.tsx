@@ -14,6 +14,8 @@ import Verify from "./pages/portal/Verify";
 import ConfirmEmail from "./pages/portal/ConfirmEmail";
 import Accounts from "./pages/portal/Accounts";
 import { StudioModels, StudioBuilder } from "./pages/portal/Studio";
+import { Builds, BuildDetail } from "./pages/portal/Builds";
+import { Configurator } from "../app/components/Configurator";
 import { ForgotPassword, ResetPassword } from "./pages/portal/ResetPassword";
 import {
   RequireAuth,
@@ -97,6 +99,32 @@ export default function App() {
           element={
             <RequireAuth roles={["ambassador", "admin"]}>
               <AmbassadorPortal />
+            </RequireAuth>
+          }
+        />
+        {/* The public configurator, with the price list showing. Same
+            component, so it looks exactly like what a customer sees. */}
+        <Route
+          path="/portal/configurator"
+          element={
+            <RequireAuth roles={["ambassador", "employee", "admin"]}>
+              <Configurator prices />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/portal/builds"
+          element={
+            <RequireAuth roles={["customer", "ambassador", "employee", "admin"]}>
+              <Builds />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/portal/builds/:id"
+          element={
+            <RequireAuth roles={["customer", "ambassador", "employee", "admin"]}>
+              <BuildDetail />
             </RequireAuth>
           }
         />

@@ -3,6 +3,7 @@
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
+  EngineOption,
   EquipmentOption,
   finishLabels,
   finishOptions,
@@ -105,7 +106,27 @@ const initialFinishes: Record<FinishKey, string> = {
   teak: "bleached",
 };
 
-export function Configurator() {
+/** A selection captured earlier, replayed for staff in the portal. */
+export type SavedSelection = {
+  model: ModelKey;
+  engineId: string;
+  finishes: Partial<Record<FinishKey, string>>;
+  equipment: string[];
+  diamondStitching: boolean;
+  ownership: string;
+};
+
+export function Configurator({
+  prices = false,
+  readOnly = false,
+  initial,
+}: {
+  /** Reveals price-list figures. Off for the public site, on inside My Cresta. */
+  prices?: boolean;
+  /** Replaying someone else's build: same view, nothing editable. */
+  readOnly?: boolean;
+  initial?: SavedSelection;
+} = {}) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const requestedModel = searchParams.get("model");
@@ -113,15 +134,21 @@ export function Configurator() {
     requestedModel === "34" || requestedModel === "36" || requestedModel === "43"
       ? requestedModel
       : "43";
-  const [model, setModel] = useState<ModelKey>(initialModel);
+  const [model, setModel] = useState<ModelKey>(initial?.model ?? initialModel);
   const [engineId, setEngineId] = useState(
-    modelOptions[initialModel].engines[0].id,
+    initial?.engineId ?? modelOptions[initial?.model ?? initialModel].engines[0].id,
   );
-  const [finishes, setFinishes] =
-    useState<Record<FinishKey, string>>(initialFinishes);
-  const [ownership, setOwnership] = useState("Full ownership");
-  const [diamondStitching, setDiamondStitching] = useState(false);
-  const [selectedEquipment, setSelectedEquipment] = useState<string[]>([]);
+  const [finishes, setFinishes] = useState<Record<FinishKey, string>>({
+    ...initialFinishes,
+    ...(initial?.finishes ?? {}),
+  });
+  const [ownership, setOwnership] = useState(initial?.ownership ?? "Full ownership");
+  const [diamondStitching, setDiamondStitching] = useState(
+    initial?.diamondStitching ?? false,
+  );
+  const [selectedEquipment, setSelectedEquipment] = useState<string[]>(
+    initial?.equipment ?? [],
+  );
   const [activeCategory, setActiveCategory] = useState("Control & manoeuvring");
   const [propulsionTab, setPropulsionTab] = useState<
     EngineOption["propulsion"] | null
@@ -261,6 +288,20 @@ export function Configurator() {
     ]),
   );
 
+  // Price-list figures, shown only where `prices` is on. The public site keeps
+  // them hidden; My Cresta shows them to staff and to the customer whose
+  // configuration it is.
+  const eur = (value: number) =>
+    `EUR ${value.toLocaleString("en-GB", { maximumFractionDigits: 0 })}`;
+
+  // Egypt's rate. The portal reads it from the platform setting; this mirror
+  // exists so the same component can price a build before it is saved.
+  const VAT_RATE = 0.14;
+
+  const onRequestCount = selectedOptions.filter(
+    (item) => item.price === "on-request",
+  ).length + (diamondStitching ? 1 : 0);
+
   const privateEstimate =
     current.basePrice +
     engine.price +
@@ -315,6 +356,32 @@ export function Configurator() {
         }),
       });
       if (!response.ok) throw new Error("Unable to save");
+
+      // Also keep the build itself, not just a prose summary of it, so an
+      // advisor can reopen this exact boat in My Cresta with prices instead
+      // of reading it back and rebuilding it by hand. The lead is already
+      // safely recorded above, so a failure here must not lose it.
+      try {
+        await fetch("/api/studio.php?action=save-build", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({
+            fullName: form.get("name"),
+            email: form.get("email"),
+            phone: form.get("phone"),
+            model,
+            engineId: engine.id,
+            ownership,
+            diamondStitching,
+            finishes,
+            equipment: selectedEquipment,
+            estimate: privateEstimate,
+          }),
+        });
+      } catch {
+        // Non-fatal by design: the customer has still reached us.
+      }
+
       setStatus("sent");
     } catch {
       setStatus("error");
@@ -473,6 +540,7 @@ export function Configurator() {
                       {item.label.split(" — ")[0]}
                     </strong>
                     <small>{item.family}</small>
+                    {prices && <em className="option-price">{eur(item.price)}</em>}
                   </span>
                 </label>
               ))}
@@ -550,6 +618,13 @@ export function Configurator() {
                 </strong>
                 <small>{upholsteryStitching.description}</small>
               </span>
+              {prices && (
+                <em className="option-price">
+                  {upholsteryStitching.price === "on-request"
+                    ? "On request"
+                    : eur(upholsteryStitching.price as number)}
+                </em>
+              )}
               <span className="stitching-check" aria-hidden="true" />
             </label>
           </fieldset>
@@ -629,6 +704,15 @@ export function Configurator() {
                       {item.exclusiveGroup && !unavailable && (
                         <span className="condition-tag">Choose one</span>
                       )}
+                      {prices && (
+                        <em className="option-price">
+                          {typeof item.price === "number"
+                            ? eur(item.price)
+                            : item.price === "on-request"
+                              ? "On request"
+                              : "Included"}
+                        </em>
+                      )}
                     </span>
                   </label>
                 );
@@ -671,17 +755,53 @@ export function Configurator() {
                 choice.
               </div>
             )}
-            <button
-              className="button button--primary button--full"
-              type="button"
-              onClick={() => setDialog(true)}
-            >
-              Save configuration & request a quote
-            </button>
-            <small>
-              No price is shown online. Internal price-list values and special
-              conditions are sent securely to your Cresta advisor.
-            </small>
+            {prices ? (
+              <div className="summary-pricing">
+                <div>
+                  <span>Boat and options</span>
+                  <strong>{eur(privateEstimate)}</strong>
+                </div>
+                <div>
+                  <span>Shipping</span>
+                  {/* Variable per configuration and set only by a Founder;
+                      zero would read as "included". */}
+                  <strong className="is-pending">To be confirmed</strong>
+                </div>
+                <div>
+                  <span>VAT ({Math.round(VAT_RATE * 100)}%)</span>
+                  <strong>{eur(Math.round(privateEstimate * VAT_RATE))}</strong>
+                </div>
+                <div className="is-total">
+                  <span>Total</span>
+                  <strong>
+                    {eur(Math.round(privateEstimate * (1 + VAT_RATE)))}
+                  </strong>
+                </div>
+                {onRequestCount > 0 && (
+                  <p className="summary-provisional">
+                    Provisional — {onRequestCount} selected option
+                    {onRequestCount === 1 ? " is" : "s are"} priced on request,
+                    and shipping is not yet set.
+                  </p>
+                )}
+              </div>
+            ) : null}
+
+            {!readOnly && (
+              <button
+                className="button button--primary button--full"
+                type="button"
+                onClick={() => setDialog(true)}
+              >
+                Save configuration & request a quote
+              </button>
+            )}
+            {!prices && (
+              <small>
+                No price is shown online. Internal price-list values and special
+                conditions are sent securely to your Cresta advisor.
+              </small>
+            )}
           </div>
         </section>
       </main>

@@ -111,3 +111,24 @@ function send_reset_link(array $user, string $token): void
         . "Cresta Marine";
     send_email($user['email'], 'Reset your Cresta Marine password', $body);
 }
+
+/**
+ * Tells the people who work house leads that a visitor built a boat.
+ *
+ * FR-LEAD-030: a build with no ambassador behind it belongs to Cresta, so it
+ * goes to the admin address rather than to nobody.
+ */
+function notify_build_received(string $buildId, string $modelKey, string $email): void
+{
+    $config = cresta_config();
+    $link = rtrim($config['site_url'], '/') . '/portal/builds/' . $buildId;
+
+    send_email(
+        $config['mail']['admin'],
+        "New Kumbra {$modelKey} configuration from the website",
+        "A visitor finished a configuration on the public site and asked for a quote.\n\n"
+        . "Model: Kumbra {$modelKey}\n"
+        . ($email !== '' ? "Email: {$email}\n" : "Email: not given\n")
+        . "\nOpen it with prices in My Cresta:\n{$link}\n\nCresta Marine"
+    );
+}

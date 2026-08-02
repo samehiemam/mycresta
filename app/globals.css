@@ -7168,3 +7168,133 @@ p {
     position: static;
   }
 }
+
+/* ---- price list inside the configurator (My Cresta only) --------------- */
+
+/* The public site renders the same markup without these, so an option's price
+   simply is not in the DOM there. */
+.option-price {
+  color: var(--navy-700);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.72rem;
+  font-style: normal;
+  margin-left: auto;
+  padding-left: 12px;
+  white-space: nowrap;
+}
+
+.engine-list label > span,
+.official-option-copy,
+.stitching-upgrade {
+  align-items: baseline;
+}
+
+.summary-pricing {
+  border-top: 1px solid var(--warm-200);
+  display: grid;
+  gap: 6px;
+  margin: 14px 0;
+  padding-top: 14px;
+}
+
+.summary-pricing > div {
+  display: flex;
+  font-size: 0.82rem;
+  justify-content: space-between;
+}
+
+.summary-pricing strong { font-family: "JetBrains Mono", monospace; font-weight: 500; }
+.summary-pricing .is-pending { color: var(--warm-500); font-family: inherit; }
+
+.summary-pricing .is-total {
+  border-top: 1px solid var(--warm-200);
+  font-size: 0.95rem;
+  margin-top: 4px;
+  padding-top: 8px;
+}
+
+.summary-provisional {
+  background: var(--warm-100);
+  border-radius: 8px;
+  color: var(--warm-700);
+  font-size: 0.7rem;
+  margin-top: 6px;
+  padding: 8px 10px;
+}
+
+/* ---- client configurations -------------------------------------------- */
+
+.portal-intro { color: var(--warm-700); max-width: 62ch; }
+
+.builds-table {
+  border-collapse: collapse;
+  margin-top: 24px;
+  width: 100%;
+}
+
+.builds-table th {
+  border-bottom: 1px solid var(--warm-200);
+  color: var(--warm-500);
+  font-size: 0.66rem;
+  letter-spacing: 0.12em;
+  padding: 0 12px 8px 0;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.builds-table td {
+  border-bottom: 1px solid var(--warm-100);
+  font-size: 0.84rem;
+  padding: 12px 12px 12px 0;
+  vertical-align: middle;
+}
+
+.builds-table td small { color: var(--warm-500); display: block; font-size: 0.72rem; }
+.builds-table .is-figure { font-family: "JetBrains Mono", monospace; }
+
+.build-status {
+  border-radius: 999px;
+  font-size: 0.66rem;
+  letter-spacing: 0.06em;
+  padding: 3px 10px;
+  text-transform: uppercase;
+}
+
+.build-status.is-new { background: var(--navy-50); color: var(--navy-700); }
+.build-status.is-contacted { background: rgba(85, 178, 187, 0.16); color: var(--teal-700); }
+.build-status.is-converted { background: rgba(46, 140, 90, 0.14); color: #226b45; }
+.build-status.is-closed { background: var(--warm-100); color: var(--warm-500); }
+
+/* Sits above the replayed configurator so it is never mistaken for the
+   customer's own view of their build. */
+.build-banner {
+  align-items: center;
+  background: var(--navy-900);
+  color: var(--white);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: space-between;
+  padding: 90px 5vw 16px;
+}
+
+.build-banner strong { display: block; }
+.build-banner span { color: rgba(255, 255, 255, 0.7); font-size: 0.74rem; margin-right: 14px; }
+
+.build-banner-right {
+  align-items: center;
+  display: flex;
+  gap: 14px;
+}
+
+.build-banner .button {
+  border-color: rgba(255, 255, 255, 0.4);
+  color: var(--white);
+}
+
+@media (max-width: 820px) {
+  .build-banner { padding-top: 96px; }
+  .builds-table thead { display: none; }
+  .builds-table tr { display: grid; gap: 4px; padding: 12px 0; }
+  .builds-table td { border: 0; padding: 0; }
+}
