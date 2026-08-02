@@ -32,7 +32,10 @@ function send_email_detailed(string $to, string $subject, string $body): array
     $mail = $config['mail'];
     $smtp = $config['smtp'] ?? [];
 
-    if (!empty($smtp['host'])) {
+    // SMTP only once there is something to authenticate with. A host on its
+    // own would take over sending and fail every message; without credentials
+    // the local transport is still the better of two imperfect options.
+    if (!empty($smtp['host']) && !empty($smtp['user']) && !empty($smtp['pass'])) {
         foreach ([__DIR__ . '/smtp.php'] as $lib) {
             if (is_file($lib)) {
                 require_once $lib;

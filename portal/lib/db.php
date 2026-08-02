@@ -74,7 +74,11 @@ function cresta_config(): array
         // Speaking SMTP to a named server, rather than handing the message to
         // whatever the shared host runs locally. Empty host means fall back.
         'smtp' => [
-            'host'   => $pick($file['smtp'] ?? [], 'host', 'CRESTA_SMTP_HOST'),
+            // Defaulted in code, not in the hosting panel. Every variable held
+            // there is one more that a concurrent edit can silently drop —
+            // which has now happened twice — and none of these are secret.
+            // Only the username and password come from the panel.
+            'host'   => $pick($file['smtp'] ?? [], 'host', 'CRESTA_SMTP_HOST', 'smtp.mail.me.com'),
             'port'   => (int) ($pick($file['smtp'] ?? [], 'port', 'CRESTA_SMTP_PORT', '587')),
             'user'   => $pick($file['smtp'] ?? [], 'user', 'CRESTA_SMTP_USER'),
             'pass'   => $pick($file['smtp'] ?? [], 'pass', 'CRESTA_SMTP_PASS'),
