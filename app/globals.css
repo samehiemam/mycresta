@@ -3019,6 +3019,11 @@ p {
   display: grid;
   flex: 1;
   grid-template-columns: minmax(0, 1fr);
+  /* A definite row, so the image's `max-height: 100%` has something to resolve
+     against. Left auto, the row sizes to the image and the percentage is
+     ignored, letting a wide render stand taller than the stage that holds it —
+     which clipped the hull and hid the finish caption underneath entirely. */
+  grid-template-rows: minmax(0, 1fr);
   justify-items: center;
   margin: 0 -14%;
   width: 128%;
@@ -6287,10 +6292,6 @@ p {
     font-size: 2.2rem;
   }
 
-  .boat-visual img {
-    max-height: 300px;
-  }
-
   .finish-options {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
@@ -6301,23 +6302,22 @@ p {
 }
 
 @media (max-width: 560px) {
+  /* Room for the whole stage: the boat, and the finish caption below it. */
   .configurator-stage {
-    height: 40vh;
-    min-height: 230px;
-    max-height: 320px;
+    height: 46vh;
+    min-height: 300px;
+    max-height: 400px;
   }
 
   .configurator-stage .configurator-stage-copy h1 {
     font-size: 1.9rem;
   }
 
+  /* A narrow screen has no width to spare — bleed far enough to fill it, but
+     not so far that the bow and stern fall off the sides. */
   .boat-visual {
-    margin: 0 -20%;
-    width: 140%;
-  }
-
-  .boat-visual img {
-    max-height: 230px;
+    margin: 0 -9%;
+    width: 118%;
   }
 
   .configurator-controls {
