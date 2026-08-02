@@ -132,6 +132,18 @@ npm run build
 Then re-upload the contents of the output folder to `public_html` (you can keep
 your already-configured `submit.php` on the server, or re-enter the DB details).
 
+### Two Hostinger behaviours worth knowing
+
+**A deploy adds and overwrites, but never deletes.** Delete a file from the
+repository and the copy already on the server stays there, still reachable, for
+good. Anything published once — a temporary endpoint, a renamed page, an old
+build asset — has to be removed by hand in *Files → File Manager*.
+
+**The PHP runtime's environment does not refresh.** Change a variable in the
+panel and PHP keeps reading the value it started with. That is why the portal
+takes its settings from `portal/config.php`, which the build regenerates from
+those same variables on every deploy; see [DEPLOY-PORTAL.md](DEPLOY-PORTAL.md).
+
 ---
 
 ## What changed vs. the original app
