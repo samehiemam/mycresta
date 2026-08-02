@@ -55,7 +55,12 @@ function cresta_config(): array
         )),
         'site_url' => $env('CRESTA_SITE_URL', $file['site_url'] ?? ''),
         // Temporary bootstrap — see autoconfirm_admin_if_enabled().
-        'admin_autoconfirm' => (bool) $env('CRESTA_ADMIN_AUTOCONFIRM', $file['admin_autoconfirm'] ?? ''),
+        // The generated config stores this as a real boolean, so normalise it
+        // before handing it to $env(), which only accepts a string fallback.
+        'admin_autoconfirm' => (bool) $env(
+            'CRESTA_ADMIN_AUTOCONFIRM',
+            empty($file['admin_autoconfirm']) ? '' : '1'
+        ),
     ];
 
     if ($config['db']['name'] === '' || $config['db']['user'] === '') {
