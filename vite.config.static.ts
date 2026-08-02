@@ -1,7 +1,7 @@
 import { defineConfig, type Plugin } from "vite";
 import react from "@vitejs/plugin-react";
 import { fileURLToPath, URL } from "node:url";
-import { cpSync, existsSync, mkdirSync } from "node:fs";
+import { cpSync, existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 
 /**
@@ -13,6 +13,63 @@ import { dirname, resolve } from "node:path";
  * deliberately excluded — those are created on the server and never travel
  * through the repository or the build.
  */
+/**
+ * Writes portal/config.php from the build environment.
+ *
+ * On Hostinger the environment variables reach the *build* but never refresh
+ * for the PHP runtime — a deployed app keeps whatever it was first given, so
+ * editing a variable in the panel silently changes nothing. Capturing them at
+ * build time and writing a config file makes the panel the source of truth
+ * again, and PHP simply reads a file.
+ *
+ * Nothing secret enters the repository: the values come from the environment
+ * at build time, and the generated file is gitignored and served only to PHP.
+ */
+function writePortalConfig(portalDir: string): void {
+  const env = process.env;
+  if (!env.CRESTA_DB_NAME || !env.CRESTA_DB_USER) {
+    return; // nothing supplied — the runtime falls back to its own lookup
+  }
+
+  // Single-quoted PHP strings: escape backslashes and single quotes only.
+  const php = (value: string | undefined) =>
+    `'${String(value ?? "").replace(/\\/g, "\\\\").replace(/'/g, "\\'")}'`;
+
+  const adminEmails = String(env.CRESTA_ADMIN_EMAILS ?? "")
+    .split(",")
+    .map((entry) => entry.trim())
+    .filter(Boolean);
+
+  const contents = `<?php
+// Generated at build time from the hosting panel's environment variables.
+// Do not edit by hand — the next deploy overwrites it.
+return [
+    'db' => [
+        'host' => ${php(env.CRESTA_DB_HOST || "localhost")},
+        'name' => ${php(env.CRESTA_DB_NAME)},
+        'user' => ${php(env.CRESTA_DB_USER)},
+        'pass' => ${php(env.CRESTA_DB_PASS)},
+    ],
+    'storage_path' => __DIR__ . '/storage',
+    'mail' => [
+        'from'      => ${php(env.CRESTA_MAIL_FROM || "no-reply@localhost")},
+        'from_name' => 'Cresta Marine',
+        'admin'     => ${php(env.CRESTA_MAIL_ADMIN)},
+    ],
+    'sms' => [
+        'driver'   => ${php(env.CRESTA_SMS_DRIVER || "manual")},
+        'endpoint' => ${php(env.CRESTA_SMS_ENDPOINT)},
+        'token'    => ${php(env.CRESTA_SMS_TOKEN)},
+        'sender'   => ${php(env.CRESTA_SMS_SENDER || "CrestaMarine")},
+    ],
+    'admin_emails' => [${adminEmails.map(php).join(", ")}],
+    'site_url' => ${php(env.CRESTA_SITE_URL)},
+];
+`;
+
+  writeFileSync(resolve(portalDir, "config.php"), contents, "utf8");
+}
+
 function portalLibrary(): Plugin {
   return {
     name: "cresta-portal-library",
@@ -29,6 +86,8 @@ function portalLibrary(): Plugin {
         filter: (source) =>
           !source.endsWith("/config.php") && !source.includes("/storage"),
       });
+
+      writePortalConfig(to);
     },
   };
 }
