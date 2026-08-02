@@ -11,6 +11,7 @@ const SELF_SERVICE_ROLES = ['customer', 'ambassador']; // staff are created by a
 const SESSION_DAYS = 30;
 const CODE_TTL_MINUTES = 15;
 const RESET_TTL_MINUTES = 60;
+const LINK_TTL_MINUTES = 60 * 24; // a confirmation link is useful for a day
 
 // ------------------------------------------------------------- validation ---
 
@@ -90,12 +91,16 @@ function public_user(array $user): array
     ];
 }
 
-/** True once both channels are confirmed and an admin has approved the account. */
+/**
+ * Usable account: the email address is confirmed and an advisor approved it.
+ *
+ * The mobile number is collected and format-checked but not verified with a
+ * code — for a yacht dealership the advisor phones the client anyway, and an
+ * SMS gateway is cost and setup for no real gain.
+ */
 function is_active(array $user): bool
 {
-    return $user['status'] === 'approved'
-        && !empty($user['email_verified_at'])
-        && !empty($user['phone_verified_at']);
+    return $user['status'] === 'approved' && !empty($user['email_verified_at']);
 }
 
 // --------------------------------------------------------------- sessions ---
@@ -188,6 +193,61 @@ function require_role(array $roles): array
 
 // ---------------------------------------------------- verification codes ---
 
+/**
+ * One-time confirmation token for an emailed link.
+ *
+ * A link is fewer steps than copying a code out of an email, and there is no
+ * short code for anyone to guess: the token is 32 random bytes, stored hashed.
+ */
+function issue_link_token(string $userId, string $destination): string
+{
+    $token = bin2hex(random_bytes(32));
+
+    db_run(
+        'UPDATE verifications SET used_at = ? WHERE user_id = ? AND channel = ? AND used_at IS NULL',
+        [now(), $userId, 'email']
+    );
+    db_run(
+        'INSERT INTO verifications (id, user_id, channel, destination, code_hash, sent_at, expires_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?)',
+        [
+            new_id(),
+            $userId,
+            'email',
+            $destination,
+            hash('sha256', $token),
+            now(),
+            minutes_from_now(LINK_TTL_MINUTES),
+        ]
+    );
+    return $token;
+}
+
+/** Confirms an email address from its link token. Returns the user, or null. */
+function consume_link_token(string $token): ?array
+{
+    if ($token === '') {
+        return null;
+    }
+    $row = db_one(
+        'SELECT * FROM verifications
+         WHERE channel = ? AND code_hash = ? AND used_at IS NULL AND expires_at > ?
+         LIMIT 1',
+        ['email', hash('sha256', $token), now()]
+    );
+    if (!$row) {
+        return null;
+    }
+
+    db_run('UPDATE verifications SET used_at = ? WHERE id = ?', [now(), $row['id']]);
+    db_run(
+        'UPDATE users SET email_verified_at = ?, updated_at = ? WHERE id = ?',
+        [now(), now(), $row['user_id']]
+    );
+    promote_configured_admin($row['user_id']);
+    return find_user($row['user_id']);
+}
+
 function issue_code(string $userId, string $channel, string $destination): string
 {
     // 6 digits, generated from a CSPRNG.
@@ -267,13 +327,9 @@ function promote_configured_admin(string $userId): void
         return;
     }
 
-    // The mobile is confirmed here too: with no SMS gateway configured there is
-    // no way to receive a code, and whoever edits config.php already controls
-    // the server. Without this the first admin could never finish signing in.
     db_run(
-        "UPDATE users SET role = 'admin', status = 'approved',
-         phone_verified_at = COALESCE(phone_verified_at, ?), updated_at = ? WHERE id = ?",
-        [now(), now(), $userId]
+        "UPDATE users SET role = 'admin', status = 'approved', updated_at = ? WHERE id = ?",
+        [now(), $userId]
     );
     audit($userId, 'admin_granted_from_config', 'user', $userId);
 }

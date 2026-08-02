@@ -25,14 +25,15 @@ function send_email(string $to, string $subject, string $body): bool
     return @mail($to, $subject, $body, $headers);
 }
 
-function send_email_code(array $user, string $code): void
+function send_confirmation_link(array $user, string $token): void
 {
+    $url = rtrim(cresta_config()['site_url'], '/') . '/confirm-email?token=' . urlencode($token);
     $body = "Hello {$user['full_name']},\n\n"
-        . "Your Cresta Marine verification code is:\n\n"
-        . "    {$code}\n\n"
-        . "It expires in 15 minutes. If you did not request it, you can ignore this email.\n\n"
+        . "Please confirm your email address for My Cresta:\n\n"
+        . "    {$url}\n\n"
+        . "The link works for 24 hours. If you did not create an account, ignore this email.\n\n"
         . "Cresta Marine";
-    send_email($user['email'], 'Your Cresta Marine verification code', $body);
+    send_email($user['email'], 'Confirm your email address', $body);
 }
 
 /**

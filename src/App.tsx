@@ -11,6 +11,7 @@ import NotFound from "./pages/NotFound";
 import Login from "./pages/portal/Login";
 import Register from "./pages/portal/Register";
 import Verify from "./pages/portal/Verify";
+import ConfirmEmail from "./pages/portal/ConfirmEmail";
 import Accounts from "./pages/portal/Accounts";
 import { ForgotPassword, ResetPassword } from "./pages/portal/ResetPassword";
 import {
@@ -63,6 +64,7 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/verify" element={<Verify />} />
+        <Route path="/confirm-email" element={<ConfirmEmail />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route

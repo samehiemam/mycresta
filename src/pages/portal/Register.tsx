@@ -6,6 +6,7 @@ import { SiteHeader } from "../../../app/components/SiteHeader";
 import { SiteFooter } from "../../../app/components/SiteFooter";
 import { useAuth } from "../../lib/auth";
 import { useTitle } from "../../lib/useTitle";
+import { emailProblem, phoneProblem, passwordProblem } from "../../lib/validate";
 
 export default function Register() {
   useTitle("Create your account | My Cresta");
@@ -18,6 +19,26 @@ export default function Register() {
   );
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+
+  // Live field checks. A field only turns red once it has been left, so the
+  // form does not scold you halfway through typing your address.
+  const [values, setValues] = useState({ email: "", phone: "", password: "" });
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const problems = {
+    email: emailProblem(values.email),
+    phone: phoneProblem(values.phone),
+    password: passwordProblem(values.password),
+  };
+  const showProblem = (field: keyof typeof problems) =>
+    touched[field] ? problems[field] : null;
+  const fieldClass = (field: keyof typeof problems) =>
+    showProblem(field) ? "is-invalid" : "";
+  const track = (field: keyof typeof values) => ({
+    value: values[field],
+    onChange: (event: React.ChangeEvent<HTMLInputElement>) =>
+      setValues((current) => ({ ...current, [field]: event.target.value })),
+    onBlur: () => setTouched((current) => ({ ...current, [field]: true })),
+  });
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -56,8 +77,8 @@ export default function Register() {
           <span className="eyebrow">My Cresta</span>
           <h1>Create your account</h1>
           <p>
-            We confirm both your email address and your mobile number, then a
-            Cresta advisor activates your account.
+            Confirm your email with one click, then a Cresta advisor activates
+            your account.
           </p>
 
           <form onSubmit={submit} className="portal-form">
@@ -94,18 +115,34 @@ export default function Register() {
                 Full name
                 <input name="fullName" required autoComplete="name" />
               </label>
-              <label>
+              <label className={fieldClass("email")}>
                 Email address
-                <input name="email" type="email" required autoComplete="email" />
+                <input
+                  name="email"
+                  type="email"
+                  required
+                  autoComplete="email"
+                  aria-invalid={showProblem("email") ? true : undefined}
+                  {...track("email")}
+                />
+                {showProblem("email") && (
+                  <small className="field-error">{showProblem("email")}</small>
+                )}
               </label>
-              <label>
+              <label className={fieldClass("phone")}>
                 Mobile number
                 <input
                   name="phone"
                   required
+                  inputMode="tel"
                   autoComplete="tel"
                   placeholder="+20 100 000 0000"
+                  aria-invalid={showProblem("phone") ? true : undefined}
+                  {...track("phone")}
                 />
+                {showProblem("phone") && (
+                  <small className="field-error">{showProblem("phone")}</small>
+                )}
               </label>
               <label>
                 {role === "ambassador" ? "Company / network" : "Company (optional)"}
@@ -113,7 +150,7 @@ export default function Register() {
               </label>
             </div>
 
-            <label>
+            <label className={fieldClass("password")}>
               Password
               <input
                 name="password"
@@ -121,11 +158,17 @@ export default function Register() {
                 required
                 minLength={10}
                 autoComplete="new-password"
+                aria-invalid={showProblem("password") ? true : undefined}
+                {...track("password")}
               />
-              <small className="portal-hint">
-                At least 10 characters. A short phrase you will remember works
-                well.
-              </small>
+              {showProblem("password") ? (
+                <small className="field-error">{showProblem("password")}</small>
+              ) : (
+                <small className="portal-hint">
+                  At least 10 characters. A short phrase you will remember works
+                  well.
+                </small>
+              )}
             </label>
 
             <label>
@@ -152,7 +195,7 @@ export default function Register() {
             <button
               className="button button--primary button--full"
               type="submit"
-              disabled={busy}
+              disabled={busy || Object.values(problems).some(Boolean)}
             >
               {busy ? "Creating your account…" : "Create account"}
             </button>

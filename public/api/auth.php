@@ -117,17 +117,11 @@ switch ($action) {
         );
 
         $user = find_user($id);
-        send_email_code($user, issue_code($id, 'email', $email));
-        $smsSent = send_sms_code($user, issue_code($id, 'phone', $phone));
+        send_confirmation_link($user, issue_link_token($id, $email));
         notify_admin_of_registration($user);
         audit($id, 'register', 'user', $id, ['requestedRole' => $role]);
 
-        json_out([
-            'ok'        => true,
-            'userId'    => $id,
-            'smsSent'   => $smsSent,
-            'next'      => 'verify',
-        ]);
+        json_out(['ok' => true, 'userId' => $id, 'next' => 'confirm-email']);
     }
 
     // --------------------------------------------------------------- login ---
@@ -179,54 +173,37 @@ switch ($action) {
         json_out(['ok' => true]);
     }
 
-    // ------------------------------------------------- send / resend a code ---
-    case 'send-code': {
+    // --------------------------------------------- resend the confirmation ---
+    case 'resend-confirmation': {
         $user = require_user();
-        $channel = field($data, 'channel', 10);
-        if (!in_array($channel, ['email', 'phone'], true)) {
-            fail('Unknown verification channel.', 422);
-        }
-        if ($channel === 'email' && $user['email_verified_at']) {
+        if (!empty($user['email_verified_at'])) {
             json_out(['ok' => true, 'alreadyVerified' => true]);
         }
-        if ($channel === 'phone' && $user['phone_verified_at']) {
-            json_out(['ok' => true, 'alreadyVerified' => true]);
-        }
+        throttle('resend-confirmation', $user['id'], 5, 60);
+        record_attempt('resend-confirmation', $user['id'], true);
 
-        throttle('send-code', $user['id'] . ':' . $channel, 5, 60);
-        record_attempt('send-code', $user['id'] . ':' . $channel, true);
-
-        if ($channel === 'email') {
-            send_email_code($user, issue_code($user['id'], 'email', $user['email']));
-            json_out(['ok' => true, 'sent' => true]);
-        }
-
-        $sent = send_sms_code($user, issue_code($user['id'], 'phone', $user['phone']));
-        json_out(['ok' => true, 'sent' => $sent, 'manualReview' => !$sent]);
+        send_confirmation_link($user, issue_link_token($user['id'], $user['email']));
+        json_out(['ok' => true, 'sent' => true]);
     }
 
-    // --------------------------------------------------------- verify code ---
-    case 'verify': {
-        $user = require_user();
-        $channel = field($data, 'channel', 10);
-        $code = preg_replace('/\D+/', '', field($data, 'code', 10)) ?? '';
+    // ------------------------------------------- confirm from an email link ---
+    case 'confirm-email': {
+        $token = field($data, 'token', 128);
+        throttle('confirm-email', substr($token, 0, 32), 10, 60);
+        record_attempt('confirm-email', substr($token, 0, 32), false);
 
-        if (!in_array($channel, ['email', 'phone'], true)) {
-            fail('Unknown verification channel.', 422);
-        }
-        throttle('verify', $user['id'] . ':' . $channel, 10, 15);
-        record_attempt('verify', $user['id'] . ':' . $channel, false);
-
-        if ($code === '' || !consume_code($user['id'], $channel, $code)) {
-            fail('That code is not valid or has expired. Request a new one.', 422);
+        $user = consume_link_token($token);
+        if (!$user) {
+            fail('That confirmation link has expired or was already used. Sign in to request a new one.', 422);
         }
 
-        audit($user['id'], 'verify_' . $channel, 'user', $user['id']);
-        $fresh = find_user($user['id']);
+        audit($user['id'], 'verify_email', 'user', $user['id']);
+        // Deliberately not 'user': confirming from an emailed link does not
+        // sign anyone in, and the browser must not believe it has a session.
         json_out([
-            'ok'     => true,
-            'user'   => public_user($fresh),
-            'active' => is_active($fresh),
+            'ok'      => true,
+            'account' => public_user($user),
+            'active'  => is_active($user),
         ]);
     }
 
