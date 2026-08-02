@@ -193,6 +193,37 @@ switch ($action) {
         json_out(['ok' => true]);
     }
 
+    // -------------------------------- set a password with a one-time code ---
+    case 'set-password': {
+        // Public by design: the person doing this cannot sign in yet. The code
+        // is the credential, so it is throttled hard against guessing.
+        $email = normalise_email(field($data, 'email'));
+        $code = preg_replace('/\\D+/', '', field($data, 'code', 12)) ?? '';
+        $password = (string) ($data['password'] ?? '');
+
+        if ($email === '' || $code === '') {
+            fail('Enter your email address and the code from your email.', 422);
+        }
+        if ($problem = password_problem($password)) {
+            fail($problem, 422);
+        }
+
+        throttle('otp_redeem', $email, 10, 30);
+        record_attempt('otp_redeem', $email, false);
+
+        foreach ([__DIR__ . '/../../portal/lib', __DIR__ . '/../../../portal/lib', __DIR__ . '/../portal/lib'] as $otpLib) {
+            if (is_file($otpLib . '/otp.php')) { require_once $otpLib . '/otp.php'; break; }
+        }
+        if (!otp_redeem($email, $code, $password)) {
+            // One message for every failure: separating "no such account" from
+            // "wrong code" tells someone probing which addresses exist.
+            fail('That code is not valid, or it has expired. Ask for a new one.', 422);
+        }
+
+        record_attempt('otp_redeem', $email, true);
+        json_out(['ok' => true, 'next' => 'login']);
+    }
+
     // --------------------------------------------- resend the confirmation ---
     case 'resend-confirmation': {
         $user = require_user();

@@ -15,6 +15,8 @@ import ConfirmEmail from "./pages/portal/ConfirmEmail";
 import Accounts from "./pages/portal/Accounts";
 import { StudioModels, StudioBuilder } from "./pages/portal/Studio";
 import { Builds, BuildDetail } from "./pages/portal/Builds";
+import { Users } from "./pages/portal/Users";
+import SetPassword from "./pages/portal/SetPassword";
 import { PricedConfigurator } from "./pages/portal/PricedConfigurator";
 import { ForgotPassword, ResetPassword } from "./pages/portal/ResetPassword";
 import {
@@ -68,6 +70,8 @@ export default function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/verify" element={<Verify />} />
         <Route path="/confirm-email" element={<ConfirmEmail />} />
+        {/* Public: someone setting a first password cannot sign in yet. */}
+        <Route path="/set-password" element={<SetPassword />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route
@@ -109,6 +113,14 @@ export default function App() {
           element={
             <RequireAuth roles={["ambassador", "employee", "admin"]}>
               <PricedConfigurator />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/portal/users"
+          element={
+            <RequireAuth roles={["admin"]}>
+              <Users />
             </RequireAuth>
           }
         />

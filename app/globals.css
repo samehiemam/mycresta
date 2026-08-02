@@ -7334,3 +7334,185 @@ p {
   margin: 0;
   padding: 10px 5vw;
 }
+
+/* ---- admin: users ------------------------------------------------------ */
+
+.portal-notice {
+  background: rgba(46, 140, 90, 0.12);
+  border-radius: 10px;
+  color: #226b45;
+  font-size: 0.8rem;
+  padding: 10px 14px;
+}
+
+.users-toolbar {
+  align-items: center;
+  display: flex;
+  gap: 16px;
+  margin: 22px 0 10px;
+}
+
+.users-toolbar span { color: var(--warm-500); font-size: 0.76rem; }
+
+.users-table { border-collapse: collapse; width: 100%; }
+
+.users-table th {
+  border-bottom: 1px solid var(--warm-200);
+  color: var(--warm-500);
+  font-size: 0.64rem;
+  letter-spacing: 0.12em;
+  padding: 0 12px 8px 0;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.users-table td {
+  border-bottom: 1px solid var(--warm-100);
+  font-size: 0.82rem;
+  padding: 12px 12px 12px 0;
+  vertical-align: top;
+}
+
+.users-table td small { color: var(--warm-500); display: block; font-size: 0.7rem; }
+.users-table tr.is-me td { background: rgba(16, 55, 104, 0.03); }
+
+.user-status,
+.user-flag {
+  border-radius: 999px;
+  display: inline-block;
+  font-size: 0.62rem;
+  letter-spacing: 0.06em;
+  padding: 3px 9px;
+  text-transform: uppercase;
+}
+
+.user-status.is-approved { background: rgba(46, 140, 90, 0.14); color: #226b45; }
+.user-status.is-pending  { background: rgba(176, 122, 20, 0.14); color: #7a5410; }
+.user-status.is-rejected,
+.user-status.is-disabled { background: var(--warm-100); color: var(--warm-500); }
+
+.user-flag.is-ok   { background: rgba(46, 140, 90, 0.14); color: #226b45; }
+.user-flag.is-warn { background: rgba(176, 90, 20, 0.12); color: #7a3d0c; }
+
+.users-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.users-actions .button { font-size: 0.7rem; padding: 6px 12px; }
+
+.users-edit-row td { background: var(--warm-50); }
+
+.user-form,
+.user-edit {
+  background: var(--white);
+  border: 1px solid var(--warm-200);
+  border-radius: 14px;
+  margin-bottom: 18px;
+  padding: 20px;
+}
+
+.user-form-grid,
+.user-edit-fields {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+.user-form label,
+.user-edit label {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.72rem;
+  gap: 4px;
+}
+
+.user-form input,
+.user-form select,
+.user-edit input,
+.user-edit select {
+  background: var(--warm-50);
+  border: 1px solid var(--warm-200);
+  border-radius: 8px;
+  font: inherit;
+  font-size: 0.84rem;
+  padding: 9px 11px;
+}
+
+.scope-picker {
+  border: 1px solid var(--warm-200);
+  border-radius: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  grid-column: 1 / -1;
+  margin-top: 12px;
+  padding: 12px 14px;
+}
+
+.scope-picker legend { color: var(--warm-500); font-size: 0.68rem; padding: 0 6px; }
+
+/* Scope checkboxes read as a row, unlike the stacked fields above. */
+.scope-picker label {
+  align-items: center;
+  flex-direction: row;
+  font-size: 0.76rem;
+  gap: 6px;
+}
+
+.scope-picker input { padding: 0; }
+
+.user-form-note {
+  color: var(--warm-700);
+  font-size: 0.74rem;
+  margin: 14px 0 12px;
+}
+
+.user-edit-actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.user-delete-confirm {
+  align-items: center;
+  color: #7a3d0c;
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 0.76rem;
+  gap: 10px;
+}
+
+.button--danger {
+  background: #a4291b;
+  border: 1px solid #a4291b;
+  color: var(--white);
+}
+
+.button--danger:hover { background: #8c2117; }
+
+.user-detail {
+  border-top: 1px solid var(--warm-200);
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  margin-top: 18px;
+  padding-top: 14px;
+}
+
+.user-detail dt { color: var(--warm-500); font-size: 0.64rem; letter-spacing: 0.1em; text-transform: uppercase; }
+.user-detail dd { font-size: 0.8rem; margin: 2px 0 0; }
+
+/* The code is read off a screen and typed — spaced out so it is hard to
+   mistype, and monospaced so every digit is the same width. */
+.otp-input {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 1.2rem !important;
+  letter-spacing: 0.4em;
+  text-align: center;
+}
+
+@media (max-width: 820px) {
+  .users-table thead { display: none; }
+  .users-table tr { display: grid; gap: 6px; padding: 14px 0; }
+  .users-table td { border: 0; padding: 0; }
+  .users-table td[colspan] { padding-top: 10px; }
+}
