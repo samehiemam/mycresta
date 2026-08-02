@@ -1,24 +1,43 @@
-# The portal library must never be reachable over the web.
+# Keep the portal library off the web — without blocking the portal UI.
 #
 # It is safest to keep this folder OUTSIDE public_html. When the host's deploy
-# can only publish the build output, it ends up inside the web root instead —
-# this file denies every request to it, so config.php (database password) and
-# storage/ (customer invoices) stay private either way.
+# can only publish the build output it lands inside the web root instead, and
+# then it shares a URL prefix with the portal's own pages: /portal,
+# /portal/team, /portal/accounts. Denying the whole directory denied those too,
+# so opening Accounts as an admin returned a server 403 long before the
+# application was ever consulted.
+#
+# The denial is therefore scoped to real files rather than to the directory.
+# Every file here and below is refused — config.php holds the database password
+# and storage/ holds customer invoices — while a path matching no file falls
+# through to the single-page app, which does its own role checking.
+#
+# PHP reads these files from disk rather than over HTTP, so the API is
+# unaffected by any of this.
 
-# Apache 2.4 / LiteSpeed
-<IfModule mod_authz_core.c>
-  Require all denied
-</IfModule>
-
-# Apache 2.2 fallback
-<IfModule !mod_authz_core.c>
-  Order deny,allow
-  Deny from all
-</IfModule>
-
-# Belt and braces: never serve these as downloadable files.
-<FilesMatch "\.(php|sql|md|log|json|env)$">
+# No file under this directory is ever served, at any depth.
+<FilesMatch "^.*$">
   <IfModule mod_authz_core.c>
     Require all denied
   </IfModule>
+  <IfModule !mod_authz_core.c>
+    Order deny,allow
+    Deny from all
+  </IfModule>
 </FilesMatch>
+
+# ...and the folder itself may not be browsed.
+Options -Indexes
+
+# The SPA fallback is repeated here rather than inherited: a child .htaccess
+# that declares its own rewrite rules replaces the parent's, and which way that
+# merge falls is not worth depending on.
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # Anything resolving to an actual file is left alone — the deny above answers
+  # it. Everything else is a client-side route.
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteRule ^ /index.html [L]
+</IfModule>
