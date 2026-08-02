@@ -4,7 +4,7 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { SiteHeader } from "../../../app/components/SiteHeader";
 import { SiteFooter } from "../../../app/components/SiteFooter";
-import { useAuth } from "../../lib/auth";
+import { useAuth, roleHome, type PortalUser } from "../../lib/auth";
 import { useTitle } from "../../lib/useTitle";
 import { emailProblem, phoneProblem, passwordProblem } from "../../lib/validate";
 
@@ -47,7 +47,7 @@ export default function Register() {
     const form = new FormData(event.currentTarget);
 
     try {
-      await api("auth", "register", {
+      const created = await api<{ next?: string }>("auth", "register", {
         fullName: form.get("fullName"),
         email: form.get("email"),
         phone: form.get("phone"),
@@ -57,12 +57,21 @@ export default function Register() {
         website: form.get("website"), // honeypot
         role,
       });
-      // Sign in straight away so the verification step has a session.
-      await api("auth", "login", {
-        email: form.get("email"),
-        password: form.get("password"),
-      });
-      navigate("/verify");
+
+      // Sign in straight away so the next screen has a session.
+      const signedIn = await api<{ user: PortalUser; active: boolean }>(
+        "auth",
+        "login",
+        { email: form.get("email"), password: form.get("password") },
+      );
+
+      // Follow the server rather than assuming: an account confirmed without
+      // an email (the admin bootstrap) has nothing to wait for.
+      if (created.next === "login" || signedIn.user.emailVerified) {
+        navigate(signedIn.active ? roleHome[signedIn.user.role] : "/portal");
+      } else {
+        navigate("/verify");
+      }
     } catch (caught) {
       setError((caught as Error).message);
       setBusy(false);
