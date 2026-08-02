@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useAuth, roleHome } from "../../src/lib/auth";
 import { useEffect, useRef, useState } from "react";
 import { boatsByBrand } from "../data";
 
@@ -60,6 +61,86 @@ function NavMenu({
   );
 }
 
+/**
+ * Who you are, and the way out.
+ *
+ * On a wide screen it is an avatar that opens on click; inside the mobile menu
+ * the same markup lays out as a labelled block, because a bare icon in a
+ * vertical list gives no clue what it does.
+ */
+function AccountMenu({ onNavigate }: { onNavigate: () => void }) {
+  const { user, logout } = useAuth();
+  const [open, setOpen] = useState(false);
+  const wrap = useRef<HTMLDivElement>(null);
+
+  // Close on an outside click or on Escape, the two things people try.
+  useEffect(() => {
+    if (!open) return;
+    function onDown(event: MouseEvent) {
+      if (wrap.current && !wrap.current.contains(event.target as Node)) setOpen(false);
+    }
+    function onKey(event: KeyboardEvent) {
+      if (event.key === "Escape") setOpen(false);
+    }
+    document.addEventListener("mousedown", onDown);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDown);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
+
+  if (!user) return null;
+
+  const initials = user.fullName
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? "")
+    .join("");
+
+  return (
+    <div className={`account-menu${open ? " is-open" : ""}`} ref={wrap}>
+      <button
+        className="account-trigger"
+        type="button"
+        aria-haspopup="menu"
+        aria-expanded={open}
+        onClick={() => setOpen((v) => !v)}
+      >
+        <span className="account-avatar" aria-hidden="true">{initials || "?"}</span>
+        <span className="account-trigger-name">{user.fullName.split(" ")[0]}</span>
+      </button>
+
+      <div className="account-panel" role="menu">
+        <div className="account-who">
+          <strong>{user.fullName}</strong>
+          <small>{user.email}</small>
+        </div>
+        <Link
+          href={roleHome[user.role]}
+          role="menuitem"
+          onClick={() => { setOpen(false); onNavigate(); }}
+        >
+          My Cresta
+        </Link>
+        <button
+          className="account-signout"
+          type="button"
+          role="menuitem"
+          onClick={async () => {
+            setOpen(false);
+            onNavigate();
+            await logout();
+          }}
+        >
+          Sign out
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export function SiteHeader({
   inverse = false,
   solid = false,
@@ -67,6 +148,7 @@ export function SiteHeader({
   inverse?: boolean;
   solid?: boolean;
 }) {
+  const { user } = useAuth();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [openMenu, setOpenMenu] = useState<MenuId | null>(null);
@@ -220,9 +302,15 @@ export function SiteHeader({
         <Link href="/about" onClick={closeAll}>
           Cresta Marine
         </Link>
-        <Link href="/my-cresta" onClick={closeAll}>
-          My Cresta
-        </Link>
+        {/* Signed out this is just the marketing page; signed in it becomes
+            the way back to your own area, and the way out. */}
+        {user ? (
+          <AccountMenu onNavigate={closeAll} />
+        ) : (
+          <Link href="/my-cresta" onClick={closeAll}>
+            My Cresta
+          </Link>
+        )}
         <a
           className="whatsapp-link"
           href="https://wa.me/201224212222"

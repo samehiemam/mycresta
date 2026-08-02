@@ -9,6 +9,9 @@ require_once __DIR__ . '/http.php';
 const ROLES = ['customer', 'employee', 'ambassador', 'admin'];
 const SELF_SERVICE_ROLES = ['customer', 'ambassador']; // staff are created by an admin
 const SESSION_DAYS = 30;
+
+/** Holds the session token, independent of PHP's own session lifetime. */
+const SESSION_COOKIE = 'cresta_id';
 const CODE_TTL_MINUTES = 15;
 const RESET_TTL_MINUTES = 60;
 const LINK_TTL_MINUTES = 60 * 24; // a confirmation link is useful for a day
@@ -126,17 +129,19 @@ function create_session(string $userId): string
     start_session();
     session_regenerate_id(true); // new id on privilege change, stops fixation
     $_SESSION['token'] = $token;
+    set_session_cookie($token);
     return $token;
 }
 
 function destroy_session(): void
 {
     start_session();
-    $token = $_SESSION['token'] ?? null;
+    $token = $_COOKIE[SESSION_COOKIE] ?? ($_SESSION['token'] ?? null);
     if (is_string($token)) {
         db_run('DELETE FROM sessions WHERE id = ?', [hash('sha256', $token)]);
     }
     $_SESSION = [];
+    clear_session_cookie();
     if (ini_get('session.use_cookies')) {
         $p = session_get_cookie_params();
         setcookie(session_name(), '', time() - 42000, $p['path'], $p['domain'], $p['secure'], $p['httponly']);
@@ -145,10 +150,55 @@ function destroy_session(): void
 }
 
 /** The signed-in user, or null. */
+/**
+ * Writes the session cookie.
+ *
+ * The token used to live only in PHP's own session, which shared its fate:
+ * PHP clears an idle session after gc_maxlifetime — twenty-four minutes on a
+ * default install — so a sign-in good for thirty days in the database was in
+ * practice lost within the hour. The token now travels in its own cookie whose
+ * lifetime matches the database row.
+ */
+function set_session_cookie(string $token): void
+{
+    if (headers_sent()) {
+        return;
+    }
+    setcookie(SESSION_COOKIE, $token, [
+        'expires'  => time() + SESSION_DAYS * 86400,
+        'path'     => '/',
+        'domain'   => cookie_domain(),
+        'secure'   => request_is_https(),
+        'httponly' => true,
+        'samesite' => 'Lax',
+    ]);
+}
+
+function clear_session_cookie(): void
+{
+    if (headers_sent()) {
+        return;
+    }
+    setcookie(SESSION_COOKIE, '', [
+        'expires'  => time() - 42000,
+        'path'     => '/',
+        'domain'   => cookie_domain(),
+        'secure'   => request_is_https(),
+        'httponly' => true,
+        'samesite' => 'Lax',
+    ]);
+}
+
 function current_user(): ?array
 {
     start_session();
-    $token = $_SESSION['token'] ?? null;
+
+    // The cookie is the source of truth; PHP's session is read as a fallback
+    // so anyone signed in before this change stays signed in.
+    $token = $_COOKIE[SESSION_COOKIE] ?? null;
+    if (!is_string($token) || $token === '') {
+        $token = $_SESSION['token'] ?? null;
+    }
     if (!is_string($token) || $token === '') {
         return null;
     }
@@ -167,6 +217,11 @@ function current_user(): ?array
     }
 
     db_run('UPDATE sessions SET last_seen_at = ? WHERE id = ?', [now(), hash('sha256', $token)]);
+
+    // Slide the cookie forward, and adopt a session that predates it.
+    $_SESSION['token'] = $token;
+    set_session_cookie($token);
+
     return $row;
 }
 

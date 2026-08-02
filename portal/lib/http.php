@@ -44,6 +44,42 @@ function require_method(string $method): void
 }
 
 /**
+ * The domain a cookie should cover, or '' to leave it host-only.
+ *
+ * The site answers on both crestamarine.com and www.crestamarine.com, and a
+ * host-only cookie set on one is invisible on the other — which logged people
+ * out the moment a link took them across. Scoping to the registrable domain
+ * covers both, and any future subdomain such as my.crestamarine.com.
+ *
+ * Left empty for anything without a dot (localhost) or a bare IP, since
+ * browsers reject a Domain attribute on those outright.
+ */
+function cookie_domain(): string
+{
+    $host = strtolower((string) ($_SERVER['HTTP_HOST'] ?? ''));
+    $host = explode(':', $host)[0];
+
+    if ($host === '' || filter_var($host, FILTER_VALIDATE_IP) || !str_contains($host, '.')) {
+        return '';
+    }
+
+    $parts = explode('.', $host);
+    if (count($parts) < 2) {
+        return '';
+    }
+    // Last two labels. Enough for crestamarine.com; a multi-part public suffix
+    // such as .co.uk would need a suffix list, which this does not have.
+    return '.' . implode('.', array_slice($parts, -2));
+}
+
+/** True when this request arrived over HTTPS, directly or through a proxy. */
+function request_is_https(): bool
+{
+    return (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+        || (($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https');
+}
+
+/**
  * Session cookie: HttpOnly so JavaScript cannot read it, SameSite=Lax so it is
  * not sent on cross-site POSTs, Secure whenever the request is over HTTPS.
  */
@@ -52,14 +88,12 @@ function start_session(): void
     if (session_status() === PHP_SESSION_ACTIVE) {
         return;
     }
-    $https = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
-        || (($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https');
-
     session_set_cookie_params([
         'lifetime' => 0,
         'path'     => '/',
+        'domain'   => cookie_domain(),
         'httponly' => true,
-        'secure'   => $https,
+        'secure'   => request_is_https(),
         'samesite' => 'Lax',
     ]);
     session_name('cresta_portal');
