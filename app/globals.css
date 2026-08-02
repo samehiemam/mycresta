@@ -7298,3 +7298,39 @@ p {
   .builds-table tr { display: grid; gap: 4px; padding: 12px 0; }
   .builds-table td { border: 0; padding: 0; }
 }
+
+/* ---- shipping and handling, entered in the priced summary --------------- */
+
+.summary-pricing .is-shipping { align-items: center; }
+
+.shipping-field input {
+  background: var(--warm-50);
+  border: 1px solid var(--warm-200);
+  border-radius: 8px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.8rem;
+  padding: 5px 9px;
+  text-align: right;
+  width: 130px;
+}
+
+.shipping-field input:focus-visible {
+  border-color: var(--navy-700);
+  outline: 2px solid rgba(16, 55, 104, 0.16);
+}
+
+/* The placeholder carries meaning here — an empty box is "not priced yet",
+   which is why it reads as words rather than sitting blank. */
+.shipping-field input::placeholder {
+  font-family: var(--font-sans, inherit);
+  font-size: 0.72rem;
+  opacity: 1;
+}
+
+.build-save-note {
+  background: var(--navy-50);
+  color: var(--navy-700);
+  font-size: 0.76rem;
+  margin: 0;
+  padding: 10px 5vw;
+}

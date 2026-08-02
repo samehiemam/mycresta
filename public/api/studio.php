@@ -34,7 +34,7 @@ $action = $_GET['action'] ?? '';
 
 // Reads are GET and need no CSRF; anything that changes state is a POST that
 // must carry the token.
-$writes = ['create', 'set-options', 'set-commercials', 'share', 'comment'];
+$writes = ['create', 'set-options', 'set-commercials', 'share', 'comment', 'set-build-shipping'];
 if (in_array($action, $writes, true)) {
     require_method('POST');
     require_csrf();
@@ -300,7 +300,45 @@ switch ($action) {
         $build['equipment'] = json_decode((string) $build['equipment'], true) ?: [];
         $build['diamond_stitching'] = (bool) $build['diamond_stitching'];
         $build['estimate_minor'] = (int) $build['estimate_minor'];
+        $build['shipping_minor'] = $build['shipping_minor'] === null
+            ? null
+            : (int) $build['shipping_minor'];
+        // Only a Founder may change it; everyone else reads it.
+        $build['can_edit_shipping'] = can($user, 'catalog', 'full');
         json_out(['ok' => true, 'build' => $build]);
+    }
+
+    case 'set-build-shipping': {
+        // FR-CFG: shipping is variable per configuration and only a Founder
+        // sets it. Guarded here rather than by hiding the field, since a
+        // hidden input is still a request anyone can send.
+        $user = require_can('pipeline', 'view');
+        if (!can($user, 'catalog', 'full')) {
+            fail('Only a Founder can set shipping and handling.', 403);
+        }
+
+        $id = field($data, 'id', 32);
+        $build = db_one('SELECT id FROM public_builds WHERE id = ?', [$id]);
+        if (!$build) {
+            fail('That configuration does not exist.', 404);
+        }
+
+        // An absent or empty value clears it back to "to be confirmed", which
+        // is not the same as pricing the freight at nothing.
+        $raw = $data['shipping_minor'] ?? null;
+        $minor = ($raw === null || $raw === '') ? null : max(0, (int) $raw);
+
+        db_run(
+            'UPDATE public_builds
+                SET shipping_minor = ?, shipping_currency = ?, shipping_set_by = ?,
+                    shipping_set_at = ?, updated_at = ?
+              WHERE id = ?',
+            [$minor, strtoupper(field($data, 'shipping_currency', 3) ?: 'EUR'),
+             $user['id'], $minor === null ? null : now(), now(), $id]
+        );
+
+        audit($user['id'], 'build_shipping_set', 'public_build', $id, ['shipping_minor' => $minor]);
+        json_out(['ok' => true, 'shipping_minor' => $minor]);
     }
 
     default:

@@ -120,12 +120,21 @@ export function Configurator({
   prices = false,
   readOnly = false,
   initial,
+  shippingMinor = null,
+  canEditShipping = false,
+  onShippingChange,
 }: {
   /** Reveals price-list figures. Off for the public site, on inside My Cresta. */
   prices?: boolean;
   /** Replaying someone else's build: same view, nothing editable. */
   readOnly?: boolean;
   initial?: SavedSelection;
+  /** Shipping and handling in minor units, or null while unpriced. */
+  shippingMinor?: number | null;
+  /** FR-CFG: only a Founder may price the freight. */
+  canEditShipping?: boolean;
+  /** Persist a change. Absent means the value lives only for this session. */
+  onShippingChange?: (minor: number | null) => void | Promise<void>;
 } = {}) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -134,6 +143,14 @@ export function Configurator({
     requestedModel === "34" || requestedModel === "36" || requestedModel === "43"
       ? requestedModel
       : "43";
+  const [shipping, setShipping] = useState<number | null>(shippingMinor ?? null);
+  const [shippingSaving, setShippingSaving] = useState(false);
+
+  // Follows the server once a saved build finishes loading.
+  useEffect(() => {
+    setShipping(shippingMinor ?? null);
+  }, [shippingMinor]);
+
   const [model, setModel] = useState<ModelKey>(initial?.model ?? initialModel);
   const [engineId, setEngineId] = useState(
     initial?.engineId ?? modelOptions[initial?.model ?? initialModel].engines[0].id,
@@ -309,6 +326,10 @@ export function Configurator({
       (total, item) => total + (typeof item.price === "number" ? item.price : 0),
       0,
     );
+
+  // VAT applies to shipping and handling as well as the boat and its options.
+  // privateEstimate is in whole euro; shipping is held in minor units.
+  const taxable = privateEstimate + (shipping ?? 0) / 100;
 
   const summary = {
     model: current.name,
@@ -761,27 +782,62 @@ export function Configurator({
                   <span>Boat and options</span>
                   <strong>{eur(privateEstimate)}</strong>
                 </div>
-                <div>
-                  <span>Shipping</span>
-                  {/* Variable per configuration and set only by a Founder;
-                      zero would read as "included". */}
-                  <strong className="is-pending">To be confirmed</strong>
+                <div className="is-shipping">
+                  <span>Shipping &amp; handling</span>
+                  {canEditShipping ? (
+                    <span className="shipping-field">
+                      <input
+                        type="number"
+                        min="0"
+                        step="100"
+                        inputMode="decimal"
+                        aria-label="Shipping and handling in EUR"
+                        placeholder="To be confirmed"
+                        disabled={shippingSaving}
+                        value={shipping === null ? "" : String(shipping / 100)}
+                        onChange={(event) => {
+                          const raw = event.target.value.trim();
+                          setShipping(raw === "" ? null : Math.round(Number(raw) * 100));
+                        }}
+                        onBlur={async () => {
+                          if (!onShippingChange) return;
+                          setShippingSaving(true);
+                          try {
+                            await onShippingChange(shipping);
+                          } finally {
+                            setShippingSaving(false);
+                          }
+                        }}
+                      />
+                    </span>
+                  ) : shipping === null ? (
+                    /* Never zero: zero would read as "included". */
+                    <strong className="is-pending">To be confirmed</strong>
+                  ) : (
+                    <strong>{eur(shipping / 100)}</strong>
+                  )}
                 </div>
                 <div>
                   <span>VAT ({Math.round(VAT_RATE * 100)}%)</span>
-                  <strong>{eur(Math.round(privateEstimate * VAT_RATE))}</strong>
+                  <strong>{eur(Math.round(taxable * VAT_RATE))}</strong>
                 </div>
                 <div className="is-total">
                   <span>Total</span>
-                  <strong>
-                    {eur(Math.round(privateEstimate * (1 + VAT_RATE)))}
-                  </strong>
+                  <strong>{eur(Math.round(taxable * (1 + VAT_RATE)))}</strong>
                 </div>
-                {onRequestCount > 0 && (
+                {(onRequestCount > 0 || shipping === null) && (
                   <p className="summary-provisional">
-                    Provisional — {onRequestCount} selected option
-                    {onRequestCount === 1 ? " is" : "s are"} priced on request,
-                    and shipping is not yet set.
+                    Provisional —{" "}
+                    {onRequestCount > 0 && (
+                      <>
+                        {onRequestCount} selected option
+                        {onRequestCount === 1 ? " is" : "s are"} priced on
+                        request
+                      </>
+                    )}
+                    {onRequestCount > 0 && shipping === null && ", and "}
+                    {shipping === null && "shipping and handling is not yet set"}
+                    .
                   </p>
                 )}
               </div>

@@ -102,7 +102,10 @@ export function BuildDetail() {
   const { api } = useAuth();
   const [selection, setSelection] = useState<SavedSelection | null>(null);
   const [meta, setMeta] = useState<BuildRow | null>(null);
+  const [shipping, setShipping] = useState<number | null>(null);
+  const [canEditShipping, setCanEditShipping] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [saveNote, setSaveNote] = useState<string | null>(null);
 
   useTitle(meta ? `Kumbra ${meta.model_key} — client build | My Cresta` : "Client build");
 
@@ -113,10 +116,14 @@ export function BuildDetail() {
       diamond_stitching: boolean;
       finishes: Record<string, string>;
       equipment: string[];
+      shipping_minor: number | null;
+      can_edit_shipping: boolean;
     };
     api<{ build: Payload }>("studio", "build", { id })
       .then((r) => {
         setMeta(r.build);
+        setShipping(r.build.shipping_minor);
+        setCanEditShipping(r.build.can_edit_shipping);
         setSelection({
           model: r.build.model_key as ModelKey,
           engineId: r.build.engine_id,
@@ -172,8 +179,29 @@ export function BuildDetail() {
           </Link>
         </div>
       </div>
+      {saveNote && <p className="build-save-note">{saveNote}</p>}
       {/* The customer's own view, replayed, with the price list revealed. */}
-      <Configurator prices readOnly initial={selection} />
+      <Configurator
+        prices
+        readOnly
+        initial={selection}
+        shippingMinor={shipping}
+        canEditShipping={canEditShipping}
+        onShippingChange={async (minor) => {
+          setSaveNote(null);
+          try {
+            await api("studio", "set-build-shipping", { id, shipping_minor: minor });
+            setShipping(minor);
+            setSaveNote(
+              minor === null
+                ? "Shipping and handling cleared — back to to be confirmed."
+                : "Shipping and handling saved.",
+            );
+          } catch (caught) {
+            setSaveNote((caught as Error).message);
+          }
+        }}
+      />
     </>
   );
 }

@@ -15,7 +15,7 @@ import ConfirmEmail from "./pages/portal/ConfirmEmail";
 import Accounts from "./pages/portal/Accounts";
 import { StudioModels, StudioBuilder } from "./pages/portal/Studio";
 import { Builds, BuildDetail } from "./pages/portal/Builds";
-import { Configurator } from "../app/components/Configurator";
+import { PricedConfigurator } from "./pages/portal/PricedConfigurator";
 import { ForgotPassword, ResetPassword } from "./pages/portal/ResetPassword";
 import {
   RequireAuth,
@@ -108,7 +108,7 @@ export default function App() {
           path="/portal/configurator"
           element={
             <RequireAuth roles={["ambassador", "employee", "admin"]}>
-              <Configurator prices />
+              <PricedConfigurator />
             </RequireAuth>
           }
         />
