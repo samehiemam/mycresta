@@ -87,11 +87,24 @@ function db(): PDO
                 ]
             );
         } catch (Throwable $e) {
-            // Never surface credentials, paths or SQL to the browser.
             error_log('Cresta portal DB connection failed: ' . $e->getMessage());
+
+            // Say which setting is wrong without echoing the credentials
+            // themselves — "temporarily unavailable" gives an operator nothing
+            // to act on, and shared hosts rarely expose PHP's error log.
+            $hint = match ((string) $e->getCode()) {
+                '1045'         => 'the database user or password was rejected (check CRESTA_DB_USER and CRESTA_DB_PASS)',
+                '1044', '1049' => 'that database name was not found or is not granted to this user (check CRESTA_DB_NAME)',
+                '2002', '2005' => 'the database host could not be reached (try CRESTA_DB_HOST=127.0.0.1)',
+                default        => 'the database refused the connection',
+            };
+
             http_response_code(500);
             header('Content-Type: application/json');
-            echo json_encode(['ok' => false, 'error' => 'Service temporarily unavailable.']);
+            echo json_encode([
+                'ok'    => false,
+                'error' => 'Cannot reach the database: ' . $hint . '.',
+            ]);
             exit;
         }
     }
