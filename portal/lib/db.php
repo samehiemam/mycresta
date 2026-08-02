@@ -54,6 +54,8 @@ function cresta_config(): array
             explode(',', $env('CRESTA_ADMIN_EMAILS', implode(',', $file['admin_emails'] ?? [])) ?? '')
         )),
         'site_url' => $env('CRESTA_SITE_URL', $file['site_url'] ?? ''),
+        // Temporary bootstrap — see autoconfirm_admin_if_enabled().
+        'admin_autoconfirm' => (bool) $env('CRESTA_ADMIN_AUTOCONFIRM', $file['admin_autoconfirm'] ?? ''),
     ];
 
     if ($config['db']['name'] === '' || $config['db']['user'] === '') {

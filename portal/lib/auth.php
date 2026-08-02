@@ -85,6 +85,7 @@ function public_user(array $user): array
         'requestedRole' => $user['requested_role'],
         'status'        => $user['status'],
         'company'       => $user['company'],
+        'message'       => $user['message'],
         'emailVerified' => !empty($user['email_verified_at']),
         'phoneVerified' => !empty($user['phone_verified_at']),
         'createdAt'     => $user['created_at'],
@@ -312,6 +313,38 @@ function consume_code(string $userId, string $channel, string $code): bool
  * email is not enough on its own — the emailed code has to be entered — so a
  * stranger cannot claim the account.
  */
+/**
+ * Confirms the configured admin address without an email.
+ *
+ * Only when CRESTA_ADMIN_AUTOCONFIRM is set. Deliverability on a fresh domain
+ * is the usual reason nobody can get in to fix anything, and this breaks that
+ * deadlock: whoever sets the variable already controls the deployment. Remove
+ * it once real email works — with it on, anyone registering as that address
+ * skips the mailbox check.
+ */
+function autoconfirm_admin_if_enabled(array $user): bool
+{
+    $config = cresta_config();
+    if (empty($config['admin_autoconfirm'])) {
+        return false;
+    }
+    $configured = array_map(
+        static fn($email) => mb_strtolower(trim((string) $email)),
+        $config['admin_emails'] ?? []
+    );
+    if (!in_array(mb_strtolower($user['email']), $configured, true)) {
+        return false;
+    }
+
+    db_run(
+        'UPDATE users SET email_verified_at = COALESCE(email_verified_at, ?), updated_at = ? WHERE id = ?',
+        [now(), now(), $user['id']]
+    );
+    promote_configured_admin($user['id']);
+    audit($user['id'], 'admin_autoconfirmed', 'user', $user['id']);
+    return true;
+}
+
 function promote_configured_admin(string $userId): void
 {
     $user = find_user($userId);

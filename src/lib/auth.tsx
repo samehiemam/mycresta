@@ -19,6 +19,7 @@ export type PortalUser = {
   requestedRole: Role;
   status: "pending" | "approved" | "rejected" | "disabled";
   company: string | null;
+  message: string | null;
   emailVerified: boolean;
   phoneVerified: boolean;
   createdAt: string;

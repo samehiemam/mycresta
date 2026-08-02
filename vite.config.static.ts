@@ -63,6 +63,7 @@ return [
         'sender'   => ${php(env.CRESTA_SMS_SENDER || "CrestaMarine")},
     ],
     'admin_emails' => [${adminEmails.map(php).join(", ")}],
+    'admin_autoconfirm' => ${env.CRESTA_ADMIN_AUTOCONFIRM ? "true" : "false"},
     'site_url' => ${php(env.CRESTA_SITE_URL)},
 ];
 `;

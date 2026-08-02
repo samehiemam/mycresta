@@ -81,9 +81,16 @@ switch ($action) {
         throttle('register', $email, 5, 60);
         record_attempt('register', $email, false);
 
-        if (find_user_by_email($email)) {
-            // Do not disclose that the address is taken; the owner gets an email.
-            $existing = find_user_by_email($email);
+        if ($existing = find_user_by_email($email)) {
+            // The configured admin may already have signed up before email
+            // delivery worked; let the bootstrap finish that account rather
+            // than leaving it stranded as pending.
+            if (autoconfirm_admin_if_enabled($existing)) {
+                json_out(['ok' => true, 'autoconfirmed' => true, 'next' => 'login']);
+            }
+
+            // Otherwise do not disclose that the address is taken; the owner
+            // gets an email instead.
             send_email(
                 $email,
                 'A registration attempt used your email',
@@ -121,7 +128,15 @@ switch ($action) {
         notify_admin_of_registration($user);
         audit($id, 'register', 'user', $id, ['requestedRole' => $role]);
 
-        json_out(['ok' => true, 'userId' => $id, 'next' => 'confirm-email']);
+        // Lets the configured admin in while email delivery is still unproven.
+        $autoconfirmed = autoconfirm_admin_if_enabled($user);
+
+        json_out([
+            'ok'            => true,
+            'userId'        => $id,
+            'autoconfirmed' => $autoconfirmed,
+            'next'          => $autoconfirmed ? 'login' : 'confirm-email',
+        ]);
     }
 
     // --------------------------------------------------------------- login ---

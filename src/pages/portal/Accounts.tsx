@@ -79,6 +79,10 @@ export default function Accounts() {
                 <span>{row.email}</span>
                 <span>{row.phone}</span>
                 {row.company && <span>{row.company}</span>}
+                <span className="account-row-when">
+                  registered {new Date(row.createdAt + "Z").toLocaleString()}
+                </span>
+                {row.message && <span className="account-row-note">“{row.message}”</span>}
               </div>
               <div className="account-row-meta">
                 <span className="portal-role-tag">

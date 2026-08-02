@@ -33,7 +33,12 @@ function send_confirmation_link(array $user, string $token): void
         . "    {$url}\n\n"
         . "The link works for 24 hours. If you did not create an account, ignore this email.\n\n"
         . "Cresta Marine";
-    send_email($user['email'], 'Confirm your email address', $body);
+
+    // mail() only reports the hand-off to the local mailer, never delivery —
+    // but a false here is a definite failure worth seeing.
+    $accepted = send_email($user['email'], 'Confirm your email address', $body);
+    audit($user['id'], $accepted ? 'confirmation_email_accepted' : 'confirmation_email_failed',
+        'user', $user['id'], ['to' => $user['email']]);
 }
 
 /**
