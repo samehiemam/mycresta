@@ -26,7 +26,14 @@ set_exception_handler(static function (Throwable $e): void {
         http_response_code(500);
         header('Content-Type: application/json; charset=utf-8');
     }
-    echo json_encode(['ok' => false, 'error' => 'Something went wrong. Please try again.']);
+    // TEMPORARY: include the message so a failure can be diagnosed without
+    // access to PHP's error log. Remove once the cause is found.
+    echo json_encode([
+        'ok'     => false,
+        'error'  => 'Something went wrong. Please try again.',
+        'detail' => $e->getMessage(),
+        'where'  => basename($e->getFile()) . ':' . $e->getLine(),
+    ]);
     exit;
 });
 
