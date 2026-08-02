@@ -170,6 +170,11 @@ switch ($action) {
         create_session($user['id']);
         audit($user['id'], 'login', 'user', $user['id']);
 
+        // The configured admin may have registered before the bootstrap was
+        // set up correctly. Finishing that account here means signing in is
+        // enough to recover it — no second registration attempt needed.
+        autoconfirm_admin_if_enabled($user);
+
         $fresh = find_user($user['id']);
         json_out([
             'ok'     => true,
