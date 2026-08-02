@@ -261,6 +261,8 @@ function spec_from(string $label, string $value): array
         $unit = match ($unitText) {
             'm'              => 'm',
             'kg'             => 'kg',
+            // The 43 states displacement in tonnes where the 34 uses kilos.
+            't'              => 't',
             'l'              => 'l',
             'hp'             => 'hp',
             'knots', 'knot'  => 'kn',
