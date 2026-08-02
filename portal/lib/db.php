@@ -30,37 +30,60 @@ function cresta_config(): array
     };
 
     $db = $file['db'] ?? [];
+
+    /**
+     * Reads one setting, letting config.php win over the environment.
+     *
+     * The generated file is written from the very same panel variables at build
+     * time, so it is never staler than the environment — while the reverse is
+     * not true. This host hands PHP an environment captured once and never
+     * refreshed, so a setting changed in the panel keeps its old value there
+     * for good. Letting the environment win pinned settings to whatever they
+     * were on the first boot; the file is re-written by every deploy.
+     */
+    $pick = static function (array $source, string $key, string $envKey, string $default = ''): string {
+        if (array_key_exists($key, $source)) {
+            return (string) $source[$key];
+        }
+        $value = getenv($envKey);
+        if ($value === false || $value === '') {
+            $value = $_ENV[$envKey] ?? $_SERVER[$envKey] ?? null;
+        }
+        return ($value === false || $value === null || $value === '') ? $default : (string) $value;
+    };
+
     $config = [
         'db' => [
-            'host' => $env('CRESTA_DB_HOST', $db['host'] ?? 'localhost'),
-            'name' => $env('CRESTA_DB_NAME', $db['name'] ?? ''),
-            'user' => $env('CRESTA_DB_USER', $db['user'] ?? ''),
-            'pass' => $env('CRESTA_DB_PASS', $db['pass'] ?? ''),
+            'host' => $pick($db, 'host', 'CRESTA_DB_HOST', 'localhost'),
+            'name' => $pick($db, 'name', 'CRESTA_DB_NAME'),
+            'user' => $pick($db, 'user', 'CRESTA_DB_USER'),
+            'pass' => $pick($db, 'pass', 'CRESTA_DB_PASS'),
         ],
         'storage_path' => $file['storage_path'] ?? __DIR__ . '/../storage',
         'mail' => [
-            'from'      => $env('CRESTA_MAIL_FROM', $file['mail']['from'] ?? 'no-reply@localhost'),
+            'from'      => $pick($file['mail'] ?? [], 'from', 'CRESTA_MAIL_FROM', 'no-reply@localhost'),
             'from_name' => $file['mail']['from_name'] ?? 'Cresta Marine',
-            'admin'     => $env('CRESTA_MAIL_ADMIN', $file['mail']['admin'] ?? ''),
+            'admin'     => $pick($file['mail'] ?? [], 'admin', 'CRESTA_MAIL_ADMIN'),
         ],
         'sms' => [
-            'driver'   => $env('CRESTA_SMS_DRIVER', $file['sms']['driver'] ?? 'manual'),
-            'endpoint' => $env('CRESTA_SMS_ENDPOINT', $file['sms']['endpoint'] ?? ''),
-            'token'    => $env('CRESTA_SMS_TOKEN', $file['sms']['token'] ?? ''),
-            'sender'   => $env('CRESTA_SMS_SENDER', $file['sms']['sender'] ?? 'CrestaMarine'),
+            'driver'   => $pick($file['sms'] ?? [], 'driver', 'CRESTA_SMS_DRIVER', 'manual'),
+            'endpoint' => $pick($file['sms'] ?? [], 'endpoint', 'CRESTA_SMS_ENDPOINT'),
+            'token'    => $pick($file['sms'] ?? [], 'token', 'CRESTA_SMS_TOKEN'),
+            'sender'   => $pick($file['sms'] ?? [], 'sender', 'CRESTA_SMS_SENDER', 'CrestaMarine'),
         ],
-        'admin_emails' => array_filter(array_map(
+        'admin_emails' => array_values(array_filter(array_map(
             'trim',
-            explode(',', $env('CRESTA_ADMIN_EMAILS', implode(',', $file['admin_emails'] ?? [])) ?? '')
-        )),
-        'site_url' => $env('CRESTA_SITE_URL', $file['site_url'] ?? ''),
-        // Temporary bootstrap — see autoconfirm_admin_if_enabled().
-        // The generated config stores this as a real boolean, so normalise it
-        // before handing it to $env(), which only accepts a string fallback.
-        'admin_autoconfirm' => (bool) $env(
-            'CRESTA_ADMIN_AUTOCONFIRM',
-            empty($file['admin_autoconfirm']) ? '' : '1'
-        ),
+            explode(',', array_key_exists('admin_emails', $file)
+                ? implode(',', (array) $file['admin_emails'])
+                : (string) $env('CRESTA_ADMIN_EMAILS', ''))
+        ))),
+        'site_url' => $pick($file, 'site_url', 'CRESTA_SITE_URL'),
+        // Temporary bootstrap — see autoconfirm_admin_if_enabled(). The file
+        // stores a real boolean, so it is read directly rather than through
+        // $pick(), which deals in strings.
+        'admin_autoconfirm' => array_key_exists('admin_autoconfirm', $file)
+            ? (bool) $file['admin_autoconfirm']
+            : (bool) $env('CRESTA_ADMIN_AUTOCONFIRM', ''),
     ];
 
     if ($config['db']['name'] === '' || $config['db']['user'] === '') {
