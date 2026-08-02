@@ -346,6 +346,9 @@ function rules_from_text(string $text): array
             $value = 'Inboard';
         } elseif (str_contains($target, 'outboard')) {
             $value = 'Outboard';
+        } elseif (str_contains($target, 'shaft')) {
+            // The 43 offers shaft drives where the smaller boats say inboard.
+            $value = 'Shafts';
         } else {
             $kind = 'option';
         }
