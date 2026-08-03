@@ -58,8 +58,8 @@ CREATE TABLE IF NOT EXISTS settings (
 -- vat_rate is 0.14 for Egypt, not the 21% carried in the shipyard price lists.
 INSERT IGNORE INTO settings (setting_key, value, updated_at) VALUES
   ('vat_rate',                '0.14',  UTC_TIMESTAMP()),
-  ('commission_finder_rate',  '0.015', UTC_TIMESTAMP()),
-  ('commission_closer_rate',  '0.025', UTC_TIMESTAMP()),
+  ('commission_finder_rate',  '0.01',  UTC_TIMESTAMP()),
+  ('commission_closer_rate',  '0.02',  UTC_TIMESTAMP()),
   ('base_currency',           'EUR',   UTC_TIMESTAMP()),
   ('active_currencies',       'EUR,USD,EGP', UTC_TIMESTAMP()),
   ('fx_rate_usd',             '1.08',  UTC_TIMESTAMP()),

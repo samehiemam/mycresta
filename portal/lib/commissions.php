@@ -2,13 +2,15 @@
 /**
  * Ambassador commission.
  *
- * The rules, none of them inferred:
+ * The rate is resolved in three steps, narrowest first: an override on the
+ * individual commission, then that ambassador's own agreed rate, then the
+ * platform default — 1% finder, 2% closer. All three are admin-editable, and
+ * each is a deliberate answer to a different question: what this deal was
+ * worth, what this person is on, and what everyone is on.
  *
- *   1.5% when the ambassador is recorded as Finder, 2.5% as Closer, on the
- *   boat and its options — before shipping and VAT. Payable only once a deal
- *   reaches Delivered; never at signature or deposit. No residual on service,
- *   parts or accessories: this is a one-time fee on a boat sale and nothing
- *   else creates a row here.
+ * The base is the boat and its options, before shipping and VAT. Payable only
+ * once a deal reaches Delivered; never at signature or deposit. No residual on
+ * service, parts or accessories — nothing but a delivery creates a row here.
  *
  * A commission is calculated once, at delivery, and stored with the rate and
  * base it used. Rates change; what somebody was owed for a boat delivered last
@@ -18,6 +20,20 @@
 declare(strict_types=1);
 
 const COMMISSION_STATUSES = ['pending', 'approved', 'paid', 'cancelled'];
+
+/** A sanity bound on any rate an admin can type. 25% is already absurd. */
+const COMMISSION_RATE_MAX = 0.25;
+
+/** Reads a rate from an admin's input, refusing anything nonsensical. */
+function commission_valid_rate(float $rate): float
+{
+    if ($rate < 0 || $rate > COMMISSION_RATE_MAX) {
+        fail('A commission rate must be between 0 and 25 percent.', 422);
+    }
+    // Four decimal places, matching the column: 1.25% is expressible, and
+    // nothing finer pretends to a precision the money does not have.
+    return round($rate, 4);
+}
 
 /**
  * The rate for an ambassador, in force now.
@@ -31,7 +47,7 @@ function commission_rate(string $ambassadorId, string $attribution): float
 {
     $global = (float) setting(
         $attribution === 'closer' ? 'commission_closer_rate' : 'commission_finder_rate',
-        $attribution === 'closer' ? '0.025' : '0.015'
+        $attribution === 'closer' ? '0.02' : '0.01'
     );
 
     $terms = db_one('SELECT finder_rate, closer_rate FROM ambassador_terms WHERE user_id = ?', [$ambassadorId]);
