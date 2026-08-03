@@ -36,6 +36,15 @@ Options -Indexes
   RewriteRule ^ /index.html [L]
 </IfModule>
 
+# The server has no mapping for these, so it labelled them text/plain and left
+# browsers to sniff the format. That works until something declines to guess.
+<IfModule mod_mime.c>
+  AddType image/avif  .avif
+  AddType image/webp  .webp
+  AddType image/svg+xml .svg
+  AddType font/woff2  .woff2
+</IfModule>
+
 # Long-cache fingerprinted build assets.
 <IfModule mod_expires.c>
   ExpiresActive On

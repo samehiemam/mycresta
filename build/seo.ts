@@ -265,7 +265,7 @@ export const routes: SeoRoute[] = [
     path: "/yacht-finance",
     title: "Yacht financing in Egypt | Cresta Marine",
     description:
-      "Finance your yacht in Egypt. Cresta Marine introduces eligible clients to boat financing through Contact Finance, alongside Kumbra sales and yacht care in El Gouna.",
+      "Finance your yacht in Egypt through Cresta Marine's partner Contact: up to 15 million EGP, down payments from 20% and plans of up to 5 years, subject to approval.",
     changefreq: "monthly",
     priority: 0.8,
     jsonLd: [

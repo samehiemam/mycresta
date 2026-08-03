@@ -13,13 +13,26 @@ import { useTitle } from "../lib/useTitle";
  * but nothing could rank for them while the content had no page, no URL and
  * no title of its own.
  *
- * Everything here is drawn from what Cresta already publishes: introductions
- * for eligible clients through Contact Finance, subject to credit approval.
- * No rate, term, deposit or eligibility rule is stated anywhere on this page,
- * because none has been confirmed — and a wrong number about credit is worse
- * than no number at all. Where a client would reasonably expect a figure, the
- * page says plainly that Contact Finance sets it.
+ * The figures below are Contact Finance's own published terms for their
+ * watercraft product, not Cresta's. They are stated as the partner's, dated
+ * to when they were taken, and linked to the source, because a lender's terms
+ * change without telling us and a stale number about credit misleads a buyer.
+ * Nothing here is inferred: the rate is absent from this page because Contact
+ * does not publish one, and inventing a plausible figure would be worse than
+ * the gap it fills.
  */
+
+/** Terms as published by Contact Finance. Six items: .boat-specs is a 6/3/2
+ *  column grid, so any other count leaves a ragged row at some breakpoint. */
+const PARTNER_TERMS: Array<[string, string]> = [
+  ["Financing up to", "15,000,000 EGP"],
+  ["Down payment from", "20%"],
+  ["Payment plan up to", "5 years"],
+  ["Applicant age", "21–65"],
+  ["Currency", "Egyptian pounds"],
+  ["Required", "Valid Egyptian ID"],
+];
+
 export default function YachtFinance() {
   useTitle("Yacht financing in Egypt | Cresta Marine");
 
@@ -32,9 +45,23 @@ export default function YachtFinance() {
           <h1>A clearer path to owning your boat.</h1>
           <p>
             Cresta Marine can introduce eligible clients to yacht financing in
-            Egypt through our partner Contact Finance — so the boat, the
-            paperwork and the funding are handled by one coordinated team.
+            Egypt through our partner Contact — so the boat, the paperwork and
+            the funding are handled by one coordinated team.
           </p>
+        </section>
+
+        <section
+          className="boat-specs"
+          aria-label="Contact watercraft financing terms"
+          data-reveal
+          data-reveal-stagger
+        >
+          {PARTNER_TERMS.map(([label, value]) => (
+            <div key={label}>
+              <span>{label}</span>
+              <strong>{value}</strong>
+            </div>
+          ))}
         </section>
 
         <section className="service-grid" data-reveal data-reveal-stagger>
@@ -44,12 +71,13 @@ export default function YachtFinance() {
             <p>
               Choose your Kumbra, configure it the way you intend to use it,
               and we prepare a personal quotation. From there we introduce you
-              to Contact Finance, who assess eligibility and credit and set the
-              terms of any offer.
+              to Contact, who assess eligibility and credit and set the terms of
+              any offer. Applications can be completed online, by phone or at a
+              Contact branch.
             </p>
             <ul className="service-feature-points">
               <li>Configure your boat and receive a personal quotation</li>
-              <li>Introduction to Contact Finance for eligible clients</li>
+              <li>Introduction to Contact for eligible clients</li>
               <li>Eligibility, credit assessment and terms set by the partner</li>
               <li>Selection, delivery and ownership stay with one Cresta team</li>
             </ul>
@@ -61,12 +89,13 @@ export default function YachtFinance() {
             </Link>
           </article>
           <article>
-            <span className="eyebrow">What can be financed</span>
-            <h2>The boat you actually configured.</h2>
+            <span className="eyebrow">Who can apply</span>
+            <h2>Egyptian ID holders, 21 to 65.</h2>
             <p>
-              Financing is arranged against the yacht and the specification you
-              select, not a stock boat chosen for you. Contact Finance confirms
-              the amount and structure available to you.
+              Contact&apos;s watercraft financing is offered in Egyptian pounds
+              to applicants holding a valid Egyptian ID, aged between 21 and 65.
+              Further documents may be requested once an application is
+              reviewed.
             </p>
           </article>
           <article>
@@ -85,9 +114,11 @@ export default function YachtFinance() {
             <span className="eyebrow">Financing partner</span>
             <h2>Talk to us about the numbers.</h2>
             <p>
-              Deposit, term and rate depend on your circumstances and are set by
-              Contact Finance rather than quoted here. Tell us which Kumbra you
-              have in mind and we will arrange the introduction.
+              Contact finances watercraft up to 15 million EGP, with down
+              payments from 20% and plans of up to five years. The rate and the
+              structure that apply to you depend on your circumstances and are
+              set by Contact — tell us which Kumbra you have in mind and we will
+              arrange the introduction.
             </p>
             <a
               className="button button--primary"
@@ -98,14 +129,27 @@ export default function YachtFinance() {
           </div>
           <div className="financing-partner">
             <span>Financing partner</span>
+            {/* width/height are the asset's own dimensions: a wrong ratio
+                reserves the wrong space and shifts the layout on load. */}
             <img
               src="/images/partners/contact-finance.avif"
-              alt="Contact Finance"
+              alt="Contact — Cresta Marine's yacht financing partner in Egypt"
+              width="300"
+              height="150"
             />
             <p>
-              Financing is subject to eligibility, credit approval and the
-              partner&apos;s applicable terms and conditions. Cresta Marine
-              introduces clients to Contact Finance and is not a lender.
+              Terms shown are published by{" "}
+              <a
+                href="https://contact.eg/en/products/watercraft"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Contact
+              </a>{" "}
+              and were correct in August 2026. Financing is subject to
+              eligibility, credit approval and the partner&apos;s applicable
+              terms and conditions, all of which may change. Cresta Marine
+              introduces clients to Contact and is not a lender.
             </p>
           </div>
         </section>
