@@ -296,7 +296,7 @@ export function SiteHeader({
           </Link>
         </NavMenu>
 
-        <Link href="/services" onClick={closeAll}>
+        <Link href="/ownership" onClick={closeAll}>
           Ownership
         </Link>
         <Link href="/about" onClick={closeAll}>

@@ -276,12 +276,22 @@ export const routes: SeoRoute[] = [
     ],
   },
   {
-    path: "/services",
-    title: "Ownership & yacht care | Cresta Marine",
+    // Was /services. The header link has always read "Ownership", and the
+    // page is about ownership models rather than a service menu, so the URL
+    // now matches. /services 301s here in .htaccess — it was in the submitted
+    // sitemap, so it must not simply stop existing.
+    path: "/ownership",
+    title: "Yacht ownership & co-ownership | Cresta Marine",
     description:
-      "Ownership support, berthing, servicing and yacht care from Cresta Marine at Abu Tig Marina, El Gouna — keeping your Kumbra ready for the Red Sea.",
+      "Own a Kumbra outright or take a half, quarter or fifth share. Fair time allocation and itemised shared costs through My Cresta, with yacht care in El Gouna.",
     changefreq: "monthly",
-    priority: 0.7,
+    priority: 0.8,
+    jsonLd: [
+      breadcrumbs([
+        ["Home", "/"],
+        ["Ownership", "/ownership"],
+      ]),
+    ],
   },
   {
     path: "/about",

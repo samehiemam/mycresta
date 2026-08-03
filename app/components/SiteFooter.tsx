@@ -12,7 +12,7 @@ export function SiteFooter() {
           <span className="footer-label">Discover</span>
           <Link href="/fleet">The fleet</Link>
           <Link href="/configure">Boat configurator</Link>
-          <Link href="/services">Ownership & care</Link>
+          <Link href="/ownership">Ownership & co-ownership</Link>
           <Link href="/yacht-finance">Yacht financing</Link>
         </div>
         <div>
