@@ -231,3 +231,34 @@ function notify_lead_stage(array $lead, string $stage): void
         . "See it in My Cresta:\n{$site}/portal/leads/{$lead['id']}\n\nCresta Marine"
     );
 }
+
+/**
+ * Tells an ambassador their commission moved.
+ *
+ * Only for the two transitions that mean something to them — approved and
+ * paid. "Pending" arrives with the delivery email they already received.
+ */
+function notify_commission_status(?array $commission, string $status): void
+{
+    if (!$commission || !in_array($status, ['approved', 'paid'], true)) {
+        return;
+    }
+    $ambassador = find_user($commission['ambassador_id']);
+    if (!$ambassador) {
+        return;
+    }
+
+    $amount = $commission['currency'] . ' '
+        . number_format(commission_payable($commission) / 100, 2, '.', ',');
+    $site = rtrim(cresta_config()['site_url'], '/');
+
+    send_email(
+        $ambassador['email'],
+        $status === 'paid' ? 'Your commission has been paid' : 'Your commission is approved',
+        "Hello {$ambassador['full_name']},\n\n"
+        . ($status === 'paid'
+            ? "Your commission of {$amount} has been recorded as paid.\n"
+            : "Your commission of {$amount} has been approved and is due for payment.\n")
+        . "\nSee it in My Cresta:\n{$site}/portal/commissions\n\nCresta Marine"
+    );
+}

@@ -17,6 +17,8 @@ $libCandidates = [
 foreach ($libCandidates as $lib) {
     if (is_dir($lib)) {
         require_once $lib . '/bootstrap.php';
+        require_once $lib . '/configurations.php';
+        require_once $lib . '/commissions.php';
         require_once $lib . '/leads.php';
         break;
     }

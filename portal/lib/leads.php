@@ -239,8 +239,15 @@ function lead_set_stage(array $user, string $leadId, string $stage, ?string $not
     lead_log($leadId, $user['id'], 'stage', $note, $lead['stage'], $stage);
     audit($user['id'], 'lead_stage_changed', 'lead', $leadId, ['from' => $lead['stage'], 'to' => $stage]);
 
-    // FR-NOTIF-020: the owning ambassador hears about it.
     $fresh = find_lead($leadId);
+
+    // FR-COMM-030: delivery is the only moment a commission comes into being.
+    // Safe to call twice — one commission per deal is enforced by the schema.
+    if ($stage === 'delivered') {
+        commission_on_delivery($fresh, $user['id']);
+    }
+
+    // FR-NOTIF-020: the owning ambassador hears about it.
     notify_lead_stage($fresh, $stage);
 
     return $fresh;
