@@ -7855,10 +7855,18 @@ p {
  * sitting inside a sentence: it renders as ordinary text, so a reader has no
  * way to know it is there. Prose links therefore have to opt back in.
  *
+ * Named .inline-link rather than .text-link, which is already taken further up
+ * by a standalone block link — inline-block, 0.75rem, its own border-bottom
+ * and top margin. Reusing that name shrank these to 12px inside 17px copy and
+ * hung the border below the line as a detached rule.
+ *
+ * Everything here is inheritable or additive on purpose: no font-size, no
+ * display, no margin. An inline link must take the size and rhythm of the
+ * sentence it sits in.
+ *
  * Underlined rather than colour-only, because colour alone fails for readers
- * who cannot distinguish it — WCAG 1.4.1. The offset and thin stroke keep it
- * from looking like a default browser link. */
-.text-link {
+ * who cannot distinguish it — WCAG 1.4.1. */
+.inline-link {
   color: var(--teal-700);
   text-decoration: underline;
   text-decoration-thickness: 1px;
@@ -7866,20 +7874,20 @@ p {
   transition: color 0.2s ease;
 }
 
-.text-link:hover,
-.text-link:focus-visible {
+.inline-link:hover,
+.inline-link:focus-visible {
   color: var(--teal-600);
   text-decoration-thickness: 2px;
 }
 
 /* On the dark gradient panels the teal is unreadable, so the light variant
    keeps the underline and borrows the pale tone used elsewhere on navy. */
-.connected-experience .text-link,
-.platform-section .text-link {
+.connected-experience .inline-link,
+.platform-section .inline-link {
   color: #b3dfe3;
 }
 
-.connected-experience .text-link:hover,
-.platform-section .text-link:hover {
+.connected-experience .inline-link:hover,
+.platform-section .inline-link:hover {
   color: var(--white);
 }

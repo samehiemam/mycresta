@@ -253,7 +253,7 @@ export default function Home() {
           <p>
             Tell us how you want to use the sea. We will help you choose,
             configure and own the boat that fits — with{" "}
-            <Link className="text-link" href="/yacht-finance">yacht financing</Link> available to
+            <Link className="inline-link" href="/yacht-finance">yacht financing</Link> available to
             eligible clients through our partner Contact Finance.
           </p>
           <div className="button-row">
