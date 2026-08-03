@@ -132,6 +132,18 @@ const breadcrumbs = (trail: Array<[string, string]>) => ({
 });
 
 /**
+ * Share cards, where a boat's hero image is not usable as one.
+ *
+ * The page images are WebP where that renders best in a browser, but several
+ * link scrapers — LinkedIn among them — still refuse WebP and fall back to
+ * showing no image at all. Where a boat's hero is WebP, a JPEG of the same
+ * boat is named here instead; the page itself is untouched.
+ */
+const SOCIAL_IMAGE: Record<string, string> = {
+  "kumbra-34": "/images/kumbra-34-aerial-new-DaqHQ-Er.jpg",
+};
+
+/**
  * Boat descriptions already read well, so they are reused verbatim and only
  * given a location suffix when there is room for one inside the ~158
  * characters Google will actually show.
@@ -205,7 +217,7 @@ export const routes: SeoRoute[] = [
     path: `/fleet/${boat.slug}`,
     title: `${boat.name} | Cresta Marine`,
     description: boatDescription(boat),
-    image: boat.hero,
+    image: SOCIAL_IMAGE[boat.slug] ?? boat.hero,
     changefreq: "monthly",
     priority: 0.8,
     jsonLd: [
