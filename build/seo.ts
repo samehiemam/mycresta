@@ -155,7 +155,19 @@ const boatDescription = (boat: (typeof boats)[number]) => {
     : boat.description;
 };
 
-/** Sign-in and account flows: real pages, but nothing for a search engine. */
+/**
+ * Sign-in and account flows: real pages, but nothing for a search engine.
+ *
+ * These are kept crawlable on purpose. /my-cresta is linked from the header
+ * and the footer, so Google will find it whatever robots.txt says — and a
+ * path disallowed there can still be indexed as a bare URL, listed under the
+ * brand name with "no information is available for this page". The tag that
+ * actually keeps a page out of the index is `noindex`, and Google has to be
+ * allowed to fetch the page to read it. So: crawlable, and explicitly noindex.
+ *
+ * Only paths with no public link and nothing to render are disallowed outright
+ * in robots.txt — see renderRobots().
+ */
 const PRIVATE_PATHS = [
   "/my-cresta",
   "/login",
@@ -332,21 +344,23 @@ export function renderSitemap(): string {
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="${ns}">\n${urls}\n</urlset>\n`;
 }
 
+/**
+ * Only paths that are never linked and have nothing to show are disallowed.
+ *
+ * The sign-in pages are deliberately absent: they carry a `noindex` tag, and
+ * blocking them here would stop Google reading the very tag that keeps them
+ * out of the index.
+ */
 export function renderRobots(): string {
-  const disallow = routes
-    .filter((route) => route.noindex)
-    .map((route) => `Disallow: ${route.path}`)
-    .join("\n");
-
   return [
     "# Cresta Marine",
     "User-agent: *",
     "Allow: /",
     "",
-    "# The private area holds no public content and must never be indexed.",
+    "# The portal application and the API: no public content, never linked.",
+    "# The sign-in pages are crawlable on purpose and carry a noindex tag.",
     "Disallow: /portal",
     "Disallow: /api/",
-    disallow,
     "",
     `Sitemap: ${SITE}/sitemap.xml`,
     "",
