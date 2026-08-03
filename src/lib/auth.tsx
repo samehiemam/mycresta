@@ -124,8 +124,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         );
       }
 
-      // Endpoints that return the account keep the context in step.
-      if (data.user !== undefined) {
+      // Only the auth endpoint speaks about who *you* are. Any endpoint may
+      // legitimately return a `user` — creating one, for instance — and
+      // adopting that as the session swapped the signed-in admin for the
+      // account they had just created, bouncing them to the confirmation
+      // screen.
+      if (endpoint === "auth" && data.user !== undefined) {
         setUser(data.user);
         setActive(Boolean(data.active));
       }

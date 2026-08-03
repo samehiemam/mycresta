@@ -34,36 +34,10 @@ export default function Verify() {
     }
   }
 
+  // Nothing to confirm: go where they were headed. A screen that only says
+  // "you are already confirmed" is a dead end with a button on it.
   if (user.emailVerified) {
-    return (
-      <>
-        <SiteHeader />
-        <main className="portal-auth">
-          <section className="portal-auth-card">
-            <span className="eyebrow">My Cresta</span>
-            <h1>Email confirmed</h1>
-            {active ? (
-              <>
-                <p>Your account is ready.</p>
-                <button
-                  className="button button--primary button--full"
-                  type="button"
-                  onClick={() => navigate(roleHome[user.role])}
-                >
-                  Go to My Cresta
-                </button>
-              </>
-            ) : (
-              <p>
-                A Cresta advisor is reviewing your account and will activate it
-                shortly — we will email you.
-              </p>
-            )}
-          </section>
-        </main>
-        <SiteFooter />
-      </>
-    );
+    return <Navigate to={active ? roleHome[user.role] : "/portal"} replace />;
   }
 
   return (

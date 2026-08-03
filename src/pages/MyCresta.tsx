@@ -1,9 +1,77 @@
+import { useState } from "react";
+import { Navigate, useNavigate } from "react-router-dom";
 import Link from "next/link";
+import { useAuth, roleHome, type PortalUser } from "../lib/auth";
 import { SiteFooter } from "../../app/components/SiteFooter";
 import { SiteHeader } from "../../app/components/SiteHeader";
 import { useTitle } from "../lib/useTitle";
 
+/** Sign in without leaving the page. */
+function SignInForm() {
+  const { api } = useAuth();
+  const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function submit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setBusy(true);
+    setError(null);
+    try {
+      const result = await api<{ user: PortalUser; active: boolean }>("auth", "login", {
+        email,
+        password,
+      });
+      if (!result.user.emailVerified) navigate("/verify");
+      else if (!result.active) navigate("/portal");
+      else navigate(roleHome[result.user.role]);
+    } catch (caught) {
+      setError((caught as Error).message);
+      setBusy(false);
+    }
+  }
+
+  return (
+    <form className="my-cresta-signin-form" onSubmit={submit}>
+      <label>
+        <span>Email address</span>
+        <input
+          type="email"
+          autoComplete="username"
+          required
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+      </label>
+      <label>
+        <span>Password</span>
+        <input
+          type="password"
+          autoComplete="current-password"
+          required
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+      </label>
+      {error && <p className="form-error">{error}</p>}
+      <button className="button button--light button--full" type="submit" disabled={busy}>
+        {busy ? "Signing in…" : "Sign in"}
+      </button>
+    </form>
+  );
+}
+
 export default function MyCresta() {
+  const { user, active, loading } = useAuth();
+
+  // Somebody already signed in does not need the sales pitch for the thing
+  // they are already inside.
+  if (!loading && user && active) {
+    return <Navigate to={roleHome[user.role]} replace />;
+  }
+
   useTitle("My Cresta | Cresta Marine");
   return (
     <>
@@ -89,9 +157,10 @@ export default function MyCresta() {
                 Reach your saved configurations, your boat and your Cresta
                 services.
               </p>
-              <Link className="button button--light button--full" href="/login">
-                Sign in to My Cresta
-              </Link>
+              {/* The form itself rather than a link to it: this is the page
+                  people arrive on, and sending them somewhere else to type two
+                  fields is a click that buys nothing. */}
+              <SignInForm />
               <small>
                 <Link href="/forgot-password">Forgot your password?</Link>
               </small>

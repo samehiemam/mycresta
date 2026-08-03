@@ -28,7 +28,10 @@ export default function Login() {
           password: form.get("password"),
         },
       );
-      if (!result.user.emailVerified || !result.user.phoneVerified) {
+      // Email only. The phone check was left over from the SMS codes we
+      // dropped, and since an account set up by one-time code has no phone
+      // timestamp, it sent every single sign-in to the confirmation screen.
+      if (!result.user.emailVerified) {
         navigate("/verify");
       } else if (!result.active) {
         navigate("/portal");

@@ -16,6 +16,7 @@ import Accounts from "./pages/portal/Accounts";
 import { StudioModels, StudioBuilder } from "./pages/portal/Studio";
 import { Builds, BuildDetail } from "./pages/portal/Builds";
 import { Users } from "./pages/portal/Users";
+import { Leads } from "./pages/portal/Leads";
 import SetPassword from "./pages/portal/SetPassword";
 import { PricedConfigurator } from "./pages/portal/PricedConfigurator";
 import { ForgotPassword, ResetPassword } from "./pages/portal/ResetPassword";
@@ -113,6 +114,14 @@ export default function App() {
           element={
             <RequireAuth roles={["ambassador", "employee", "admin"]}>
               <PricedConfigurator />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/portal/leads"
+          element={
+            <RequireAuth roles={["ambassador", "employee", "admin"]}>
+              <Leads />
             </RequireAuth>
           }
         />
