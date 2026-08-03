@@ -42,7 +42,7 @@ export default function Ownership() {
           <p>
             Three ways to put a Kumbra on the water: buy it outright, spread
             the cost with{" "}
-            <Link href="/yacht-finance">yacht financing</Link>, or take a share
+            <Link className="text-link" href="/yacht-finance">yacht financing</Link>, or take a share
             of one boat alongside a few other owners. Cresta Marine looks after
             the yacht whichever route you take — berthing, servicing, cleaning
             and preparation — and My Cresta keeps every owner looking at the
@@ -63,7 +63,7 @@ export default function Ownership() {
               plans to work around.
             </p>
             <p>
-              <Link href="/yacht-finance">Financing</Link> changes when you pay
+              <Link className="text-link" href="/yacht-finance">Financing</Link> changes when you pay
               rather than what you own: the boat is yours, with the cost spread
               over up to five years through our partner Contact, subject to
               approval.

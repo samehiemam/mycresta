@@ -7847,3 +7847,39 @@ p {
   .leads-table tr { display: grid; gap: 6px; padding: 14px 0; }
   .leads-table td { border: 0; padding: 0; }
 }
+
+/* Inline links inside body copy.
+ *
+ * The global reset makes every anchor inherit its colour and drop its
+ * underline, which is right for navigation and buttons and wrong for a link
+ * sitting inside a sentence: it renders as ordinary text, so a reader has no
+ * way to know it is there. Prose links therefore have to opt back in.
+ *
+ * Underlined rather than colour-only, because colour alone fails for readers
+ * who cannot distinguish it — WCAG 1.4.1. The offset and thin stroke keep it
+ * from looking like a default browser link. */
+.text-link {
+  color: var(--teal-700);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  transition: color 0.2s ease;
+}
+
+.text-link:hover,
+.text-link:focus-visible {
+  color: var(--teal-600);
+  text-decoration-thickness: 2px;
+}
+
+/* On the dark gradient panels the teal is unreadable, so the light variant
+   keeps the underline and borrows the pale tone used elsewhere on navy. */
+.connected-experience .text-link,
+.platform-section .text-link {
+  color: #b3dfe3;
+}
+
+.connected-experience .text-link:hover,
+.platform-section .text-link:hover {
+  color: var(--white);
+}

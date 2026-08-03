@@ -140,6 +140,7 @@ export default function YachtFinance() {
             <p>
               Terms shown are published by{" "}
               <a
+                className="text-link"
                 href="https://contact.eg/en/products/watercraft"
                 target="_blank"
                 rel="noreferrer"
