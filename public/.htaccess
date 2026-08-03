@@ -1,16 +1,39 @@
 # Cresta Marine — static SPA on Apache / LiteSpeed (Hostinger)
 
+# Prerendering gives /fleet and /fleet/kumbra-43 real directories on disk, and
+# mod_dir answers a directory request with a 301 to the trailing-slash form
+# before the rewrite below is ever consulted. That would redirect every
+# indexed URL to a second address that disagrees with its own canonical tag.
+# Turning DirectorySlash off leaves the path to the rewrite; -Indexes then
+# makes sure no directory can be listed as a result.
+<IfModule mod_dir.c>
+  DirectorySlash Off
+  DirectoryIndex index.html
+</IfModule>
+Options -Indexes
+
 <IfModule mod_rewrite.c>
   RewriteEngine On
   RewriteBase /
 
-  # Serve real files and directories as-is (assets, images, submit.php, etc.)
-  RewriteCond %{REQUEST_FILENAME} -f [OR]
-  RewriteCond %{REQUEST_FILENAME} -d
+  # One canonical hostname. Both www and the apex answered on 443, so the whole
+  # site existed twice as far as a search engine was concerned, splitting the
+  # ranking signals between two addresses that were never linked to each other.
+  RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+  RewriteRule ^ https://%1%{REQUEST_URI} [R=301,L]
+
+  # Serve real files as-is (assets, images, submit.php, robots.txt, sitemap.xml)
+  RewriteCond %{REQUEST_FILENAME} -f
   RewriteRule ^ - [L]
 
+  # A prerendered route -> its index.html. Done explicitly rather than by
+  # letting Apache find the DirectoryIndex, because that path answers /fleet
+  # with a 301 to /fleet/ and every indexed URL would carry a needless hop.
+  RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI}/index.html -f
+  RewriteRule ^(.+?)/?$ /$1/index.html [L]
+
   # Everything else is a client-side route -> serve the SPA entry.
-  RewriteRule ^ index.html [L]
+  RewriteRule ^ /index.html [L]
 </IfModule>
 
 # Long-cache fingerprinted build assets.

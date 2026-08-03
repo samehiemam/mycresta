@@ -1,8 +1,9 @@
 import { defineConfig, type Plugin } from "vite";
 import react from "@vitejs/plugin-react";
 import { fileURLToPath, URL } from "node:url";
-import { cpSync, existsSync, mkdirSync, writeFileSync } from "node:fs";
+import { cpSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
+import { renderHead, renderRobots, renderSitemap, routes } from "./build/seo";
 
 /**
  * Copies the portal library into the build output.
@@ -114,6 +115,85 @@ function portalLibrary(): Plugin {
   };
 }
 
+/**
+ * Emits one HTML file per public route, plus robots.txt and sitemap.xml.
+ *
+ * Vite produces a single index.html, which Apache then serves for every path.
+ * That is fine for the application and useless for search: one title and one
+ * Open Graph card for the whole site. Here we take that built file — assets
+ * already hashed and injected — and stamp a route-specific <head> into copies
+ * of it, so /fleet/kumbra-43 arrives at a crawler describing the Kumbra 43.
+ *
+ * robots.txt and sitemap.xml are generated from the same route table rather
+ * than kept by hand, because a sitemap that disagrees with the site is worse
+ * than no sitemap at all. Both previously 404'd into the SPA fallback and were
+ * served as HTML, which no crawler can parse.
+ */
+/**
+ * Warns when a public route exists in the router but not in the SEO table.
+ *
+ * The failure this prevents is silent: an uncovered route still works, still
+ * returns 200, and still looks correct in a browser — it just quietly serves
+ * the home page's title and description to every crawler that visits it. That
+ * is precisely the bug this whole plugin exists to fix, so it is worth a
+ * second of build time to notice it coming back.
+ *
+ * A warning rather than an error: a missing description should never be the
+ * reason a deploy fails.
+ */
+function warnOnUncoveredRoutes(root: string): void {
+  const appFile = resolve(root, "src/App.tsx");
+  if (!existsSync(appFile)) return;
+
+  const declared = [...readFileSync(appFile, "utf8").matchAll(/path="([^"]+)"/g)]
+    .map((match) => match[1])
+    // The private area is deliberately excluded, and ":slug" is covered by the
+    // concrete boat paths the table expands from app/data.ts.
+    .filter((path) => path.startsWith("/") && !path.startsWith("/portal") && !path.includes(":"));
+
+  const covered = new Set(routes.map((route) => route.path));
+  const missing = declared.filter((path) => !covered.has(path));
+
+  if (missing.length) {
+    console.warn(
+      `\n  ⚠ [seo] These routes have no entry in build/seo.ts and will be served\n` +
+        `    the generic home-page metadata: ${missing.join(", ")}\n`
+    );
+  }
+}
+
+function seoPrerender(): Plugin {
+  return {
+    name: "cresta-seo-prerender",
+    apply: "build",
+    closeBundle() {
+      const root = dirname(fileURLToPath(import.meta.url));
+      const out = resolve(root, process.env.BUILD_OUT_DIR || ".next");
+      const entry = resolve(out, "index.html");
+      if (!existsSync(entry)) return;
+
+      const template = readFileSync(entry, "utf8");
+      warnOnUncoveredRoutes(root);
+
+      for (const route of routes) {
+        const html = renderHead(template, route);
+        // "/" is the entry itself; everything else becomes a directory with an
+        // index.html, so the URL stays clean and extensionless.
+        const target =
+          route.path === "/"
+            ? entry
+            : resolve(out, route.path.replace(/^\//, ""), "index.html");
+
+        mkdirSync(dirname(target), { recursive: true });
+        writeFileSync(target, html, "utf8");
+      }
+
+      writeFileSync(resolve(out, "robots.txt"), renderRobots(), "utf8");
+      writeFileSync(resolve(out, "sitemap.xml"), renderSitemap(), "utf8");
+    },
+  };
+}
+
 // Static SPA build for shared hosting (e.g. Hostinger). No server / vinext /
 // Cloudflare involvement — outputs a plain dist-static/ of HTML, CSS and JS.
 //
@@ -123,7 +203,7 @@ const resolvePath = (relativePath: string) =>
   fileURLToPath(new URL(relativePath, import.meta.url));
 
 export default defineConfig({
-  plugins: [react(), portalLibrary()],
+  plugins: [react(), portalLibrary(), seoPrerender()],
   resolve: {
     alias: [
       { find: /^next\/link$/, replacement: resolvePath("./src/shims/next-link.tsx") },
