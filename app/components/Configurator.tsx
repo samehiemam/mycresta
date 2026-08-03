@@ -155,7 +155,7 @@ function usePriceList(
     const query = new URLSearchParams({ action: "price-list", model });
     if (configurationId) query.set("configuration", configurationId);
 
-    fetch(`/api/studio.php?${query}`, { credentials: "include" })
+    fetch(`/api/studio.php?${query}`, { credentials: "same-origin" })
       .then((response) => (response.ok ? response.json() : null))
       .then((data) => {
         if (!live) return;
@@ -261,9 +261,27 @@ function StaffSave({
   const [state, setState] = useState<"idle" | "saving" | "saved" | "error">("idle");
   const [error, setError] = useState<string | null>(null);
 
+  /**
+   * The token the server issues with the session. Every state-changing action
+   * has to carry it as X-CSRF-Token or the request is refused with 419 — which
+   * surfaces as "your session expired", so a missing token looks exactly like
+   * an expired one and no amount of refreshing fixes it.
+   *
+   * Read here rather than through the app's api() helper because this
+   * component is shared with the public site and cannot depend on the portal's
+   * auth context.
+   */
+  async function csrfToken(): Promise<string> {
+    const response = await fetch("/api/auth.php?action=session", {
+      credentials: "same-origin",
+    });
+    const data = await response.json();
+    return data.csrfToken ?? "";
+  }
+
   useEffect(() => {
     if (!open) return;
-    fetch("/api/studio.php?action=assignable", { credentials: "include" })
+    fetch("/api/studio.php?action=assignable", { credentials: "same-origin" })
       .then((response) => (response.ok ? response.json() : null))
       .then((data) => setPeople((data?.customers ?? []) as Assignable[]))
       .catch(() => setPeople([]));
@@ -279,8 +297,11 @@ function StaffSave({
     try {
       const response = await fetch("/api/studio.php?action=save-configuration", {
         method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
+        credentials: "same-origin",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-Token": await csrfToken(),
+        },
         body: JSON.stringify({
           name,
           description,

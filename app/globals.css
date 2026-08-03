@@ -7942,16 +7942,22 @@ p {
   outline: 2px solid var(--teal-100);
 }
 
-.staff-save-check {
+/* Scoped through .staff-save label, not .staff-save-check alone: the label
+   rule above is more specific, so a bare class here loses the cascade and the
+   box stacks above its own caption instead of sitting beside it. */
+.staff-save label.staff-save-check {
   align-items: center;
   display: grid;
   gap: 10px;
   grid-template-columns: auto 1fr;
 }
 
-.staff-save-check input { width: auto; }
+.staff-save label.staff-save-check input {
+  height: 18px;
+  width: 18px;
+}
 
-.staff-save-check span {
+.staff-save label.staff-save-check span {
   color: var(--warm-700);
   font-size: 0.82rem;
   letter-spacing: normal;
