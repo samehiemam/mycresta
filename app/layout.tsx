@@ -36,7 +36,7 @@ export async function generateMetadata(): Promise<Metadata> {
       url: origin,
       images: [
         {
-          url: `${origin}/og.png`,
+          url: `${origin}/og-cover.jpg`,
           width: 1730,
           height: 909,
           alt: "Cresta Marine — Peak Boating Experience. Own the Sea.",
@@ -47,7 +47,7 @@ export async function generateMetadata(): Promise<Metadata> {
       card: "summary_large_image",
       title: "Peak Boating Experience. Own the Sea.",
       description: "Distinctive yachts. One Cresta standard.",
-      images: [`${origin}/og.png`],
+      images: [`${origin}/og-cover.jpg`],
     },
   };
 }

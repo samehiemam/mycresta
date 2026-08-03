@@ -22,6 +22,26 @@ import { boats } from "../app/data";
 /** Canonical origin. No trailing slash — every path below starts with one. */
 export const SITE = "https://crestamarine.com";
 
+/**
+ * The default share card, used by every page without an image of its own.
+ *
+ * Rendered from build/og/card.html — the real logo lockup, the brand navy and
+ * teal, and the tagline, at the 1200x630 scrapers expect. Re-render with:
+ *
+ *   chrome --headless --force-device-scale-factor=2 --window-size=1200,630 \
+ *     --screenshot=out.png <served card.html>
+ *
+ * then downsample to 1200x630 and save as JPEG. Two reasons it is a JPEG and
+ * not the old PNG: the previous card was 1.2 MB, heavy enough that a slow
+ * scraper fetch can drop the preview entirely, and this is 98 KB.
+ *
+ * The filename is new rather than a replacement of og.png on purpose. Files in
+ * public/ are served with a year of immutable caching and carry no content
+ * hash, so overwriting one leaves every cache — Hostinger's CDN included —
+ * serving the old bytes indefinitely. A new name is the only reliable bust.
+ */
+const OG_COVER = "/og-cover.jpg";
+
 /** Real, verifiable contact details; these appear in the structured data. */
 const CONTACT = {
   email: "info@crestamarine.com",
@@ -78,7 +98,7 @@ const localBusiness = {
     "Kumbra Yachts dealer at Abu Tig Marina, El Gouna, offering yacht sales, personal configuration, ownership support and yacht care on the Red Sea.",
   url: `${SITE}/`,
   logo: absolute("/images/cresta-mark-navy.png"),
-  image: absolute("/og.png"),
+  image: absolute(OG_COVER),
   email: CONTACT.email,
   telephone: CONTACT.phones[0],
   address: {
@@ -332,7 +352,7 @@ const OWNED_TAGS =
 
 export function renderHead(template: string, route: SeoRoute): string {
   const canonical = SITE + (route.path === "/" ? "/" : route.path);
-  const image = absolute(route.image ?? "/og.png");
+  const image = absolute(route.image ?? OG_COVER);
 
   const tags = [
     `<title>${escapeAttr(route.title)}</title>`,

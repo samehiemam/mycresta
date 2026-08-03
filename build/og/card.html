@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  /* Brand tokens, copied verbatim from app/globals.css :root */
+  :root {
+    --navy-900: #081d33;
+    --navy-800: #0b2847;
+    --teal-700: #14656d;
+    --teal-600: #1b818c;
+    --teal-400: #55b2bb;
+    --sand-500: #c9ae81;
+    --white: #ffffff;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1200px; height: 630px; overflow: hidden; }
+
+  .card {
+    position: relative;
+    width: 1200px;
+    height: 630px;
+    background:
+      radial-gradient(120% 90% at 88% 78%, rgba(27,129,140,0.55) 0%, rgba(11,40,71,0) 58%),
+      linear-gradient(135deg, var(--navy-900) 0%, var(--navy-800) 62%, #0d2f52 100%);
+    font-family: "Jost", sans-serif;
+    color: var(--white);
+    overflow: hidden;
+  }
+
+  /* The wave motif from the original card, redrawn in brand teal. */
+  .waves { position: absolute; inset: 0; }
+
+  .content {
+    position: absolute;
+    left: 86px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+  }
+
+  .logo { width: 470px; display: block; }
+
+  /* The gold rule under the logo — --sand-500, the brand's own accent. */
+  .rule {
+    width: 104px;
+    height: 3px;
+    background: var(--sand-500);
+    margin: 40px 0 38px;
+    border-radius: 2px;
+  }
+
+  h1 {
+    font-size: 78px;
+    font-weight: 500;
+    line-height: 1.03;
+    letter-spacing: -0.015em;
+  }
+
+  .sub {
+    margin-top: 30px;
+    font-size: 27px;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.82);
+    letter-spacing: 0.005em;
+  }
+</style>
+</head>
+<body>
+  <div class="card">
+    <svg class="waves" viewBox="0 0 1200 630" preserveAspectRatio="none" aria-hidden="true">
+      <g fill="none" stroke="var(--teal-400)" stroke-opacity="0.30">
+        <path d="M-40 470 C 220 386, 470 566, 720 470 S 1080 330, 1250 404" stroke-width="1.4"/>
+        <path d="M-40 496 C 220 412, 470 592, 720 496 S 1080 356, 1250 430" stroke-width="1.2"/>
+        <path d="M-40 522 C 220 438, 470 618, 720 522 S 1080 382, 1250 456" stroke-width="1.1"/>
+        <path d="M-40 548 C 220 464, 470 644, 720 548 S 1080 408, 1250 482" stroke-width="1"/>
+        <path d="M-40 574 C 220 490, 470 670, 720 574 S 1080 434, 1250 508" stroke-width="0.9"/>
+        <path d="M-40 600 C 220 516, 470 696, 720 600 S 1080 460, 1250 534" stroke-width="0.8"/>
+      </g>
+      <g fill="none" stroke="var(--teal-400)" stroke-opacity="0.16">
+        <path d="M-40 444 C 220 360, 470 540, 720 444 S 1080 304, 1250 378" stroke-width="1"/>
+        <path d="M-40 418 C 220 334, 470 514, 720 418 S 1080 278, 1250 352" stroke-width="0.9"/>
+      </g>
+    </svg>
+
+    <div class="content">
+      <img class="logo" src="/images/cresta-logo-white.png" alt="Cresta Marine" />
+      <div class="rule"></div>
+      <h1>Peak Boating Experience.<br />Own the Sea.</h1>
+      <p class="sub">Distinctive yachts. One Cresta standard.</p>
+    </div>
+  </div>
+</body>
+</html>
