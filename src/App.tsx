@@ -4,6 +4,7 @@ import Home from "./pages/Home";
 import Fleet from "./pages/Fleet";
 import BoatDetail from "./pages/BoatDetail";
 import Services from "./pages/Services";
+import YachtFinance from "./pages/YachtFinance";
 import About from "./pages/About";
 import Configure from "./pages/Configure";
 import MyCresta from "./pages/MyCresta";
@@ -63,6 +64,7 @@ export default function App() {
           <Route path="/fleet" element={<Fleet />} />
           <Route path="/fleet/:slug" element={<BoatDetail />} />
           <Route path="/services" element={<Services />} />
+          <Route path="/yacht-finance" element={<YachtFinance />} />
           <Route path="/about" element={<About />} />
           <Route path="/configure" element={<Configure />} />
           <Route path="/my-cresta" element={<MyCresta />} />

@@ -13,6 +13,7 @@ export function SiteFooter() {
           <Link href="/fleet">The fleet</Link>
           <Link href="/configure">Boat configurator</Link>
           <Link href="/services">Ownership & care</Link>
+          <Link href="/yacht-finance">Yacht financing</Link>
         </div>
         <div>
           <span className="footer-label">Contact</span>

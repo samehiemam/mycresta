@@ -47,9 +47,9 @@ export default function Home() {
               Own the Sea.
             </h1>
             <p>
-              Distinctive yachts, chosen without compromise and configured
-              around the way you live on the water. One Cresta standard,
-              wherever your course leads.
+              Kumbra Yachts dealer in Egypt. Distinctive yachts, chosen without
+              compromise and configured around the way you live on the water.
+              One Cresta standard, wherever your course leads.
             </p>
             <div className="button-row">
               <Link
@@ -63,10 +63,12 @@ export default function Home() {
               </Link>
             </div>
           </div>
+          {/* Three items, not four: .hero-foot is a fixed three-column grid,
+              and a fourth drops to a second row on its own. */}
           <div className="hero-foot">
-            <span>Based at Abu Tig Marina · Egypt</span>
-            <span>Full & co-ownership</span>
-            <span>Yacht care & concierge</span>
+            <span>Kumbra dealer · Abu Tig Marina</span>
+            <span>Red Sea & North Coast</span>
+            <span>Ownership, care & financing</span>
           </div>
         </section>
 
@@ -78,9 +80,11 @@ export default function Home() {
             It is how boating should feel.
           </h2>
           <p>
-            From selecting the right yacht to personalisation, delivery and
-            long-term care, Cresta makes every step considered, connected and
-            distinctly yours.
+            Cresta Marine is the Kumbra Yachts dealer at Abu Tig Marina in El
+            Gouna, serving owners across the Red Sea and Egypt&apos;s North
+            Coast. From selecting the right yacht to personalisation, delivery,
+            financing and long-term care, Cresta makes every step considered,
+            connected and distinctly yours.
           </p>
         </section>
 
@@ -144,6 +148,7 @@ export default function Home() {
             <ul>
               <li>Curated yacht models</li>
               <li>Full or co-ownership</li>
+              <li>Yacht financing for eligible clients</li>
               <li>Saved to your customer account</li>
             </ul>
             <Link
@@ -247,7 +252,9 @@ export default function Home() {
           <h2>Your next chapter starts with the right boat.</h2>
           <p>
             Tell us how you want to use the sea. We will help you choose,
-            configure and own the boat that fits.
+            configure and own the boat that fits — with{" "}
+            <Link href="/yacht-finance">yacht financing</Link> available to
+            eligible clients through our partner Contact Finance.
           </p>
           <div className="button-row">
             <Link

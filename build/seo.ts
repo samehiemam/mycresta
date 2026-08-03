@@ -31,7 +31,17 @@ const CONTACT = {
   street: "Abu Tig Marina",
   locality: "El Gouna",
   region: "Red Sea Governorate",
+  postalCode: "84513",
   country: "EG",
+  /**
+   * The Google Business Profile. Naming it in `sameAs` tells Google that the
+   * site and the listing are one business rather than two that happen to share
+   * a name — which is why the address and phone here must keep matching the
+   * listing exactly. This is the short link Google generated for the profile;
+   * it is used verbatim rather than a CID URL derived by hand, because getting
+   * such a derivation subtly wrong would point at somebody else's business.
+   */
+  googleBusiness: "https://maps.app.goo.gl/577mTsKUyrn6DUXCA",
 };
 
 export type SeoRoute = {
@@ -76,11 +86,25 @@ const localBusiness = {
     streetAddress: CONTACT.street,
     addressLocality: CONTACT.locality,
     addressRegion: CONTACT.region,
+    postalCode: CONTACT.postalCode,
     addressCountry: CONTACT.country,
   },
-  areaServed: { "@type": "Place", name: "Red Sea, Egypt" },
+  // Where clients are served, which is wider than where the business sits.
+  // The North Coast is listed because Cresta serves it from El Gouna — it is
+  // deliberately not a second address, since claiming a location without a
+  // staffed premises there is what gets a Business Profile suspended.
+  areaServed: [
+    { "@type": "Place", name: "El Gouna, Red Sea, Egypt" },
+    { "@type": "Place", name: "Hurghada, Red Sea, Egypt" },
+    { "@type": "Place", name: "North Coast, Mediterranean, Egypt" },
+    { "@type": "Country", name: "Egypt" },
+  ],
   brand: { "@type": "Brand", name: "Kumbra Yachts" },
-  sameAs: [CONTACT.instagram, `https://wa.me/${CONTACT.whatsapp.replace("+", "")}`],
+  sameAs: [
+    CONTACT.googleBusiness,
+    CONTACT.instagram,
+    `https://wa.me/${CONTACT.whatsapp.replace("+", "")}`,
+  ],
   contactPoint: CONTACT.phones.map((telephone) => ({
     "@type": "ContactPoint",
     telephone,
@@ -233,6 +257,23 @@ export const routes: SeoRoute[] = [
       "Build your Kumbra online — hull colour, upholstery, engines and equipment — then request a personal quotation from Cresta Marine in El Gouna.",
     changefreq: "monthly",
     priority: 0.8,
+  },
+  {
+    // Targets "boat finance Egypt" / "yacht financing Egypt": commercially
+    // valuable, barely contested locally, and previously unrepresented by any
+    // URL on the site.
+    path: "/yacht-finance",
+    title: "Yacht financing in Egypt | Cresta Marine",
+    description:
+      "Finance your yacht in Egypt. Cresta Marine introduces eligible clients to boat financing through Contact Finance, alongside Kumbra sales and yacht care in El Gouna.",
+    changefreq: "monthly",
+    priority: 0.8,
+    jsonLd: [
+      breadcrumbs([
+        ["Home", "/"],
+        ["Yacht financing", "/yacht-finance"],
+      ]),
+    ],
   },
   {
     path: "/services",

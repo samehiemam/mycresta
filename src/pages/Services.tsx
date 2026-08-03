@@ -66,12 +66,9 @@ export default function Services() {
               personal plans while keeping the yacht selection and ownership
               journey coordinated through one team.
             </p>
-            <a
-              className="button button--primary"
-              href="mailto:info@crestamarine.com?subject=Boat%20financing%20enquiry"
-            >
-              Discuss financing
-            </a>
+            <Link className="button button--primary" href="/yacht-finance">
+              Yacht financing
+            </Link>
           </div>
           <div className="financing-partner">
             <span>Financing partner</span>
