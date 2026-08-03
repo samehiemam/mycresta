@@ -21,6 +21,13 @@ import { useTitle } from "../lib/useTitle";
  * quarter and a fifth. Nothing here invents a rotation rule, a booking window
  * or a cost split, because none is defined yet; the page describes the
  * principles it works to and leaves the mechanics to the conversation.
+ *
+ * Financing is framed as one of three ways to own rather than a footnote. It
+ * had been a single clause in the closing paragraph of a 555-word page, which
+ * is indistinguishable from not mentioning it: a reader deciding how to pay
+ * had to reach the bottom to learn the option existed. It now appears in the
+ * headline and the first paragraph, and again where the reader is actually
+ * weighing the choice.
  */
 export default function Ownership() {
   useTitle("Yacht ownership & co-ownership | Cresta Marine");
@@ -31,33 +38,41 @@ export default function Ownership() {
       <main>
         <section className="page-intro page-intro--wide" data-reveal>
           <span className="eyebrow">Ownership</span>
-          <h1>Own it outright, or own the time you use.</h1>
+          <h1>Own it outright. Finance it. Or own the time you use.</h1>
           <p>
-            A Kumbra can be yours entirely, or shared with a small group who
-            want the same thing from the water. Either way Cresta Marine
-            handles the boat — berthing, servicing, cleaning and preparation —
-            and My Cresta keeps every owner looking at the same information.
+            Three ways to put a Kumbra on the water: buy it outright, spread
+            the cost with{" "}
+            <Link href="/yacht-finance">yacht financing</Link>, or take a share
+            of one boat alongside a few other owners. Cresta Marine looks after
+            the yacht whichever route you take — berthing, servicing, cleaning
+            and preparation — and My Cresta keeps every owner looking at the
+            same information.
           </p>
         </section>
 
         <section className="about-story" data-reveal>
           <div>
-            <span className="eyebrow">Choosing the model</span>
-            <h2>How much boat do you actually use?</h2>
+            <span className="eyebrow">Choosing how to buy</span>
+            <h2>How often will you really use it?</h2>
           </div>
           <div>
             <p>
-              Most boats spend the overwhelming majority of the year at their
-              berth. Full ownership makes sense when you want the boat
-              available on any day, kept exactly to your specification, with
-              nobody else&apos;s schedule to consider.
+              A boat spends more of the year at its berth than most owners
+              expect. Buying outright is right when you want yours available on
+              any day, kept to your specification, with nobody else&apos;s
+              plans to work around.
             </p>
             <p>
-              Co-ownership makes sense when you want the same boat and the same
-              standard for a fraction of the cost, and your use concentrates
-              into parts of the year. You buy a share of a specific yacht — not
-              access to a pool — and it is configured once, by the owners,
-              before it is built.
+              <Link href="/yacht-finance">Financing</Link> changes when you pay
+              rather than what you own: the boat is yours, with the cost spread
+              over up to five years through our partner Contact, subject to
+              approval.
+            </p>
+            <p>
+              A share suits owners whose time on the water falls into
+              particular months. You buy part of one specific yacht — not
+              access to a pool — and the owners agree the specification
+              together before it is built.
             </p>
           </div>
         </section>
@@ -76,17 +91,17 @@ export default function Ownership() {
             <span>1/2</span>
             <h2>A half share</h2>
             <p>
-              Two owners, one yacht. The closest thing to full ownership, at
-              roughly half the capital and half the running cost, with time
-              divided between you.
+              Two owners, one yacht. The closest thing to owning it outright,
+              for roughly half the price and half the running costs, with the
+              year divided between you.
             </p>
           </article>
           <article>
             <span>1/4 · 1/5</span>
             <h2>A quarter or a fifth</h2>
             <p>
-              For owners whose boating concentrates into particular seasons or
-              weeks. The lowest cost of entry to a new Kumbra, kept to exactly
+              For owners who use a boat in particular seasons rather than all
+              year. The least expensive way into a new Kumbra, kept to exactly
               the same standard.
             </p>
           </article>
@@ -108,11 +123,11 @@ export default function Ownership() {
               the calendar is visible to everyone who shares the boat.
             </p>
             <p>
-              Costs are itemised against the boat rather than estimated —
-              berthing, insurance, servicing, cleaning, fuel and preparation —
-              and split according to each share. Every owner sees the same
-              ledger, so a bill is never a surprise and nobody has to keep
-              their own spreadsheet.
+              Every cost the boat incurs is recorded as it happens rather than
+              estimated — berthing, insurance, servicing, cleaning, fuel and
+              preparation — then split according to the size of each share.
+              All the owners see the same figures, so a bill is never a
+              surprise and nobody has to keep their own spreadsheet.
             </p>
             <p>
               Servicing, cleaning and trip preparation are requested through
@@ -152,10 +167,8 @@ export default function Ownership() {
             <h2>Start with the boat. We will handle the rest.</h2>
             <p>
               Configure the Kumbra you want and tell us how you intend to use
-              it. We will show you what full ownership and a share each look
-              like, including{" "}
-              <Link href="/yacht-finance">yacht financing</Link> where it
-              applies.
+              it. We will price it three ways — outright, financed and as a
+              share — so you can compare them side by side.
             </p>
           </div>
           <Link

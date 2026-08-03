@@ -283,7 +283,7 @@ export const routes: SeoRoute[] = [
     path: "/ownership",
     title: "Yacht ownership & co-ownership | Cresta Marine",
     description:
-      "Own a Kumbra outright or take a half, quarter or fifth share. Fair time allocation and itemised shared costs through My Cresta, with yacht care in El Gouna.",
+      "Own a Kumbra outright, finance it, or take a half, quarter or fifth share. Fair time allocation and itemised shared costs through My Cresta, with yacht care in El Gouna.",
     changefreq: "monthly",
     priority: 0.8,
     jsonLd: [
