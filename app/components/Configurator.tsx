@@ -136,7 +136,10 @@ type PriceList = {
  * The figures are never in the bundle. This request is the only way they reach
  * a browser, and the server decides on every call.
  */
-function usePriceList(model: ModelKey, configurationId?: string): PriceList | null {
+function usePriceList(
+  model: ModelKey,
+  configurationId?: string,
+): { list: PriceList | null; viewer: Viewer | null } {
   // The model is stored beside its figures rather than cleared on the way in.
   // Clearing meant a synchronous setState inside the effect, and stamping the
   // model makes the guarantee stronger anyway: a list is only ever returned for
@@ -145,6 +148,7 @@ function usePriceList(model: ModelKey, configurationId?: string): PriceList | nu
   const [fetched, setFetched] = useState<{ model: ModelKey; list: PriceList } | null>(
     null,
   );
+  const [viewer, setViewer] = useState<Viewer | null>(null);
 
   useEffect(() => {
     let live = true;
@@ -154,7 +158,9 @@ function usePriceList(model: ModelKey, configurationId?: string): PriceList | nu
     fetch(`/api/studio.php?${query}`, { credentials: "include" })
       .then((response) => (response.ok ? response.json() : null))
       .then((data) => {
-        if (live && data?.prices) setFetched({ model, list: data.prices as PriceList });
+        if (!live) return;
+        if (data?.prices) setFetched({ model, list: data.prices as PriceList });
+        if (data?.viewer) setViewer(data.viewer as Viewer);
       })
       .catch(() => {
         /* Offline or blocked: stay unpriced rather than half-priced. */
@@ -165,7 +171,10 @@ function usePriceList(model: ModelKey, configurationId?: string): PriceList | nu
     };
   }, [model, configurationId]);
 
-  return fetched?.model === model ? fetched.list : null;
+  return {
+    list: fetched?.model === model ? fetched.list : null,
+    viewer,
+  };
 }
 
 /**
@@ -204,6 +213,225 @@ function withPrices(
       };
     }),
   };
+}
+
+/** A prospect this session may attach a configuration to. */
+type Assignable = {
+  lead_id: string;
+  full_name: string;
+  email: string | null;
+  stage: string;
+  customer_id: string | null;
+};
+
+/** What this session may do here, as opposed to what it may see. */
+type Viewer = { signedIn: boolean; canAssign: boolean; canSaveTemplate: boolean };
+
+/**
+ * Naming and assignment, for staff and ambassadors.
+ *
+ * A visitor's save captures a lead; this one produces a record with a name a
+ * salesperson can find again and a customer it belongs to. The customer list
+ * is of leads rather than accounts, because most prospects never create one —
+ * so assigning to a customer and linking to a lead are the same act here.
+ *
+ * The picker is scoped on the server, so an ambassador is never sent a name
+ * outside their own pipeline, and the assignment is re-checked on save: the
+ * dropdown is client-side and therefore not evidence of anything.
+ */
+function StaffSave({
+  model,
+  selection,
+  canSaveTemplate,
+}: {
+  model: ModelKey;
+  selection: SavedSelection;
+  canSaveTemplate: boolean;
+}) {
+  const [open, setOpen] = useState(false);
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [leadId, setLeadId] = useState("");
+  const [creatingNew, setCreatingNew] = useState(false);
+  const [newName, setNewName] = useState("");
+  const [newEmail, setNewEmail] = useState("");
+  const [newPhone, setNewPhone] = useState("");
+  const [isTemplate, setIsTemplate] = useState(false);
+  const [people, setPeople] = useState<Assignable[]>([]);
+  const [state, setState] = useState<"idle" | "saving" | "saved" | "error">("idle");
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    fetch("/api/studio.php?action=assignable", { credentials: "include" })
+      .then((response) => (response.ok ? response.json() : null))
+      .then((data) => setPeople((data?.customers ?? []) as Assignable[]))
+      .catch(() => setPeople([]));
+  }, [open]);
+
+  async function save() {
+    if (name.trim() === "") {
+      setError("Give the configuration a name.");
+      return;
+    }
+    setState("saving");
+    setError(null);
+    try {
+      const response = await fetch("/api/studio.php?action=save-configuration", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          description,
+          model,
+          selection,
+          isTemplate,
+          leadId: creatingNew ? "" : leadId,
+          newCustomerName: creatingNew ? newName : "",
+          newCustomerEmail: creatingNew ? newEmail : "",
+          newCustomerPhone: creatingNew ? newPhone : "",
+        }),
+      });
+      const data = await response.json();
+      if (!response.ok || !data.ok) throw new Error(data.error ?? "Could not save.");
+      setState("saved");
+    } catch (caught) {
+      setState("error");
+      setError(caught instanceof Error ? caught.message : "Could not save.");
+    }
+  }
+
+  if (state === "saved") {
+    return (
+      <p className="build-save-note">
+        Saved as &ldquo;{name}&rdquo;
+        {isTemplate ? " as a template." : leadId || creatingNew ? " and assigned." : "."}{" "}
+        <a className="inline-link" href="/portal/builds">
+          All configurations
+        </a>
+      </p>
+    );
+  }
+
+  if (!open) {
+    return (
+      <button
+        className="button button--primary button--full"
+        type="button"
+        onClick={() => setOpen(true)}
+      >
+        Save configuration
+      </button>
+    );
+  }
+
+  return (
+    <div className="staff-save">
+      <label>
+        <span>Configuration name</span>
+        <input
+          value={name}
+          onChange={(event) => setName(event.target.value)}
+          placeholder="e.g. Gouna day trips — 3 × 300 hp"
+          maxLength={160}
+        />
+      </label>
+
+      <label>
+        <span>Description</span>
+        <textarea
+          value={description}
+          onChange={(event) => setDescription(event.target.value)}
+          placeholder="What this specification is good for, and who it suits."
+          maxLength={600}
+          rows={2}
+        />
+      </label>
+
+      {canSaveTemplate && (
+        <label className="staff-save-check">
+          <input
+            type="checkbox"
+            checked={isTemplate}
+            onChange={(event) => {
+              setIsTemplate(event.target.checked);
+              if (event.target.checked) {
+                setCreatingNew(false);
+                setLeadId("");
+              }
+            }}
+          />
+          <span>Save as a template to offer to customers</span>
+        </label>
+      )}
+
+      {!isTemplate && (
+        <>
+          <label>
+            <span>Customer</span>
+            <select
+              value={creatingNew ? "__new" : leadId}
+              onChange={(event) => {
+                const value = event.target.value;
+                setCreatingNew(value === "__new");
+                setLeadId(value === "__new" ? "" : value);
+              }}
+            >
+              <option value="">Not assigned yet</option>
+              {people.map((person) => (
+                <option key={person.lead_id} value={person.lead_id}>
+                  {person.full_name}
+                  {person.email ? ` — ${person.email}` : ""}
+                </option>
+              ))}
+              <option value="__new">+ New customer…</option>
+            </select>
+          </label>
+
+          {creatingNew && (
+            <div className="staff-save-new">
+              <label>
+                <span>Full name</span>
+                <input value={newName} onChange={(e) => setNewName(e.target.value)} />
+              </label>
+              <label>
+                <span>Email</span>
+                <input
+                  type="email"
+                  value={newEmail}
+                  onChange={(e) => setNewEmail(e.target.value)}
+                />
+              </label>
+              <label>
+                <span>Mobile</span>
+                <input value={newPhone} onChange={(e) => setNewPhone(e.target.value)} />
+              </label>
+              <small>
+                Creates a lead, owned by whoever registers them first.
+              </small>
+            </div>
+          )}
+        </>
+      )}
+
+      {error && <p className="staff-save-error">{error}</p>}
+
+      <div className="button-row">
+        <button
+          className="button button--primary"
+          type="button"
+          onClick={save}
+          disabled={state === "saving"}
+        >
+          {state === "saving" ? "Saving…" : "Save configuration"}
+        </button>
+        <button className="button button--outline" type="button" onClick={() => setOpen(false)}>
+          Cancel
+        </button>
+      </div>
+    </div>
+  );
 }
 
 export function Configurator({
@@ -272,8 +500,20 @@ export function Configurator({
   // whether they arrived, so there is no way to render a figure the session
   // was not given — the old boolean prop could be set independently of whether
   // the data was allowed, which is precisely how the leak stayed invisible.
-  const priceList = usePriceList(model, configurationId);
+  const { list: priceList, viewer } = usePriceList(model, configurationId);
   const prices = priceList !== null;
+
+  // Exactly what is needed to rebuild this boat later, and nothing derived:
+  // labels and figures are looked up again on replay so a saved record never
+  // preserves a price the reader is not entitled to see.
+  const savedSelection: SavedSelection = {
+    model,
+    engineId,
+    finishes,
+    equipment: selectedEquipment,
+    diamondStitching,
+    ownership,
+  };
   const current = useMemo(
     () => withPrices(modelOptions[model], priceList),
     [model, priceList],
@@ -947,7 +1187,15 @@ export function Configurator({
               </div>
             ) : null}
 
-            {!readOnly && (
+            {!readOnly && viewer?.canAssign && (
+              <StaffSave
+                model={model}
+                selection={savedSelection}
+                canSaveTemplate={viewer.canSaveTemplate}
+              />
+            )}
+
+            {!readOnly && !viewer?.canAssign && (
               <button
                 className="button button--primary button--full"
                 type="button"

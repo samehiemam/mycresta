@@ -7891,3 +7891,85 @@ p {
 .platform-section .inline-link:hover {
   color: var(--white);
 }
+
+/* Naming and assigning a configuration, for staff and ambassadors.
+ *
+ * Sits inside the summary card where the visitor's quote-request button is, so
+ * the panel inherits that column's width and needs no layout of its own. */
+.staff-save {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 8px;
+}
+
+.staff-save label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.staff-save label > span {
+  color: var(--warm-500);
+  font-family: "Jost", sans-serif;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.staff-save input,
+.staff-save select,
+.staff-save textarea {
+  background: var(--white);
+  border: 1px solid var(--warm-300);
+  border-radius: 8px;
+  color: var(--warm-900);
+  font-family: inherit;
+  /* 16px on phones or iOS Safari zooms the page the moment a field is
+     focused, which reads as the layout jumping. */
+  font-size: 16px;
+  padding: 11px 12px;
+  width: 100%;
+}
+
+.staff-save textarea { resize: vertical; }
+
+.staff-save input:focus-visible,
+.staff-save select:focus-visible,
+.staff-save textarea:focus-visible {
+  border-color: var(--teal-600);
+  outline: 2px solid var(--teal-100);
+}
+
+.staff-save-check {
+  align-items: center;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: auto 1fr;
+}
+
+.staff-save-check input { width: auto; }
+
+.staff-save-check span {
+  color: var(--warm-700);
+  font-size: 0.82rem;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+.staff-save-new {
+  border-left: 2px solid var(--teal-100);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-left: 14px;
+}
+
+.staff-save-new small { color: var(--warm-500); font-size: 0.72rem; }
+
+.staff-save-error {
+  color: var(--danger);
+  font-size: 0.82rem;
+  margin: 0;
+}

@@ -20,6 +20,7 @@ foreach ($libCandidates as $lib) {
         require_once $lib . '/pricing.php';
         require_once $lib . '/catalog.php';
         require_once $lib . '/configurations.php';
+        require_once $lib . '/leads.php';
         break;
     }
 }
@@ -34,7 +35,8 @@ $action = $_GET['action'] ?? '';
 
 // Reads are GET and need no CSRF; anything that changes state is a POST that
 // must carry the token.
-$writes = ['create', 'set-options', 'set-commercials', 'share', 'comment', 'set-build-shipping'];
+$writes = ['create', 'set-options', 'set-commercials', 'share', 'comment', 'set-build-shipping',
+           'save-configuration'];
 if (in_array($action, $writes, true)) {
     require_method('POST');
     require_csrf();
@@ -250,10 +252,141 @@ switch ($action) {
             $config = db_one('SELECT * FROM configurations WHERE id = ?', [$configId]);
         }
 
+        // The same call also answers what this session may *do* here, because
+        // the client needs both on mount and one round trip is enough. Staff
+        // and ambassadors get the naming and assignment panel; a visitor gets
+        // the quote request they had before.
+        $role = $viewer['role'] ?? '';
         json_out([
             'ok' => true,
             'prices' => configurator_prices($viewer, $modelKey, $config),
+            'viewer' => [
+                'signedIn' => (bool) $viewer,
+                'canAssign' => in_array($role, ['admin', 'employee', 'ambassador'], true),
+                'canSaveTemplate' => in_array($role, ['admin', 'employee'], true),
+            ],
         ]);
+    }
+
+    /**
+     * Customers a saved configuration may be assigned to.
+     *
+     * The list is of leads, not user accounts, because a prospect is a lead
+     * from the moment they are known and may never create an account —
+     * leads.customer_id is nullable for exactly that reason. Listing accounts
+     * would hide every prospect who has not signed up, which is most of them.
+     *
+     * It also makes "assign to a customer" and "link to a lead" one action
+     * rather than two that can disagree.
+     *
+     * Scoped in SQL, not filtered in the browser: an ambassador sees their own
+     * leads and nobody else's, so a name they may not see is never sent.
+     */
+    case 'assignable': {
+        $user = require_can('configurator', 'own');
+
+        $rows = can_see_all($user, 'pipeline')
+            ? db_all(
+                "SELECT id AS lead_id, full_name, email, stage, customer_id
+                   FROM leads
+                  WHERE stage <> 'closed_lost'
+               ORDER BY full_name LIMIT 500"
+            )
+            : db_all(
+                "SELECT id AS lead_id, full_name, email, stage, customer_id
+                   FROM leads
+                  WHERE ambassador_id = ? AND stage <> 'closed_lost'
+               ORDER BY full_name LIMIT 500",
+                [$user['id']]
+            );
+
+        json_out(['ok' => true, 'customers' => $rows]);
+    }
+
+    /**
+     * Saves a named configuration, optionally against a customer.
+     *
+     * Staff and ambassadors only — a visitor's route is still save-build,
+     * which captures a lead rather than a named record.
+     *
+     * A new customer is registered as a lead through lead_register() rather
+     * than inserted here, so first-to-register ownership applies exactly as it
+     * does everywhere else. Creating a prospect from the configurator must not
+     * be a side door around the rule that decides whose commission it is.
+     */
+    case 'save-configuration': {
+        $user = require_can('configurator', 'own');
+
+        $name = field($data, 'name', 160);
+        if ($name === '') {
+            fail('Give the configuration a name.', 422);
+        }
+        $modelKey = field($data, 'model', 8);
+        if (!in_array($modelKey, ['34', '36', '43'], true)) {
+            fail('Unknown model.', 422);
+        }
+
+        $leadId = field($data, 'leadId', 32) ?: null;
+
+        // A brand-new prospect, named right here in the panel.
+        $newName = field($data, 'newCustomerName', 255);
+        if ($leadId === null && $newName !== '') {
+            // Keys are lead_register()'s own, and `source` has to be one of
+            // LEAD_SOURCES or it is silently recorded as 'other'.
+            $lead = lead_register($user, [
+                'fullName' => $newName,
+                'email'    => field($data, 'newCustomerEmail'),
+                'phone'    => field($data, 'newCustomerPhone', 64),
+                'source'   => $user['role'] === 'ambassador' ? 'ambassador' : 'other',
+                'model'    => "kumbra-{$modelKey}",
+            ]);
+            $leadId = $lead['id'];
+        }
+
+        // An ambassador may only attach to a lead that is theirs. Checked here
+        // rather than trusted from the picker, which is client-side.
+        $sharedWith = null;
+        if ($leadId !== null) {
+            $lead = db_one('SELECT * FROM leads WHERE id = ?', [$leadId]);
+            if (!$lead) {
+                fail('That customer no longer exists.', 404);
+            }
+            if (!can_see_all($user, 'pipeline') && ($lead['ambassador_id'] ?? null) !== $user['id']) {
+                fail('That customer is not yours.', 403);
+            }
+            $sharedWith = $lead['customer_id'] ?: null;
+        }
+
+        $isTemplate = !empty($data['isTemplate']);
+        if ($isTemplate && !in_array($user['role'], ['admin', 'employee'], true)) {
+            fail('Only Cresta staff can save a template.', 403);
+        }
+
+        $id = new_id();
+        db_run(
+            'INSERT INTO configurations
+               (id, model_id, model_key, lead_id, created_by, ambassador_id, shared_with,
+                status, name, description, is_template, vat_rate, notes, created_at, updated_at)
+             VALUES (?, NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            [
+                $id, $modelKey, $leadId, $user['id'],
+                $user['role'] === 'ambassador' ? $user['id'] : null,
+                $sharedWith,
+                'draft',
+                $name,
+                mb_substr(trim((string) ($data['description'] ?? '')), 0, 600) ?: null,
+                $isTemplate ? 1 : 0,
+                (float) setting('vat_rate', '0.14'),
+                json_encode($data['selection'] ?? new stdClass(), JSON_UNESCAPED_UNICODE),
+                now(), now(),
+            ]
+        );
+
+        audit($user['id'], 'configuration_saved', 'configuration', $id, [
+            'model' => $modelKey, 'lead' => $leadId, 'template' => $isTemplate,
+        ]);
+
+        json_out(['ok' => true, 'id' => $id, 'leadId' => $leadId]);
     }
 
     // ------------------------------------------------- client-built quotes ---
