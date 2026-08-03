@@ -92,34 +92,20 @@ const localBusiness = {
 };
 
 /**
- * A boat, as a Product.
+ * Boats deliberately carry no `Product` markup.
  *
- * No `offers` block: the public site does not publish prices, and inventing
- * one to win a rich result would be a lie told to a search engine. Specs come
- * from the same data the page renders, so they cannot disagree with it.
+ * Product is only eligible for a rich result with `offers`, `review` or
+ * `aggregateRating`, and the public site publishes no prices — Search Console
+ * reported the boat pages as "1 invalid item" for exactly that reason. The
+ * options were to invent a price, which would be a lie told to a search
+ * engine, or to drop the type. Dropping it costs nothing: without a price
+ * there is no rich result either way, so the markup was buying a standing
+ * error in return for no benefit. The pages rank on their content, and the
+ * breadcrumbs below already validate.
+ *
+ * If starting prices are ever published, Product with a real `offers` block
+ * becomes worth adding back — that is the only thing that changes here.
  */
-const boatProduct = (boat: (typeof boats)[number]) => ({
-  "@context": "https://schema.org",
-  "@type": "Product",
-  "@id": `${SITE}/fleet/${boat.slug}#product`,
-  name: boat.name,
-  description: boat.description,
-  url: `${SITE}/fleet/${boat.slug}`,
-  image: absolute(boat.hero),
-  category: "Motor yacht",
-  brand: { "@type": "Brand", name: "Kumbra Yachts" },
-  manufacturer: { "@type": "Organization", name: "Kumbra Yachts" },
-  seller: { "@id": `${SITE}/#business` },
-  additionalProperty: [
-    ["Length overall", boat.length],
-    ["Beam", boat.beam],
-    ["Guest capacity", boat.capacity],
-    ["Maximum power", boat.power],
-    ["Top speed", boat.speed],
-    ["Accommodation", boat.cabins],
-  ].map(([name, value]) => ({ "@type": "PropertyValue", name, value })),
-});
-
 const breadcrumbs = (trail: Array<[string, string]>) => ({
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
@@ -233,7 +219,6 @@ export const routes: SeoRoute[] = [
     changefreq: "monthly",
     priority: 0.8,
     jsonLd: [
-      boatProduct(boat),
       breadcrumbs([
         ["Home", "/"],
         ["Fleet", "/fleet"],
