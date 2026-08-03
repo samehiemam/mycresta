@@ -8,6 +8,7 @@ import {
   finishLabels,
   finishOptions,
   modelOptions,
+  ModelConfiguration,
   ModelKey,
   upholsteryStitching,
   visualColour,
@@ -116,19 +117,109 @@ export type SavedSelection = {
   ownership: string;
 };
 
+/** What the server sends back, in minor units, when a session may see prices. */
+type PriceList = {
+  currency: string;
+  base: number | "on-request" | null;
+  engines: Record<string, number | "on-request">;
+  equipment: Record<string, number | "on-request">;
+};
+
+/**
+ * Fetches the price list for a model, if this session is allowed one.
+ *
+ * Returns null both while loading and when the answer is "not for you", and
+ * the caller treats those the same: an unpriced configurator. That is the
+ * normal state for most visitors rather than an error, so a refusal is a 200
+ * carrying `prices: null` and nothing is logged.
+ *
+ * The figures are never in the bundle. This request is the only way they reach
+ * a browser, and the server decides on every call.
+ */
+function usePriceList(model: ModelKey, configurationId?: string): PriceList | null {
+  // The model is stored beside its figures rather than cleared on the way in.
+  // Clearing meant a synchronous setState inside the effect, and stamping the
+  // model makes the guarantee stronger anyway: a list is only ever returned for
+  // the boat it was fetched for, so a 34 price can never be shown against a 43
+  // during the moment between switching model and the new figures arriving.
+  const [fetched, setFetched] = useState<{ model: ModelKey; list: PriceList } | null>(
+    null,
+  );
+
+  useEffect(() => {
+    let live = true;
+    const query = new URLSearchParams({ action: "price-list", model });
+    if (configurationId) query.set("configuration", configurationId);
+
+    fetch(`/api/studio.php?${query}`, { credentials: "include" })
+      .then((response) => (response.ok ? response.json() : null))
+      .then((data) => {
+        if (live && data?.prices) setFetched({ model, list: data.prices as PriceList });
+      })
+      .catch(() => {
+        /* Offline or blocked: stay unpriced rather than half-priced. */
+      });
+
+    return () => {
+      live = false;
+    };
+  }, [model, configurationId]);
+
+  return fetched?.model === model ? fetched.list : null;
+}
+
+/**
+ * Puts server prices back onto the option objects the UI already reads.
+ *
+ * The alternative was to thread a lookup through every price site in the
+ * render, which is the same change made forty times with forty chances to miss
+ * one — and a missed one shows a price to somebody who may not see it. Merging
+ * at the source means there is exactly one place where a figure can enter.
+ */
+function withPrices(
+  model: ModelConfiguration,
+  list: PriceList | null,
+): ModelConfiguration {
+  if (!list) return model;
+  return {
+    ...model,
+    basePrice: typeof list.base === "number" ? list.base / 100 : null,
+    engines: model.engines.map((engine) => ({
+      ...engine,
+      price:
+        typeof list.engines[engine.id] === "number"
+          ? (list.engines[engine.id] as number) / 100
+          : null,
+    })),
+    equipment: model.equipment.map((item) => {
+      const found = list.equipment[item.id];
+      return {
+        ...item,
+        price:
+          typeof found === "number"
+            ? found / 100
+            : found === "on-request"
+              ? ("on-request" as const)
+              : null,
+      };
+    }),
+  };
+}
+
 export function Configurator({
-  prices = false,
   readOnly = false,
   initial,
+  configurationId,
   shippingMinor = null,
   canEditShipping = false,
   onShippingChange,
 }: {
-  /** Reveals price-list figures. Off for the public site, on inside My Cresta. */
-  prices?: boolean;
   /** Replaying someone else's build: same view, nothing editable. */
   readOnly?: boolean;
   initial?: SavedSelection;
+  /** Widens price visibility to an approved quote's recipient, for this one
+   *  configuration. The server still decides; this only says which. */
+  configurationId?: string;
   /** Shipping and handling in minor units, or null while unpriced. */
   shippingMinor?: number | null;
   /** FR-CFG: only a Founder may price the freight. */
@@ -177,7 +268,16 @@ export function Configurator({
     "idle",
   );
 
-  const current = modelOptions[model];
+  // Prices arrive from the server or not at all. `prices` is derived from
+  // whether they arrived, so there is no way to render a figure the session
+  // was not given — the old boolean prop could be set independently of whether
+  // the data was allowed, which is precisely how the leak stayed invisible.
+  const priceList = usePriceList(model, configurationId);
+  const prices = priceList !== null;
+  const current = useMemo(
+    () => withPrices(modelOptions[model], priceList),
+    [model, priceList],
+  );
   const engine =
     current.engines.find((item) => item.id === engineId) ?? current.engines[0];
 
@@ -319,9 +419,11 @@ export function Configurator({
     (item) => item.price === "on-request",
   ).length + (diamondStitching ? 1 : 0);
 
+  // Zero when unpriced, which is inert: every figure derived from it is only
+  // rendered behind `prices`, and `prices` is false in exactly that case.
   const privateEstimate =
-    current.basePrice +
-    engine.price +
+    (current.basePrice ?? 0) +
+    (engine.price ?? 0) +
     selectedOptions.reduce(
       (total, item) => total + (typeof item.price === "number" ? item.price : 0),
       0,
@@ -561,7 +663,9 @@ export function Configurator({
                       {item.label.split(" — ")[0]}
                     </strong>
                     <small>{item.family}</small>
-                    {prices && <em className="option-price">{eur(item.price)}</em>}
+                    {prices && item.price !== null && (
+                      <em className="option-price">{eur(item.price)}</em>
+                    )}
                   </span>
                 </label>
               ))}

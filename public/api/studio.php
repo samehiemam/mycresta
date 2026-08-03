@@ -222,6 +222,40 @@ switch ($action) {
         ]);
     }
 
+    /**
+     * The configurator's price list for one model.
+     *
+     * Deliberately answers 200 with prices: null rather than 403 when the
+     * caller may not see figures. An unpriced configurator is the normal,
+     * expected state for most visitors — it is not an error, and treating it
+     * as one would mean the public page logging failures on every load.
+     *
+     * The check is configurator_prices() itself: there is no path here that
+     * reads a price before deciding whether the caller may have it.
+     */
+    case 'price-list': {
+        $modelKey = $param('model', 8);
+        if (!in_array($modelKey, ['34', '36', '43'], true)) {
+            fail('Unknown model.', 422);
+        }
+
+        $viewer = current_user();
+
+        // A configuration id is optional, and only ever widens visibility for
+        // that one configuration — an approved quote shown to the customer it
+        // was shared with.
+        $config = null;
+        $configId = $param('configuration', 32);
+        if ($configId !== '') {
+            $config = db_one('SELECT * FROM configurations WHERE id = ?', [$configId]);
+        }
+
+        json_out([
+            'ok' => true,
+            'prices' => configurator_prices($viewer, $modelKey, $config),
+        ]);
+    }
+
     // ------------------------------------------------- client-built quotes ---
     case 'save-build': {
         // Deliberately open: a visitor builds a boat before they have an

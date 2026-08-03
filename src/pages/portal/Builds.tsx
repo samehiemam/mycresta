@@ -180,9 +180,12 @@ export function BuildDetail() {
         </div>
       </div>
       {saveNote && <p className="build-save-note">{saveNote}</p>}
-      {/* The customer's own view, replayed, with the price list revealed. */}
+      {/* The customer's own view, replayed. Prices appear if the server grants
+          them to this session — for staff, or for the customer this quote was
+          approved and shared with. Passing the id is what lets it check the
+          second case; the component cannot decide this for itself. */}
       <Configurator
-        prices
+        configurationId={id}
         readOnly
         initial={selection}
         shippingMinor={shipping}
