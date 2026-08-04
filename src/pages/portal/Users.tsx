@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { SiteHeader } from "../../../app/components/SiteHeader";
 import { SiteFooter } from "../../../app/components/SiteFooter";
+import { PortalNav } from "./PortalLayout";
+import { useSearchParams } from "react-router-dom";
 import { useAuth } from "../../lib/auth";
 import { useTitle } from "../../lib/useTitle";
 import { emailProblem, phoneProblem } from "../../lib/validate";
@@ -17,12 +19,48 @@ type AdminUser = {
   scopes: string[];
   emailVerified: boolean;
   hasPassword: boolean;
+  canSeePrices: boolean;
+  pricesGrantedAt: string | null;
   otpPending: boolean;
   lastLoginAt: string | null;
   createdAt: string;
 };
 
 const STATUSES = ["pending", "approved", "rejected", "disabled"] as const;
+
+/**
+ * Whether this person may see prices.
+ *
+ * A Founder always can, and it cannot be taken away from them — showing a
+ * switch that refuses to move would be worse than showing none, so their row
+ * states the fact instead.
+ *
+ * Everyone else is off until switched on, one account at a time. That is the
+ * whole point of the grant: it is not "ambassadors can see prices", it is
+ * "this ambassador can".
+ */
+function PriceToggle({
+  user,
+  onChange,
+}: {
+  user: AdminUser;
+  onChange: (user: AdminUser, allowed: boolean) => void;
+}) {
+  if (user.role === "admin") {
+    return <span className="user-flag is-ok">always</span>;
+  }
+
+  return (
+    <label className="price-toggle">
+      <input
+        type="checkbox"
+        checked={user.canSeePrices}
+        onChange={(event) => onChange(user, event.target.checked)}
+      />
+      <span>{user.canSeePrices ? "Can see prices" : "Hidden"}</span>
+    </label>
+  );
+}
 
 /** Turns a role plus its scopes into the job title people actually use. */
 function describe(user: AdminUser): string {
@@ -78,6 +116,18 @@ export function Users() {
     load().catch((caught: Error) => setError(caught.message));
   }, [load]);
 
+  /**
+   * An optional ?role= filter, which is how the Ambassadors entry in the
+   * navigation reaches this page. Filtering here rather than in a second
+   * endpoint keeps one source of truth for what an account is: the same row,
+   * the same controls, just fewer of them.
+   */
+  const [params, setParams] = useSearchParams();
+  const roleFilter = params.get("role");
+  const shown = roleFilter
+    ? (users ?? []).filter((u) => u.role === roleFilter)
+    : users ?? [];
+
   async function run(id: string, fn: () => Promise<unknown>, message: string) {
     setBusy(id);
     setError(null);
@@ -93,17 +143,55 @@ export function Users() {
     }
   }
 
+  /**
+   * Grants or revokes price visibility for one account.
+   *
+   * Sent on its own rather than folded into the row's other edits, because the
+   * server treats it separately: it is Founder-only and it records who granted
+   * it and when, which a bulk save would lose.
+   */
+  async function setPrices(user: AdminUser, allowed: boolean) {
+    await run(
+      user.id,
+      () => api("users", "update", { id: user.id, canSeePrices: allowed }),
+      allowed
+        ? `${user.fullName} can now see prices.`
+        : `Prices hidden from ${user.fullName}.`,
+    );
+  }
+
   return (
     <>
       <SiteHeader />
       <main className="portal-page">
+        <PortalNav />
         <span className="eyebrow">My Cresta</span>
-        <h1>Users</h1>
+        <h1>{roleFilter === "ambassador" ? "Ambassadors" : "People"}</h1>
         <p className="portal-intro">
-          Everyone with access to My Cresta. Passwords are never set here — a
-          new account, or a reset, sends a one-time code to that person so they
-          choose their own.
+          {roleFilter === "ambassador"
+            ? "Everyone introducing clients to Cresta. Switch price visibility on for an ambassador and the configurator shows them figures."
+            : "Everyone with access to My Cresta. Passwords are never set here — a new account, or a reset, sends a one-time code to that person so they choose their own."}
         </p>
+
+        {/* Says out loud that the list is filtered, and offers the way out.
+            A filtered list that looks complete is how somebody concludes an
+            account was deleted. */}
+        {roleFilter && (
+          <p className="users-filter">
+            Showing {shown.length}{" "}
+            {roleFilter === "ambassador" ? "ambassador" : roleFilter}
+            {shown.length === 1 ? "" : "s"} of {(users ?? []).length} accounts.
+            <button
+              type="button"
+              onClick={() => {
+                params.delete("role");
+                setParams(params, { replace: true });
+              }}
+            >
+              Show everyone
+            </button>
+          </p>
+        )}
 
         {error && <p className="form-error">{error}</p>}
         {notice && <p className="portal-notice">{notice}</p>}
@@ -116,7 +204,11 @@ export function Users() {
           >
             {adding ? "Cancel" : "Add a user"}
           </button>
-          <span>{users?.length ?? 0} accounts</span>
+          {/* Counts what is on screen. Showing the unfiltered total beside a
+              filtered list invites the reader to conclude accounts vanished. */}
+          <span>
+            {shown.length} {shown.length === 1 ? "account" : "accounts"}
+          </span>
         </div>
 
         {adding && (
@@ -140,13 +232,14 @@ export function Users() {
                 <th>Name</th>
                 <th>Role</th>
                 <th>Status</th>
+                <th>Prices</th>
                 <th>Sign-in</th>
                 <th>Last seen</th>
                 <th />
               </tr>
             </thead>
             <tbody>
-              {users.map((u) => (
+              {shown.map((u) => (
                 <>
                   <tr key={u.id} className={u.id === me ? "is-me" : undefined}>
                     <td>
@@ -163,6 +256,9 @@ export function Users() {
                     <td>
                       <span className={`user-status is-${u.status}`}>{u.status}</span>
                       {u.id === me && <small>you</small>}
+                    </td>
+                    <td>
+                      <PriceToggle user={u} onChange={setPrices} />
                     </td>
                     <td>
                       {/* An account with no password cannot be signed into yet;
@@ -203,7 +299,7 @@ export function Users() {
                   </tr>
                   {expanded === u.id && (
                     <tr className="users-edit-row" key={`${u.id}-edit`}>
-                      <td colSpan={6}>
+                      <td colSpan={7}>
                         <EditUser
                           user={u}
                           roles={roles}

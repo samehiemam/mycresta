@@ -2,6 +2,7 @@ import { Navigate } from "react-router-dom";
 import Link from "next/link";
 import { SiteHeader } from "../../../app/components/SiteHeader";
 import { SiteFooter } from "../../../app/components/SiteFooter";
+import { PortalNav } from "./PortalLayout";
 import { useEffect, useState } from "react";
 import { useAuth, roleHome, type Role } from "../../lib/auth";
 import { useTitle } from "../../lib/useTitle";
@@ -89,6 +90,7 @@ function PortalShell({
     <>
       <SiteHeader />
       <main className="portal-page">
+        <PortalNav />
         <header className="portal-page-head">
           <div>
             <span className="eyebrow">My Cresta</span>

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { SiteHeader } from "../../../app/components/SiteHeader";
 import { SiteFooter } from "../../../app/components/SiteFooter";
+import { PortalNav } from "./PortalLayout";
 import { useAuth, type PortalUser, type Role } from "../../lib/auth";
 import { useTitle } from "../../lib/useTitle";
 
@@ -51,6 +52,7 @@ export default function Accounts() {
     <>
       <SiteHeader />
       <main className="portal-page">
+        <PortalNav />
         <header className="portal-page-head">
           <div>
             <span className="eyebrow">Cresta team</span>

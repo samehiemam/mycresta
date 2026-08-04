@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { SiteHeader } from "../../../app/components/SiteHeader";
 import { SiteFooter } from "../../../app/components/SiteFooter";
+import { PortalNav } from "./PortalLayout";
 import { useAuth } from "../../lib/auth";
 import { useTitle } from "../../lib/useTitle";
 import { emailProblem, phoneProblem } from "../../lib/validate";
@@ -82,6 +83,7 @@ export function Leads() {
     <>
       <SiteHeader />
       <main className="portal-page">
+        <PortalNav />
         <span className="eyebrow">My Cresta</span>
         <h1>Leads and deals</h1>
         <p className="portal-intro">

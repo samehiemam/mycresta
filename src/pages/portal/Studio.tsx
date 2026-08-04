@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import Link from "next/link";
 import { SiteHeader } from "../../../app/components/SiteHeader";
 import { SiteFooter } from "../../../app/components/SiteFooter";
+import { PortalNav } from "./PortalLayout";
 import { useAuth } from "../../lib/auth";
 import { useTitle } from "../../lib/useTitle";
 
@@ -98,6 +99,7 @@ export function StudioModels() {
     <>
       <SiteHeader />
       <main className="portal-page">
+        <PortalNav />
         <span className="eyebrow">Cresta Studio</span>
         <h1>Build a configuration</h1>
         {error && <p className="form-error">{error}</p>}
@@ -227,6 +229,7 @@ export function StudioBuilder() {
       <>
         <SiteHeader />
         <main className="portal-page">
+        <PortalNav />
           <h1>Configuration unavailable</h1>
           <p className="form-error">{error}</p>
           <Link className="button button--outline" href="/portal/studio">
@@ -243,6 +246,7 @@ export function StudioBuilder() {
       <>
         <SiteHeader />
         <main className="portal-page">
+        <PortalNav />
           <p className="portal-loading">Loading…</p>
         </main>
         <SiteFooter />

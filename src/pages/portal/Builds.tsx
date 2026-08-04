@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import Link from "next/link";
 import { SiteHeader } from "../../../app/components/SiteHeader";
 import { SiteFooter } from "../../../app/components/SiteFooter";
+import { PortalNav } from "./PortalLayout";
 import { Configurator, type SavedSelection } from "../../../app/components/Configurator";
 import type { ModelKey } from "../../../app/configurator-data";
 import { useAuth } from "../../lib/auth";
@@ -40,6 +41,7 @@ export function Builds() {
     <>
       <SiteHeader />
       <main className="portal-page">
+        <PortalNav />
         <span className="eyebrow">My Cresta</span>
         <h1>Client configurations</h1>
         <p className="portal-intro">
@@ -141,6 +143,7 @@ export function BuildDetail() {
       <>
         <SiteHeader />
         <main className="portal-page">
+        <PortalNav />
           <h1>Configuration unavailable</h1>
           <p className="form-error">{error}</p>
           <Link className="button button--outline" href="/portal/builds">
@@ -157,6 +160,7 @@ export function BuildDetail() {
       <>
         <SiteHeader />
         <main className="portal-page">
+        <PortalNav />
           <p className="portal-loading">Loading the configuration…</p>
         </main>
         <SiteFooter />

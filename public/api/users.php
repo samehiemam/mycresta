@@ -70,6 +70,11 @@ function admin_user_row(array $u): array
             'scope'
         ),
         'emailVerified' => $u['email_verified_at'] !== null,
+        // Price visibility is a grant on the account, not a role, so it has to
+        // be reported per person — a Founder cannot decide who to switch on
+        // without seeing who already is.
+        'canSeePrices'  => (bool) ($u['can_see_prices'] ?? false),
+        'pricesGrantedAt' => $u['prices_granted_at'] ?? null,
         'hasPassword'   => !empty($u['password_hash']),
         'lastLoginAt'   => $u['last_login_at'],
         'createdAt'     => $u['created_at'],
@@ -181,6 +186,14 @@ switch ($action) {
                     [$id, $scope, $admin['id'], now()]
                 );
             }
+        }
+
+        // Price visibility is deliberately a separate call rather than another
+        // column in the UPDATE above: it is Founder-only, while the rest of
+        // this action is open to anyone who can reach the users page, and it
+        // records who granted it and when.
+        if (array_key_exists('canSeePrices', $data)) {
+            set_price_visibility($admin, $id, (bool) $data['canSeePrices']);
         }
 
         // A disabled account should not stay signed in on whatever it left open.

@@ -7979,3 +7979,92 @@ p {
   font-size: 0.82rem;
   margin: 0;
 }
+
+
+/* Navigation between the signed-in pages.
+ *
+ * A row rather than a rail: the portal pages each own their layout, and a bar
+ * slots into all of them without any being rebuilt. It scrolls sideways on a
+ * phone instead of wrapping, so the row stays one line and the page never
+ * grows a horizontal scrollbar of its own. */
+.portal-nav {
+  border-bottom: 1px solid var(--warm-200);
+  display: flex;
+  gap: 2px;
+  margin: 0 0 30px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  scrollbar-width: thin;
+}
+
+.portal-nav a {
+  border-bottom: 2px solid transparent;
+  color: var(--warm-500);
+  font-family: "Jost", sans-serif;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  padding: 10px 14px;
+  transition: color 0.15s ease, border-color 0.15s ease;
+  white-space: nowrap;
+}
+
+.portal-nav a:hover {
+  color: var(--teal-700);
+}
+
+.portal-nav a.is-active {
+  border-bottom-color: var(--teal-600);
+  color: var(--navy-800);
+}
+
+.portal-nav a:focus-visible {
+  border-radius: 4px;
+  outline: 2px solid var(--teal-600);
+  outline-offset: -2px;
+}
+
+/* Price visibility, in the users table. */
+.price-toggle {
+  align-items: center;
+  cursor: pointer;
+  display: inline-flex;
+  gap: 8px;
+}
+
+.price-toggle input {
+  height: 16px;
+  width: 16px;
+}
+
+.price-toggle span {
+  color: var(--warm-700);
+  font-size: 0.74rem;
+  white-space: nowrap;
+}
+
+/* States plainly that the people list is filtered, with the way back. */
+.users-filter {
+  align-items: center;
+  background: var(--teal-100);
+  border-radius: 6px;
+  color: var(--teal-900);
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 0.8rem;
+  gap: 10px;
+  margin: 0 0 20px;
+  padding: 10px 14px;
+}
+
+.users-filter button {
+  background: transparent;
+  border: 0;
+  color: var(--teal-700);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.8rem;
+  padding: 0;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
