@@ -21,6 +21,7 @@ type AdminUser = {
   hasPassword: boolean;
   canSeePrices: boolean;
   pricesGrantedAt: string | null;
+  phones: { id: string; label: string; phone: string; note: string | null }[];
   otpPending: boolean;
   lastLoginAt: string | null;
   createdAt: string;
@@ -320,6 +321,20 @@ export function Users() {
                               `${u.fullName} deleted.`,
                             )
                           }
+                          onAddPhone={(phone, label) =>
+                            run(
+                              u.id,
+                              () => api("users", "add-phone", { id: u.id, phone, label }),
+                              "Number added.",
+                            )
+                          }
+                          onRemovePhone={(phoneId) =>
+                            run(
+                              u.id,
+                              () => api("users", "remove-phone", { phoneId }),
+                              "Number removed.",
+                            )
+                          }
                         />
                       </td>
                     </tr>
@@ -443,6 +458,82 @@ function AddUser({
   );
 }
 
+/**
+ * Extra telephone numbers held against one person.
+ *
+ * Saved as they are added rather than with the rest of the form: a number is a
+ * row of its own on the server, and batching them into the row's save would
+ * mean inventing a diff — added, removed, unchanged — for no benefit.
+ *
+ * The main number stays in the field above. This is for the second mobile, the
+ * WhatsApp line that is not the same number, and the office.
+ */
+function PhoneBook({
+  phones,
+  onAdd,
+  onRemove,
+  busy,
+}: {
+  phones: { id: string; label: string; phone: string; note: string | null }[];
+  onAdd: (phone: string, label: string) => void;
+  onRemove: (id: string) => void;
+  busy: boolean;
+}) {
+  const [value, setValue] = useState("");
+  const [label, setLabel] = useState("mobile");
+
+  return (
+    <fieldset className="phone-book">
+      <legend>Other numbers</legend>
+
+      {phones.length > 0 && (
+        <ul>
+          {phones.map((p) => (
+            <li key={p.id}>
+              <span className="phone-label">{p.label}</span>
+              <span className="phone-number">{p.phone}</span>
+              <button
+                type="button"
+                disabled={busy}
+                onClick={() => onRemove(p.id)}
+                aria-label={`Remove ${p.phone}`}
+              >
+                Remove
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      <div className="phone-add">
+        <select value={label} onChange={(e) => setLabel(e.target.value)}>
+          <option value="mobile">Mobile</option>
+          <option value="whatsapp">WhatsApp</option>
+          <option value="office">Office</option>
+          <option value="home">Home</option>
+          <option value="other">Other</option>
+        </select>
+        <input
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          placeholder="+20 100 000 0000"
+        />
+        <button
+          className="button button--outline"
+          type="button"
+          disabled={busy || value.trim() === ""}
+          onClick={() => {
+            onAdd(value, label);
+            setValue("");
+          }}
+        >
+          Add number
+        </button>
+      </div>
+    </fieldset>
+  );
+}
+
 function EditUser({
   user,
   roles,
@@ -451,6 +542,8 @@ function EditUser({
   busy,
   onSave,
   onDelete,
+  onAddPhone,
+  onRemovePhone,
 }: {
   user: AdminUser;
   roles: string[];
@@ -459,15 +552,50 @@ function EditUser({
   busy: boolean;
   onSave: (values: Record<string, unknown>) => void;
   onDelete: () => void;
+  onAddPhone: (phone: string, label: string) => void;
+  onRemovePhone: (phoneId: string) => void;
 }) {
+  const [fullName, setFullName] = useState(user.fullName);
+  const [email, setEmail] = useState(user.email);
+  const [phone, setPhone] = useState(user.phone);
+  const [company, setCompany] = useState(user.company ?? "");
   const [role, setRole] = useState(user.role);
   const [status, setStatus] = useState<string>(user.status);
   const [chosen, setChosen] = useState<string[]>(user.scopes);
   const [confirming, setConfirming] = useState(false);
 
+  // Caught here as well as on the server so a typo is answered immediately
+  // rather than after a round trip.
+  const problem = emailProblem(email) ?? (fullName.trim() === "" ? "A name is required." : null);
+
   return (
     <div className="user-edit">
       <div className="user-edit-fields">
+        <label>
+          Full name
+          <input value={fullName} onChange={(e) => setFullName(e.target.value)} />
+        </label>
+        <label>
+          Email
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <small>This is the address they sign in with.</small>
+        </label>
+        <label>
+          Main telephone
+          <input value={phone} onChange={(e) => setPhone(e.target.value)} />
+        </label>
+        <label>
+          Company
+          <input
+            value={company}
+            onChange={(e) => setCompany(e.target.value)}
+            placeholder="Optional"
+          />
+        </label>
         <label>
           Role
           <select value={role} onChange={(e) => setRole(e.target.value)}>
@@ -509,12 +637,23 @@ function EditUser({
         )}
       </div>
 
+      <PhoneBook
+        phones={user.phones ?? []}
+        busy={busy}
+        onAdd={onAddPhone}
+        onRemove={onRemovePhone}
+      />
+
+      {problem && <p className="form-error">{problem}</p>}
+
       <div className="user-edit-actions">
         <button
           className="button button--primary"
           type="button"
-          disabled={busy}
-          onClick={() => onSave({ role, status, scopes: chosen })}
+          disabled={busy || problem !== null}
+          onClick={() =>
+            onSave({ fullName, email, phone, company, role, status, scopes: chosen })
+          }
         >
           Save changes
         </button>

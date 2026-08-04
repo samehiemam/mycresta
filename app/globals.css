@@ -8204,3 +8204,90 @@ a.stat:focus-visible { outline: 2px solid var(--teal-600); outline-offset: -2px;
 }
 
 .founder-stats .stat--attention .stat-v { color: var(--navy-900); }
+
+/* Extra telephone numbers inside the user edit row. */
+.phone-book {
+  border: 1px solid var(--warm-200);
+  border-radius: 8px;
+  margin: 16px 0 0;
+  padding: 12px 14px 14px;
+}
+
+.phone-book legend {
+  color: var(--warm-500);
+  font-family: "Jost", sans-serif;
+  font-size: 0.64rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  padding: 0 6px;
+  text-transform: uppercase;
+}
+
+.phone-book ul {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  list-style: none;
+  margin: 0 0 12px;
+  padding: 0;
+}
+
+.phone-book li {
+  align-items: center;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 84px 1fr auto;
+}
+
+.phone-book .phone-label {
+  color: var(--teal-700);
+  font-family: "Jost", sans-serif;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.phone-book .phone-number {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.8rem;
+}
+
+.phone-book li button {
+  background: transparent;
+  border: 0;
+  color: var(--danger);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.72rem;
+  padding: 2px 4px;
+  text-decoration: underline;
+}
+
+.phone-add {
+  display: grid;
+  gap: 8px;
+  /* The label is a fixed width so the number field gets the room; on a phone
+     the whole thing stacks rather than squeezing three controls onto a line. */
+  grid-template-columns: 120px minmax(0, 1fr) auto;
+}
+
+.phone-add select,
+.phone-add input {
+  border: 1px solid var(--warm-300);
+  border-radius: 6px;
+  /* 16px, or iOS Safari zooms the page the moment the field takes focus. */
+  font-family: inherit;
+  font-size: 16px;
+  padding: 9px 10px;
+  width: 100%;
+}
+
+@media (max-width: 620px) {
+  .phone-add {
+    grid-template-columns: 1fr;
+  }
+  .phone-book li {
+    grid-template-columns: 72px 1fr auto;
+  }
+}

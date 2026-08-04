@@ -74,6 +74,7 @@ function admin_user_row(array $u): array
         // be reported per person — a Founder cannot decide who to switch on
         // without seeing who already is.
         'canSeePrices'  => (bool) ($u['can_see_prices'] ?? false),
+        'phones'        => contact_phones('user', $u['id']),
         'pricesGrantedAt' => $u['prices_granted_at'] ?? null,
         'hasPassword'   => !empty($u['password_hash']),
         'lastLoginAt'   => $u['last_login_at'],
@@ -169,14 +170,37 @@ switch ($action) {
             fail('This is the last active admin. Promote someone else first.', 409);
         }
 
+        // The email address is what the account signs in with, so a change has
+        // to be unique or the next sign-in is ambiguous.
+        $email = field($data, 'email') !== ''
+            ? normalise_email(field($data, 'email'))
+            : $target['email'];
+        if ($email !== $target['email']) {
+            $clash = find_user_by_email($email);
+            if ($clash && $clash['id'] !== $id) {
+                fail('Another account already uses that email address.', 409);
+            }
+        }
+
         db_run(
-            'UPDATE users SET full_name = ?, phone = ?, role = ?, status = ?, updated_at = ? WHERE id = ?',
+            'UPDATE users
+                SET full_name = ?, email = ?, phone = ?, company = ?, role = ?, status = ?, updated_at = ?
+              WHERE id = ?',
             [
                 field($data, 'fullName') ?: $target['full_name'],
+                $email,
                 normalise_phone(field($data, 'phone', 32)) ?: $target['phone'],
+                // Explicit empty clears it; a missing key leaves it alone.
+                array_key_exists('company', $data)
+                    ? (field($data, 'company') ?: null)
+                    : $target['company'],
                 $role, $status, now(), $id,
             ]
         );
+
+        // email_verified_at is deliberately left alone. is_active() requires it,
+        // so clearing it on an address change would lock the account out — the
+        // Founder making the change is the assertion that the address is right.
 
         if (array_key_exists('scopes', $data)) {
             db_run('DELETE FROM user_scopes WHERE user_id = ?', [$id]);
@@ -207,6 +231,20 @@ switch ($action) {
         ]);
 
         json_out(['ok' => true, 'user' => admin_user_row(find_user($id))]);
+    }
+
+    case 'add-phone': {
+        $id = field($data, 'id', 32);
+        json_out(['ok' => true, 'phones' => contact_phone_add(
+            $admin, 'user', $id,
+            field($data, 'phone', 64),
+            field($data, 'label', 16) ?: 'mobile',
+            field($data, 'note', 120) ?: null
+        )]);
+    }
+
+    case 'remove-phone': {
+        json_out(['ok' => true, 'phones' => contact_phone_remove($admin, field($data, 'phoneId', 32))]);
     }
 
     case 'send-code': {

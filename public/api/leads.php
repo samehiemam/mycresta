@@ -20,6 +20,7 @@ foreach ($libCandidates as $lib) {
         require_once $lib . '/configurations.php';
         require_once $lib . '/commissions.php';
         require_once $lib . '/leads.php';
+        require_once $lib . '/contacts.php';
         break;
     }
 }
@@ -112,6 +113,10 @@ switch ($action) {
         json_out([
             'ok'       => true,
             'lead'     => lead_row($full),
+            'phones'   => contact_phones('lead', $lead['id']),
+            // So the screen knows whether to render an edit form at all rather
+            // than offering one that the save would refuse.
+            'canEdit'  => can_edit_contact($user, 'lead', $lead['id']),
             'notes'    => $full['notes'],
             'events'   => db_all(
                 'SELECT e.kind, e.body, e.from_stage, e.to_stage, e.due_at, e.done_at, e.created_at,
@@ -162,6 +167,32 @@ switch ($action) {
         lead_log($lead['id'], $user['id'], 'note', mb_substr($body, 0, 4000), null, null,
             field($data, 'dueAt', 32) ?: null);
         json_out(['ok' => true]);
+    }
+
+    /**
+     * Corrects a lead's own details: the name and the ways to reach them.
+     *
+     * Scoped in contacts.php rather than here — an ambassador reaches the leads
+     * they own and no others, including house leads, which belong to Cresta
+     * rather than to whoever happens to open the page.
+     */
+    case 'update': {
+        $updated = lead_update_contact($user, field($data, 'id', 32), $data);
+        json_out(['ok' => true, 'lead' => $updated]);
+    }
+
+    case 'add-phone': {
+        $id = field($data, 'id', 32);
+        json_out(['ok' => true, 'phones' => contact_phone_add(
+            $user, 'lead', $id,
+            field($data, 'phone', 64),
+            field($data, 'label', 16) ?: 'mobile',
+            field($data, 'note', 120) ?: null
+        )]);
+    }
+
+    case 'remove-phone': {
+        json_out(['ok' => true, 'phones' => contact_phone_remove($user, field($data, 'phoneId', 32))]);
     }
 
     case 'reassign': {
