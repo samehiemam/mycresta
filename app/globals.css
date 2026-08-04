@@ -8094,3 +8094,13 @@ p {
     font-size: clamp(1.85rem, 8.5vw, 3.1rem);
   }
 }
+
+/* The hero kicker.
+ *
+ * Larger than the eyebrows elsewhere because it is no longer a label above the
+ * real line — it carries half the proposition, and at 0.72rem it read as a
+ * caption to the headline rather than the first half of a sentence. */
+.home-hero-copy .eyebrow {
+  font-size: clamp(0.82rem, 1.1vw, 0.95rem);
+  letter-spacing: 0.15em;
+}

@@ -38,19 +38,15 @@ export default function Home() {
               opacity: heroFade,
             }}
           >
+            {/* The proposition now leads, in both tiers: the kicker names what
+                is different about these boats and the headline shows it. The
+                brand line still sits in the page title, the footer and the
+                share card, so nothing is lost by giving the hero to the idea
+                that actually sells. */}
             <span className="eyebrow eyebrow--light">
-              Peak Boating Experience
+              Beyond the day trip
             </span>
-            {/* The eyebrow above carries the brand; the headline carries the
-                proposition. Two tiers rather than one, because "Peak Boating
-                Experience" says who we are and nothing about what the boats
-                do — and the previous headline repeated the button beneath it
-                word for word. */}
-            <h1>
-              Beyond the day trip.
-              <br />
-              Wake up to the waves.
-            </h1>
+            <h1>Wake up to the waves.</h1>
             <p>
               Island-hop across the Red Sea at first light, anchor somewhere
               quiet, and stay the night on board. Cresta Marine is the Kumbra
