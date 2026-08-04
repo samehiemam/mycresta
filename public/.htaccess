@@ -64,4 +64,24 @@ Options -Indexes
   <FilesMatch "index\.html$">
     Header set Cache-Control "no-cache, must-revalidate"
   </FilesMatch>
+
+  # Baseline security headers. None of these fix a hole — the portal already
+  # refuses config.php, the SQL and the library — but they close the classes of
+  # attack that need the browser's cooperation, and they are what a hosting
+  # vulnerability scan looks for.
+
+  # The portal signs people in, so the session cookie must never be replayable
+  # from inside somebody else's frame.
+  Header always set X-Frame-Options "SAMEORIGIN"
+
+  # Stops a browser from guessing that an uploaded file is really something
+  # executable. Matters because the vault will accept customer documents.
+  Header always set X-Content-Type-Options "nosniff"
+
+  # Full URLs leak: a shared configuration or a password-reset link would
+  # otherwise travel in the Referer to any site a customer clicks through to.
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+
+  # Nothing here uses a camera, a microphone or a location, so nothing may.
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=()"
 </IfModule>
