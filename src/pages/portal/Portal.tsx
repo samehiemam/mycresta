@@ -269,6 +269,109 @@ function QuickCreate({
   );
 }
 
+/**
+ * Sends each role to its own home.
+ *
+ * Everybody signs in and arrives at /portal, which rendered the customer page
+ * for all of them — so a Founder's first screen offered to build a boat and
+ * nothing else, with no sight of the pipeline, the people or the approvals
+ * waiting on them.
+ */
+export function PortalHome() {
+  const { user } = useAuth();
+  if (user?.role === "admin" || user?.role === "employee") return <TeamPortal />;
+  if (user?.role === "ambassador") return <AmbassadorPortal />;
+  return <CustomerPortal />;
+}
+
+/**
+ * The numbers a Founder opens the portal to see.
+ *
+ * Deliberately above the actions rather than below them: the page's job on
+ * arrival is to say what changed and what is waiting, and a wall of identical
+ * cards cannot do that. Anything needing a decision is a link; anything at zero
+ * stays quiet rather than demanding attention it has not earned.
+ *
+ * Every figure is fetched from an endpoint that already scopes to the viewer,
+ * so an Advisor sees the same panel with their own numbers in it.
+ */
+function FounderStats() {
+  const { api } = useAuth();
+  const [leads, setLeads] = useState<Record<string, number> | null>(null);
+  const [pending, setPending] = useState<number | null>(null);
+  const [commission, setCommission] = useState<{
+    byStatus: Record<string, { count: number; amount: number }>;
+    currency: string;
+  } | null>(null);
+
+  useEffect(() => {
+    let live = true;
+    // Independent: one endpoint being unavailable must not blank the others.
+    api<{ counts: Record<string, number> }>("leads", "list")
+      .then((r) => live && setLeads(r.counts))
+      .catch(() => live && setLeads({}));
+    // 'list' returns every account with the pending ones first, so the count
+    // that matters has to be filtered rather than taken from the length.
+    api<{ users: { status: string }[] }>("accounts", "list")
+      .then((r) => live && setPending(r.users.filter((u) => u.status === "pending").length))
+      .catch(() => live && setPending(null));
+    api<{ totals: typeof commission }>("commissions", "list")
+      .then((r) => live && setCommission(r.totals))
+      .catch(() => live && setCommission(null));
+    return () => {
+      live = false;
+    };
+  }, [api]);
+
+  const open = leads
+    ? Object.entries(leads)
+        .filter(([stage]) => stage !== "delivered" && stage !== "closed_lost")
+        .reduce((total, [, n]) => total + n, 0)
+    : null;
+  const delivered = leads?.delivered ?? 0;
+  const awaiting = commission?.byStatus?.pending?.count ?? 0;
+
+  const money = (minor: number, currency: string) =>
+    `${currency} ${Math.round(minor / 100).toLocaleString("en-GB")}`;
+
+  return (
+    <section className="founder-stats" aria-label="At a glance">
+      <Link className="stat" href="/portal/leads">
+        <span className="stat-k">Open leads</span>
+        <strong className="stat-v">{open ?? "—"}</strong>
+        <small>in the pipeline now</small>
+      </Link>
+
+      <Link className="stat" href="/portal/leads">
+        <span className="stat-k">Delivered</span>
+        <strong className="stat-v">{delivered}</strong>
+        <small>boats handed over</small>
+      </Link>
+
+      <Link
+        className={`stat${pending ? " stat--attention" : ""}`}
+        href="/portal/accounts"
+      >
+        <span className="stat-k">Account requests</span>
+        <strong className="stat-v">{pending ?? "—"}</strong>
+        <small>{pending ? "waiting on you" : "nothing waiting"}</small>
+      </Link>
+
+      <div className={`stat${awaiting ? " stat--attention" : ""}`}>
+        <span className="stat-k">Commission</span>
+        <strong className="stat-v">
+          {commission
+            ? money(commission.byStatus?.pending?.amount ?? 0, commission.currency)
+            : "—"}
+        </strong>
+        <small>
+          {awaiting ? `${awaiting} awaiting approval` : "nothing pending"}
+        </small>
+      </div>
+    </section>
+  );
+}
+
 export function CustomerPortal() {
   useTitle("My Cresta");
   const { user } = useAuth();
@@ -309,10 +412,12 @@ export function TeamPortal() {
 
   return (
     <PortalShell
-      title="Cresta team"
-      intro="Configurations, leads, customers and the boat catalog."
+      title={`Good to see you, ${user?.fullName.split(" ")[0] ?? ""}`}
+      intro="What is waiting, and what to do next."
     >
       {notice && <p className="portal-notice">{notice}</p>}
+
+      <FounderStats />
 
       {creating && (
         <QuickCreate
@@ -330,7 +435,7 @@ export function TeamPortal() {
         <ActionCard
           title="Create a configuration"
           body="Build a boat with the price list showing, then set the discount and shipping."
-          href="/portal/configurator"
+          href="/configure"
           cta="New configuration"
         />
         {isFounder && (
@@ -377,7 +482,7 @@ export function TeamPortal() {
         />
         <SoonCard
           title="Commissions"
-          body="Finder and closer fees on delivered deals, with the approval workflow."
+          body="Totals are in the panel above. The approve-and-pay screen is next; until then the workflow runs over the API."
         />
       </div>
 

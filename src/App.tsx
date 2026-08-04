@@ -23,6 +23,7 @@ import { PricedConfigurator } from "./pages/portal/PricedConfigurator";
 import { ForgotPassword, ResetPassword } from "./pages/portal/ResetPassword";
 import {
   RequireAuth,
+  PortalHome,
   CustomerPortal,
   TeamPortal,
   AmbassadorPortal,
@@ -77,11 +78,14 @@ export default function App() {
         <Route path="/set-password" element={<SetPassword />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+        {/* One address, four front doors. Everybody signs in and lands on
+            /portal, so it has to decide by role — a Founder was getting the
+            customer page, which offers to build a boat and little else. */}
         <Route
           path="/portal"
           element={
             <RequireAuth roles={["customer", "employee", "ambassador", "admin"]}>
-              <CustomerPortal />
+              <PortalHome />
             </RequireAuth>
           }
         />

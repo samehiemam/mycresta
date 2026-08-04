@@ -8145,3 +8145,62 @@ p {
     );
   }
 }
+
+/* The founder's at-a-glance panel.
+ *
+ * Above the action cards on purpose: arriving at the portal, the question is
+ * what changed and what is waiting, and a grid of identical cards cannot
+ * answer it. Anything actionable is a link; anything at zero stays quiet. */
+.founder-stats {
+  display: grid;
+  gap: 1px;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  background: var(--warm-200);
+  border: 1px solid var(--warm-200);
+  border-radius: 10px;
+  margin: 0 0 34px;
+  overflow: hidden;
+}
+
+.founder-stats .stat {
+  background: var(--white);
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 18px 20px 20px;
+  transition: background 0.15s ease;
+}
+
+/* Only the ones that go somewhere should feel like they do. */
+a.stat:hover { background: var(--navy-50); }
+a.stat:focus-visible { outline: 2px solid var(--teal-600); outline-offset: -2px; }
+
+.founder-stats .stat-k {
+  color: var(--warm-500);
+  font-family: "Jost", sans-serif;
+  font-size: 0.64rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.founder-stats .stat-v {
+  color: var(--navy-800);
+  font-size: 1.9rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  line-height: 1.1;
+}
+
+.founder-stats .stat small {
+  color: var(--warm-500);
+  font-size: 0.74rem;
+}
+
+/* Something is waiting on a person. The sand rail is the site's own accent for
+   that, and it reads without relying on colour alone — the caption says so. */
+.founder-stats .stat--attention {
+  box-shadow: inset 3px 0 0 var(--sand-500);
+}
+
+.founder-stats .stat--attention .stat-v { color: var(--navy-900); }
