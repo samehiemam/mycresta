@@ -275,3 +275,18 @@
     display: none;
   }
 }
+
+/* The Ken Burns drift is a crop, and on a phone the hero has none to spare.
+ *
+ * It scales the photograph to 1.14 and drifts it, which is invisible on the
+ * desktop hero because that image is already cropped to fill a wide box. On a
+ * phone the image is shown whole inside its own band, so the same 14% is
+ * taken straight off the bow and stern of the boat — undoing the point of
+ * showing it whole. The photograph holds still at this size instead. */
+@media (max-width: 820px) {
+  .home-hero > img {
+    animation: none;
+    transform: none;
+    will-change: auto;
+  }
+}
