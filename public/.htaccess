@@ -37,8 +37,31 @@ Options -Indexes
   RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI}/index.html -f
   RewriteRule ^(.+?)/?$ /$1/index.html [L]
 
-  # Everything else is a client-side route -> serve the SPA entry.
+  # The home page, explicitly. The prerender rule above cannot match it: in a
+  # per-directory context "/" is the empty string, and its pattern needs at
+  # least one character. It used to be caught by the blanket fallback that the
+  # 404 below replaces, so without this line the site's front page is the one
+  # address that stops working.
+  RewriteRule ^$ /index.html [L]
+
+  # The portal is a client-side app and its paths are not prerendered, so they
+  # reach here and must still serve the entry.
+  RewriteCond %{REQUEST_URI} ^/portal(/|$)
   RewriteRule ^ /index.html [L]
+
+  # Everything left over was never a page on this site.
+  #
+  # It used to be served the entry with a 200, which is a soft 404: the address
+  # answers, so a search engine has no reason to drop it. An earlier version of
+  # this site had /contact, /platform and others, and Google was still offering
+  # them as sitelinks — each one landing on a page that is not what the link
+  # said. They cannot leave the index until the server admits they are gone.
+  #
+  # The body is still the app, so a person who follows a stale link sees the
+  # site's own not-found page rather than a bare server error. Only the status
+  # changes, and the status is the part a crawler reads.
+  ErrorDocument 404 /index.html
+  RewriteRule ^ - [R=404,L]
 </IfModule>
 
 # The server has no mapping for these, so it labelled them text/plain and left
