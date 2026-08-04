@@ -1092,14 +1092,24 @@ p {
 }
 
 .home-hero-copy {
-  max-width: 770px;
+  /* Wide enough for the longest headline line to stay on one line. At 770px
+     even the previous headline broke mid-sentence — "Configure your boat."
+     needed 868px at the size it was set in — so the hero had been quietly
+     wrapping into three ragged lines rather than the two it was written as. */
+  max-width: 1000px;
   position: relative;
   z-index: 2;
 }
 
 .home-hero h1 {
   color: var(--white);
-  font-size: clamp(4.2rem, 8vw, 7.8rem);
+  /* Both ends are set by the longest line, "Wake up to the waves.": the cap so
+     it still fits the 1000px container on a wide screen, and the floor so it
+     survives a 375px phone without stranding "waves." on a line of its own.
+     A smaller headline that breaks where it was written beats a larger one
+     that breaks mid-sentence. */
+  font-size: clamp(1.9rem, 6.4vw, 5.9rem);
+  text-wrap: balance;
   line-height: 0.92;
   margin: 22px 0 30px;
 }
@@ -8067,4 +8077,20 @@ p {
   padding: 0;
   text-decoration: underline;
   text-underline-offset: 2px;
+}
+
+/* The hero headline on a phone.
+ *
+ * A shared rule above pins a dozen headings to 3.1rem below 560px, which for
+ * this one leaves "Wake up to the waves." needing 492px inside a 327px column
+ * — so both sentences break and "trip." and "waves." each end up stranded on
+ * a line of their own. Scoped to the hero so the other headings keep theirs.
+ *
+ * Sized from the measurement rather than by eye: at 375px the longest line
+ * needs the type at 32px to hold, and 8.5vw lands there while still scaling
+ * down to a 320px phone and up to the 3.1rem the shared rule intended. */
+@media (max-width: 560px) {
+  .home-hero h1 {
+    font-size: clamp(1.85rem, 8.5vw, 3.1rem);
+  }
 }

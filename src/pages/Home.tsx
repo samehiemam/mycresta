@@ -41,15 +41,21 @@ export default function Home() {
             <span className="eyebrow eyebrow--light">
               Peak Boating Experience
             </span>
+            {/* The eyebrow above carries the brand; the headline carries the
+                proposition. Two tiers rather than one, because "Peak Boating
+                Experience" says who we are and nothing about what the boats
+                do — and the previous headline repeated the button beneath it
+                word for word. */}
             <h1>
-              Configure your boat.
+              Beyond the day trip.
               <br />
-              Own the Sea.
+              Wake up to the waves.
             </h1>
             <p>
-              Kumbra Yachts dealer in Egypt. Distinctive yachts, chosen without
-              compromise and configured around the way you live on the water.
-              One Cresta standard, wherever your course leads.
+              Island-hop across the Red Sea at first light, anchor somewhere
+              quiet, and stay the night on board. Cresta Marine is the Kumbra
+              Yachts dealer at Abu Tig Marina, El Gouna — Spanish-built yachts,
+              configured around how you actually use the water.
             </p>
             <div className="button-row">
               <Link
