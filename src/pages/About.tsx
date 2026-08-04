@@ -4,7 +4,7 @@ import { SiteHeader } from "../../app/components/SiteHeader";
 import { useTitle } from "../lib/useTitle";
 
 export default function About() {
-  useTitle("About Cresta Marine | Peak Boating Experience");
+  useTitle("About Cresta Marine | Beyond the Day Trip");
   return (
     <>
       <SiteHeader />
@@ -17,7 +17,7 @@ export default function About() {
             island hopping at sunrise, sharing long lunches at anchor, finding
             quiet coves and sleeping aboard under the stars. We turn that
             passion into thoughtful yacht buying, reliable ownership support
-            and genuine Peak Boating Experiences.
+            and days on the water that are worth the boat.
           </p>
         </section>
         <section className="about-image" data-reveal>
@@ -99,7 +99,7 @@ export default function About() {
         </section>
         <section className="model-cta" data-reveal>
           <div>
-            <span className="eyebrow">Peak Boating Experience, delivered</span>
+            <span className="eyebrow">Beyond the day trip, delivered</span>
             <h2>From choosing the right boat to every service after delivery.</h2>
             <p>
               Selection, configuration, purchase, delivery, servicing and

@@ -4,7 +4,7 @@ import { SiteFooter } from "../components/SiteFooter";
 import { SiteHeader } from "../components/SiteHeader";
 
 export const metadata: Metadata = {
-  title: "About Cresta Marine | Peak Boating Experience",
+  title: "About Cresta Marine | Beyond the Day Trip",
 };
 
 export default function AboutPage() {
@@ -20,7 +20,7 @@ export default function AboutPage() {
             island hopping at sunrise, sharing long lunches at anchor, finding
             quiet coves and sleeping aboard under the stars. We turn that
             passion into thoughtful yacht buying, reliable ownership support
-            and genuine Peak Boating Experiences.
+            and days on the water that are worth the boat.
           </p>
         </section>
         <section className="about-image">
@@ -102,7 +102,7 @@ export default function AboutPage() {
         </section>
         <section className="model-cta">
           <div>
-            <span className="eyebrow">Peak Boating Experience, delivered</span>
+            <span className="eyebrow">Beyond the day trip, delivered</span>
             <h2>From choosing the right boat to every service after delivery.</h2>
             <p>
               Selection, configuration, purchase, delivery, servicing and

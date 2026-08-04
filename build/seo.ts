@@ -96,7 +96,7 @@ const localBusiness = {
   "@type": "LocalBusiness",
   "@id": `${SITE}/#business`,
   name: "Cresta Marine",
-  alternateName: "Cresta Marine — Peak Boating Experience",
+  alternateName: "Cresta Marine — Beyond the Day Trip",
   description:
     "Kumbra Yachts dealer at Abu Tig Marina, El Gouna, offering yacht sales, personal configuration, ownership support and yacht care on the Red Sea.",
   url: `${SITE}/`,
@@ -215,7 +215,7 @@ const PRIVATE_PATHS = [
 export const routes: SeoRoute[] = [
   {
     path: "/",
-    title: "Cresta Marine | Peak Boating Experience",
+    title: "Cresta Marine | Beyond the Day Trip",
     description:
       "Cresta Marine is the Kumbra Yachts dealer at Abu Tig Marina, El Gouna. Curated yachts, personal configuration and full ownership support on the Red Sea.",
     changefreq: "monthly",
@@ -318,9 +318,9 @@ export const routes: SeoRoute[] = [
   },
   {
     path: "/about",
-    title: "About Cresta Marine | Peak Boating Experience",
+    title: "About Cresta Marine | Beyond the Day Trip",
     description:
-      "Cresta Marine brings the Peak Boating Experience to the Red Sea as the Kumbra Yachts dealer in El Gouna, Egypt. One standard, from first viewing to yacht care.",
+      "Cresta Marine is the Kumbra Yachts dealer in El Gouna, Egypt — Spanish-built yachts for the Red Sea, and the support that keeps them ready.",
     changefreq: "yearly",
     priority: 0.6,
   },

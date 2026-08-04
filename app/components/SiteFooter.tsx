@@ -6,7 +6,7 @@ export function SiteFooter() {
       <div className="footer-main">
         <div className="footer-brand">
           <img src="/images/cresta-logo-white.png" alt="Cresta Marine" />
-          <p>Peak Boating Experience</p>
+          <p>Beyond the day trip</p>
         </div>
         <div>
           <span className="footer-label">Discover</span>
@@ -40,7 +40,7 @@ export function SiteFooter() {
       </div>
       <div className="footer-bottom">
         <span>© 2026 Cresta Marine</span>
-        <span>Peak Boating Experience</span>
+        <span>Beyond the day trip</span>
         <span>Privacy · Terms</span>
       </div>
     </footer>

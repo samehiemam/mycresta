@@ -12,7 +12,7 @@ const homeFleetImages: Record<string, string> = {
 };
 
 export default function Home() {
-  useTitle("Cresta Marine | Peak Boating Experience");
+  useTitle("Cresta Marine | Beyond the Day Trip");
   const scrollY = useScrollOffset();
   // Hero copy lags the page slightly for depth, then fades before it can reach
   // the hero footer strip.
@@ -75,11 +75,15 @@ export default function Home() {
         </section>
 
         <section className="home-thesis" data-reveal>
-          <span className="eyebrow">Peak Boating Experience</span>
+          {/* The old headline was built on the word "peak" — "The peak is not
+              a place" — so swapping the label above it would have left the
+              sentence pointing at a slogan the site no longer uses. Rewritten
+              to carry the same idea under the new one. */}
+          <span className="eyebrow">Beyond the day trip</span>
           <h2>
-            The peak is not a place.
+            The best days
             <br />
-            It is how boating should feel.
+            do not end at sunset.
           </h2>
           <p>
             Cresta Marine is the Kumbra Yachts dealer at Abu Tig Marina in El
@@ -250,7 +254,7 @@ export default function Home() {
         </section>
 
         <section className="home-contact" data-reveal>
-          <span className="eyebrow">Peak Boating Experience</span>
+          <span className="eyebrow">Start with a conversation</span>
           <h2>Your next chapter starts with the right boat.</h2>
           <p>
             Tell us how you want to use the sea. We will help you choose,

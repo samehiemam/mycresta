@@ -5,9 +5,9 @@ import { SiteHeader } from "./components/SiteHeader";
 import { boats } from "./data";
 
 export const metadata: Metadata = {
-  title: "Cresta Marine | Peak Boating Experience",
+  title: "Cresta Marine | Beyond the Day Trip",
   description:
-    "Cresta Marine delivers the Peak Boating Experience through curated yachts, personal configuration, ownership support and yacht care.",
+    "Cresta Marine is the Kumbra Yachts dealer at Abu Tig Marina, El Gouna. Island-hop the Red Sea, anchor somewhere quiet, and stay the night on board.",
 };
 
 const homeFleetImages: Record<string, string> = {
@@ -31,7 +31,7 @@ export default function Home() {
           <div className="home-hero-overlay" />
           <div className="home-hero-copy">
             <span className="eyebrow eyebrow--light">
-              Peak Boating Experience
+              Beyond the day trip
             </span>
             <h1>
               Configure your boat.
@@ -63,7 +63,7 @@ export default function Home() {
         </section>
 
         <section className="home-thesis">
-          <span className="eyebrow">Peak Boating Experience</span>
+          <span className="eyebrow">Beyond the day trip</span>
           <h2>
             The peak is not a place.
             <br />
@@ -235,7 +235,7 @@ export default function Home() {
         </section>
 
         <section className="home-contact">
-          <span className="eyebrow">Peak Boating Experience</span>
+          <span className="eyebrow">Beyond the day trip</span>
           <h2>Your next chapter starts with the right boat.</h2>
           <p>
             Tell us how you want to use the sea. We will help you choose,

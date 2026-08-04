@@ -20,17 +20,17 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     metadataBase: new URL(origin),
     title: {
-      default: "Cresta Marine | Peak Boating Experience",
+      default: "Cresta Marine | Beyond the Day Trip",
       template: "%s",
     },
     description:
-      "Cresta Marine delivers the Peak Boating Experience through curated yachts, personal configuration, ownership support and yacht care.",
+      "Cresta Marine is the Kumbra Yachts dealer at Abu Tig Marina, El Gouna. Island-hop the Red Sea, anchor somewhere quiet, and stay the night on board.",
     icons: {
       icon: "/images/cresta-mark-navy.png",
       shortcut: "/images/cresta-mark-navy.png",
     },
     openGraph: {
-      title: "Peak Boating Experience. Own the Sea.",
+      title: "Beyond the day trip. Wake up to the waves.",
       description: "Distinctive yachts. One Cresta standard.",
       type: "website",
       url: origin,
@@ -39,13 +39,13 @@ export async function generateMetadata(): Promise<Metadata> {
           url: `${origin}/og-cover-2.jpg`,
           width: 1730,
           height: 909,
-          alt: "Cresta Marine — Peak Boating Experience. Own the Sea.",
+          alt: "Cresta Marine — Beyond the day trip. Wake up to the waves.",
         },
       ],
     },
     twitter: {
       card: "summary_large_image",
-      title: "Peak Boating Experience. Own the Sea.",
+      title: "Beyond the day trip. Wake up to the waves.",
       description: "Distinctive yachts. One Cresta standard.",
       images: [`${origin}/og-cover-2.jpg`],
     },
