@@ -9,10 +9,6 @@
   /* Brand tokens, copied verbatim from app/globals.css :root */
   :root {
     --navy-900: #081d33;
-    --navy-800: #0b2847;
-    --teal-700: #14656d;
-    --teal-600: #1b818c;
-    --teal-400: #55b2bb;
     --sand-500: #c9ae81;
     --white: #ffffff;
   }
@@ -23,74 +19,91 @@
     position: relative;
     width: 1200px;
     height: 630px;
-    background:
-      radial-gradient(120% 90% at 88% 78%, rgba(27,129,140,0.55) 0%, rgba(11,40,71,0) 58%),
-      linear-gradient(135deg, var(--navy-900) 0%, var(--navy-800) 62%, #0d2f52 100%);
+    background: var(--navy-900);
     font-family: "Jost", sans-serif;
     color: var(--white);
     overflow: hidden;
   }
 
-  /* The wave motif from the original card, redrawn in brand teal. */
-  .waves { position: absolute; inset: 0; }
+  .photo {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* The boat sits right of centre in the frame; nudging the crop that way
+       keeps it clear of the copy rather than behind it. */
+    object-position: 62% 55%;
+  }
+
+  /* The desktop hero's own wash, copied so a shared link and the page it opens
+     read as the same design rather than two takes on it. */
+  .scrim {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(90deg, rgba(8,29,51,0.95) 0%, rgba(8,29,51,0.72) 44%, rgba(8,29,51,0.14) 78%),
+      linear-gradient(0deg, rgba(8,29,51,0.74), transparent 44%);
+  }
 
   .content {
     position: absolute;
-    left: 86px;
+    left: 76px;
     top: 50%;
     transform: translateY(-50%);
     z-index: 2;
+    max-width: 720px;
   }
 
-  .logo { width: 470px; display: block; }
+  .logo { width: 390px; display: block; }
 
-  /* The gold rule under the logo — --sand-500, the brand's own accent. */
   .rule {
-    width: 104px;
+    width: 92px;
     height: 3px;
     background: var(--sand-500);
-    margin: 40px 0 38px;
+    margin: 32px 0 28px;
     border-radius: 2px;
   }
 
+  .kicker {
+    color: #b3dfe3;
+    display: block;
+    font-size: 21px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
   h1 {
-    font-size: 78px;
+    /* Sized to hold on one line: wrapped, the second line ran down into the
+       hull and the headline started competing with the boat behind it. */
+    font-size: 60px;
     font-weight: 500;
-    line-height: 1.03;
+    line-height: 1.04;
+    white-space: nowrap;
     letter-spacing: -0.015em;
+    margin-top: 14px;
   }
 
   .sub {
-    margin-top: 30px;
-    font-size: 27px;
+    margin-top: 24px;
+    font-size: 25px;
     font-weight: 400;
-    color: rgba(255, 255, 255, 0.82);
-    letter-spacing: 0.005em;
+    color: rgba(255, 255, 255, 0.8);
   }
 </style>
 </head>
 <body>
   <div class="card">
-    <svg class="waves" viewBox="0 0 1200 630" preserveAspectRatio="none" aria-hidden="true">
-      <g fill="none" stroke="var(--teal-400)" stroke-opacity="0.30">
-        <path d="M-40 470 C 220 386, 470 566, 720 470 S 1080 330, 1250 404" stroke-width="1.4"/>
-        <path d="M-40 496 C 220 412, 470 592, 720 496 S 1080 356, 1250 430" stroke-width="1.2"/>
-        <path d="M-40 522 C 220 438, 470 618, 720 522 S 1080 382, 1250 456" stroke-width="1.1"/>
-        <path d="M-40 548 C 220 464, 470 644, 720 548 S 1080 408, 1250 482" stroke-width="1"/>
-        <path d="M-40 574 C 220 490, 470 670, 720 574 S 1080 434, 1250 508" stroke-width="0.9"/>
-        <path d="M-40 600 C 220 516, 470 696, 720 600 S 1080 460, 1250 534" stroke-width="0.8"/>
-      </g>
-      <g fill="none" stroke="var(--teal-400)" stroke-opacity="0.16">
-        <path d="M-40 444 C 220 360, 470 540, 720 444 S 1080 304, 1250 378" stroke-width="1"/>
-        <path d="M-40 418 C 220 334, 470 514, 720 418 S 1080 278, 1250 352" stroke-width="0.9"/>
-      </g>
-    </svg>
+    <img class="photo" src="/images/hero-home-k43-side-Dk6eFIXz.jpg" alt="" />
+    <div class="scrim"></div>
 
     <div class="content">
       <img class="logo" src="/images/cresta-logo-white.png" alt="Cresta Marine" />
       <div class="rule"></div>
-      <h1>Peak Boating Experience.<br />Own the Sea.</h1>
-      <p class="sub">Distinctive yachts. One Cresta standard.</p>
+      <span class="kicker">Beyond the day trip</span>
+      <h1>Wake up to the waves.</h1>
+      <p class="sub">Kumbra Yachts · Abu Tig Marina, El Gouna</p>
     </div>
   </div>
 </body>

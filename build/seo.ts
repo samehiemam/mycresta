@@ -25,22 +25,25 @@ export const SITE = "https://crestamarine.com";
 /**
  * The default share card, used by every page without an image of its own.
  *
- * Rendered from build/og/card.html — the real logo lockup, the brand navy and
- * teal, and the tagline, at the 1200x630 scrapers expect. Re-render with:
+ * Rendered from build/og/card.html: the hero photograph under the same wash
+ * the desktop hero uses, the real logo lockup, and the hero's own words — so a
+ * link shared in WhatsApp and the page it opens read as one design rather than
+ * two takes on it. Re-render with:
  *
  *   chrome --headless --force-device-scale-factor=2 --window-size=1200,630 \
  *     --screenshot=out.png <served card.html>
  *
- * then downsample to 1200x630 and save as JPEG. Two reasons it is a JPEG and
- * not the old PNG: the previous card was 1.2 MB, heavy enough that a slow
- * scraper fetch can drop the preview entirely, and this is 98 KB.
+ * then downsample to 1200x630 and save as JPEG. It is a JPEG because the
+ * original card was a 1.2 MB PNG, heavy enough that a slow scraper fetch drops
+ * the preview altogether; this is ~113 KB.
  *
- * The filename is new rather than a replacement of og.png on purpose. Files in
- * public/ are served with a year of immutable caching and carry no content
- * hash, so overwriting one leaves every cache — Hostinger's CDN included —
- * serving the old bytes indefinitely. A new name is the only reliable bust.
+ * The number in the filename goes up whenever the artwork changes, and that is
+ * not decoration. Files in public/ are served with a year of immutable caching
+ * and carry no content hash, so overwriting one leaves every cache — Hostinger's
+ * CDN, and WhatsApp's own preview store — serving the old picture indefinitely.
+ * A new name is the only reliable bust.
  */
-const OG_COVER = "/og-cover.jpg";
+const OG_COVER = "/og-cover-2.jpg";
 
 /** Real, verifiable contact details; these appear in the structured data. */
 const CONTACT = {
