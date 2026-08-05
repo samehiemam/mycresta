@@ -88,20 +88,22 @@ export default function Home() {
         </section>
 
         <section className="home-thesis" data-reveal>
-          <span className="eyebrow">Beyond the day trip</span>
-          {/* Broken at the comma: left to wrap it splits after "made" and
-              strands "distinctly yours." from the phrase it belongs to. */}
+          {/* The eyebrow is uppercased in CSS, so it is written in sentence
+              case like the others. */}
+          <span className="eyebrow">A shared love of the sea</span>
+          {/* Left to wrap it breaks after "on", splitting the phrase and
+              leaving "the water." short. Broken at the clause instead. */}
           <h2>
-            Yacht ownership,
+            Advice shaped by
             <br />
-            made distinctly yours.
+            life on the water.
           </h2>
           <p>
-            From choosing the right Kumbra yacht to personalisation, delivery,
-            financing and long-term care, Cresta Marine guides every stage of
-            ownership. Based at Abu Tig Marina in El Gouna, we serve clients
-            across the Red Sea and Egypt&apos;s North Coast with thoughtful
-            advice, seamless support and an experience shaped around you.
+            Choosing a yacht begins with understanding how you want to
+            experience the sea. Through thoughtful guidance and a genuine
+            passion for life on the water, we help you find the Kumbra yacht
+            that feels right for you—from the first conversation to every
+            journey ahead.
           </p>
         </section>
 

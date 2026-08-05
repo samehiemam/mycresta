@@ -4868,13 +4868,8 @@ p {
     padding: 90px 24px;
   }
 
-  /* Sized from the measurement, like the hero: at a flat 3.5rem the longest
-     line needs 534px and stops fitting below about 582px, which strands the
-     first and last words of the heading on lines of their own. The vw term
-     holds the break where it was written all the way down to a 320px phone,
-     and the cap keeps the wide end where it was. */
   .home-thesis h2 {
-    font-size: clamp(1.7rem, 8.8vw, 3.5rem);
+    font-size: 3.5rem;
   }
 
   .home-fleet {
@@ -8433,12 +8428,13 @@ p {
   }
 
   /* The thesis heading is caught by the same shared rule, and its longest
-     line — "made distinctly yours." — needs 473px at 3.1rem inside a 327px
-     column, so the break written into it collapses and the first and last
-     words end up alone. Same treatment, measured the same way; the vw term
-     matches the one above 560px so the size does not jump at the boundary. */
+     line — "life on the water." — needs 366px at 3.1rem inside a 327px
+     column, so the break written into it collapses. Sized the same way: the
+     vw term is the largest that still holds the break on a 320px phone, and
+     it reaches the 3.1rem the shared rule intended by about 450px, so only
+     the narrowest screens give anything up. */
   .home-thesis h2 {
-    font-size: clamp(1.7rem, 8.8vw, 3.1rem);
+    font-size: clamp(1.7rem, 11vw, 3.1rem);
   }
 }
 
