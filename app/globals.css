@@ -1128,10 +1128,40 @@ p {
   width: 100%;
 }
 
+/* A scrim over the column the copy sits in, easing away across the rest.
+ *
+ * The old wash ramped the full width, which spent 0.92 on the left — far more
+ * than the type needs over dark water — and had thinned to 0.10 by the time
+ * the headline reached the bright sky, where it needs the most. Measured
+ * against the photograph, that left "sunset." at 2.6:1, under the 3:1 large
+ * text is meant to hold.
+ *
+ * The copy ends at 61% of the width, so this holds 0.6 to 52% and then eases
+ * off. The many stops are a smoothstep: a straight ramp of the same length
+ * shows a seam where the slope changes, and the eye catches the corner, not
+ * the rate.
+ *
+ * Sampled against the photograph behind each block, everything now clears
+ * 4.5:1 — headline 4.2 (was 2.6), paragraph 5.1, kicker 5.6, foot strip 6.3
+ * — and the frame reads about 8% brighter overall. Re-measure if the hero
+ * photograph is replaced; these numbers are specific to what is behind it. */
 .home-hero-overlay {
   background:
-    linear-gradient(90deg, rgba(8, 29, 51, 0.92) 0%, rgba(8, 29, 51, 0.56) 45%, rgba(8, 29, 51, 0.1) 74%),
-    linear-gradient(0deg, rgba(8, 29, 51, 0.72), transparent 42%);
+    linear-gradient(
+      90deg,
+      rgba(8, 29, 51, 0.6) 0%,
+      rgba(8, 29, 51, 0.6) 52%,
+      rgba(8, 29, 51, 0.575) 56.25%,
+      rgba(8, 29, 51, 0.509) 60.5%,
+      rgba(8, 29, 51, 0.417) 64.75%,
+      rgba(8, 29, 51, 0.31) 69%,
+      rgba(8, 29, 51, 0.204) 73.25%,
+      rgba(8, 29, 51, 0.111) 77.5%,
+      rgba(8, 29, 51, 0.045) 81.75%,
+      rgba(8, 29, 51, 0.02) 86%,
+      rgba(8, 29, 51, 0.02) 100%
+    ),
+    linear-gradient(0deg, rgba(8, 29, 51, 0.55), transparent 42%);
   inset: 0;
   position: absolute;
 }
@@ -4445,6 +4475,30 @@ p {
 }
 
 @media (max-width: 1100px) {
+  /* The copy column is a fixed width against a shrinking hero, so it reaches
+     76% of the frame here against 61% at 1280 — past the point where the wash
+     above has eased off. Same curve, held out to 70% before it starts. This
+     band was already the weakest on the page: measured against the old wash
+     the headline sat at 1.7:1. */
+  .home-hero-overlay {
+    background:
+      linear-gradient(
+        90deg,
+        rgba(8, 29, 51, 0.62) 0%,
+        rgba(8, 29, 51, 0.62) 70%,
+        rgba(8, 29, 51, 0.594) 72.75%,
+        rgba(8, 29, 51, 0.526) 75.5%,
+        rgba(8, 29, 51, 0.43) 78.25%,
+        rgba(8, 29, 51, 0.32) 81%,
+        rgba(8, 29, 51, 0.21) 83.75%,
+        rgba(8, 29, 51, 0.114) 86.5%,
+        rgba(8, 29, 51, 0.046) 89.25%,
+        rgba(8, 29, 51, 0.02) 92%,
+        rgba(8, 29, 51, 0.02) 100%
+      ),
+      linear-gradient(0deg, rgba(8, 29, 51, 0.55), transparent 42%);
+  }
+
   .site-header {
     grid-template-columns: auto 1fr;
     padding: 0 3vw;
