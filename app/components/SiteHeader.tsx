@@ -109,29 +109,26 @@ function AccountMenu({ onNavigate }: { onNavigate: () => void }) {
     setError("");
 
     try {
-      const response = await api<{ user?: unknown; success?: boolean }>(
-        "auth.php",
+      // Call auth API - it automatically updates user context on success
+      await api<{ ok?: boolean; user?: unknown; active?: boolean }>(
+        "auth",
         "login",
         { email, password }
       );
 
-      if (response?.success || response?.user) {
-        setEmail("");
-        setPassword("");
-        setOpen(false);
-        onNavigate();
-        // Small delay then refresh to show logged-in state
-        setTimeout(() => window.location.reload(), 500);
-      } else {
-        setError("Login failed. Please check your credentials.");
-      }
+      // If we get here without error, login succeeded
+      setEmail("");
+      setPassword("");
+      setOpen(false);
+      onNavigate();
+
+      // Small delay then refresh to show logged-in state
+      setTimeout(() => window.location.reload(), 300);
     } catch (err) {
+      // The api function throws ApiError with the server message
       const message =
-        err instanceof Error
-          ? err.message
-          : "Login failed. Please try again.";
+        err instanceof Error ? err.message : "Login failed. Please try again.";
       setError(message);
-    } finally {
       setLogging(false);
     }
   };
