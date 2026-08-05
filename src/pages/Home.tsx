@@ -30,7 +30,7 @@ export default function Home() {
               waits on, so it is decoded eagerly and given its ratio up front
               to keep the copy below from jumping. */}
           <img
-            src="/images/hero-home-k43-sunset.webp"
+            src="/images/hero-home-k43-sunset-bright.webp"
             alt="Kumbra 43 underway at sunset"
             width={1536}
             height={1024}
