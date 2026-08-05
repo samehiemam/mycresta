@@ -8467,14 +8467,23 @@ p {
     top: var(--hero-band-top);
   }
 
-  /* Rises later and harder than the desktop wash, so the photograph stays
-     clean and the copy still lands on solid ground. */
+  /* Measured off the band, not the section.
+   *
+   * In percentages these stops were read against the whole hero — copy and
+   * padding included — while the photograph only occupies the top third of
+   * it. The ramp meant to land underneath the picture was sweeping across it
+   * instead, putting 38% navy over the middle of the shot and 69% over the
+   * bottom, which is what made it look dark on a phone.
+   *
+   * Below the band there is nothing to dim — the section is already navy —
+   * so the wash has one job here: feather the last 64px of the photograph
+   * into that navy so it does not end on a hard line. The rest stays clear. */
   .home-hero-overlay {
     background: linear-gradient(
       180deg,
-      rgba(8, 29, 51, 0) 0%,
-      rgba(8, 29, 51, 0.55) 34%,
-      rgba(8, 29, 51, 0.95) 46%
+      rgba(8, 29, 51, 0) 0,
+      rgba(8, 29, 51, 0) calc(var(--hero-band-top) + 66.7vw - 64px),
+      rgba(8, 29, 51, 0.95) calc(var(--hero-band-top) + 66.7vw + 6px)
     );
   }
 }
