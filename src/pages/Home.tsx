@@ -53,7 +53,13 @@ export default function Home() {
             <span className="eyebrow eyebrow--light">
               Beyond the day trip
             </span>
-            <h1>Wake up to the waves.</h1>
+            {/* Broken by hand: left to wrap, "sunset." drops alone onto the
+                second line at most desktop widths. */}
+            <h1>
+              The best days
+              <br />
+              do not end at sunset.
+            </h1>
             <p>
               Island-hop across the Red Sea at first light, anchor somewhere
               quiet, and stay the night on board. Cresta Marine is the Kumbra
@@ -82,16 +88,8 @@ export default function Home() {
         </section>
 
         <section className="home-thesis" data-reveal>
-          {/* The old headline was built on the word "peak" — "The peak is not
-              a place" — so swapping the label above it would have left the
-              sentence pointing at a slogan the site no longer uses. Rewritten
-              to carry the same idea under the new one. */}
           <span className="eyebrow">Beyond the day trip</span>
-          <h2>
-            The best days
-            <br />
-            do not end at sunset.
-          </h2>
+          <h2>Wake up to the waves.</h2>
           <p>
             Cresta Marine is the Kumbra Yachts dealer at Abu Tig Marina in El
             Gouna, serving owners across the Red Sea and Egypt&apos;s North

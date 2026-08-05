@@ -1148,9 +1148,9 @@ p {
 
 .home-hero h1 {
   color: var(--white);
-  /* Both ends are set by the longest line, "Wake up to the waves.": the cap so
+  /* Both ends are set by the longest line, "do not end at sunset.": the cap so
      it still fits the 1000px container on a wide screen, and the floor so it
-     survives a 375px phone without stranding "waves." on a line of its own.
+     survives a 375px phone without stranding "sunset." on a line of its own.
      A smaller headline that breaks where it was written beats a larger one
      that breaks mid-sentence. */
   font-size: clamp(1.9rem, 6.4vw, 5.9rem);
@@ -8415,9 +8415,9 @@ p {
 /* The hero headline on a phone.
  *
  * A shared rule above pins a dozen headings to 3.1rem below 560px, which for
- * this one leaves "Wake up to the waves." needing 492px inside a 327px column
- * — so both sentences break and "trip." and "waves." each end up stranded on
- * a line of their own. Scoped to the hero so the other headings keep theirs.
+ * this one leaves the longest line needing 492px inside a 327px column — so
+ * both sentences break and the last word of each ends up stranded on a line
+ * of its own. Scoped to the hero so the other headings keep theirs.
  *
  * Sized from the measurement rather than by eye: at 375px the longest line
  * needs the type at 32px to hold, and 8.5vw lands there while still scaling
