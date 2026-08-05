@@ -803,7 +803,6 @@ p {
   background: var(--navy-900);
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 6px;
-  bottom: calc(100% + 9px);
   color: var(--white);
   content: attr(data-label);
   display: block;
@@ -815,7 +814,10 @@ p {
   padding: 5px 9px;
   pointer-events: none;
   position: absolute;
-  transform: translateX(-50%) translateY(4px);
+  /* Below the mark, not above it: the marks sit 33px down an 88px header, and
+     a label above them lands off the top of the page. */
+  top: calc(100% + 9px);
+  transform: translateX(-50%) translateY(-4px);
   transition: opacity 150ms ease, transform 150ms ease;
   white-space: nowrap;
   z-index: 60;
