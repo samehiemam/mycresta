@@ -110,7 +110,7 @@ function AccountMenu({ onNavigate }: { onNavigate: () => void }) {
 
     try {
       // Call auth API - it automatically updates user context on success
-      await api<{ ok?: boolean; user?: unknown; active?: boolean }>(
+      const response = await api<{ ok?: boolean; user?: { role?: string }; active?: boolean }>(
         "auth",
         "login",
         { email, password }
@@ -122,8 +122,10 @@ function AccountMenu({ onNavigate }: { onNavigate: () => void }) {
       setOpen(false);
       onNavigate();
 
-      // Small delay then refresh to show logged-in state
-      setTimeout(() => window.location.reload(), 300);
+      // Navigate to the user's role-specific home page
+      const userRole = response?.user?.role as keyof typeof roleHome;
+      const profileUrl = (userRole && roleHome[userRole]) || "/my-cresta";
+      window.location.href = profileUrl;
     } catch (err) {
       // The api function throws ApiError with the server message
       const message =
