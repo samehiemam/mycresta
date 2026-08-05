@@ -796,27 +796,29 @@ p {
 
 .instagram-link::after,
 .whatsapp-link::after,
-.facebook-link::after {
+.facebook-link::after,
+.account-trigger::after {
   background: var(--navy-900);
   border-radius: 4px;
-  bottom: calc(100% + 8px);
+  bottom: calc(100% + 10px);
   color: var(--white);
   content: attr(data-label);
   font-size: 0.7rem;
   left: 50%;
   opacity: 0;
-  padding: 4px 8px;
+  padding: 6px 10px;
   pointer-events: none;
-  position: absolute;
+  position: fixed;
   transform: translateX(-50%) translateY(4px);
   transition: opacity 150ms ease, transform 150ms ease;
   white-space: nowrap;
-  z-index: 50;
+  z-index: 9999;
 }
 
 .instagram-link:hover::after,
 .whatsapp-link:hover::after,
-.facebook-link:hover::after {
+.facebook-link:hover::after,
+.account-trigger:hover::after {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
 }
@@ -7584,28 +7586,6 @@ p {
   position: relative;
 }
 
-.account-trigger::after {
-  background: var(--navy-900);
-  border-radius: 4px;
-  bottom: calc(100% + 8px);
-  color: var(--white);
-  content: "My Cresta Login";
-  font-size: 0.7rem;
-  left: 50%;
-  opacity: 0;
-  padding: 4px 8px;
-  pointer-events: none;
-  position: absolute;
-  transform: translateX(-50%) translateY(4px);
-  transition: opacity 150ms ease, transform 150ms ease;
-  white-space: nowrap;
-  z-index: 50;
-}
-
-.account-trigger:hover::after {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
-}
 
 .account-avatar {
   align-items: center;

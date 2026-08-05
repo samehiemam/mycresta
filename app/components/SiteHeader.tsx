@@ -144,6 +144,7 @@ function AccountMenu({ onNavigate }: { onNavigate: () => void }) {
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
         aria-label={user ? `Account menu for ${user.fullName}` : "Account menu"}
+        data-label="My Cresta Login"
       >
         {user ? (
           <span className="account-avatar has-initials">
