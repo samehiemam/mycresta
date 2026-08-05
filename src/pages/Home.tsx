@@ -26,9 +26,16 @@ export default function Home() {
       </div>
       <main>
         <section className="home-hero">
+          {/* The hero is the largest thing on the page and the one the browser
+              waits on, so it is decoded eagerly and given its ratio up front
+              to keep the copy below from jumping. */}
           <img
-            src="/images/hero-home-k43-side-Dk6eFIXz.jpg"
+            src="/images/hero-home-k43-vivid.webp"
             alt="Kumbra 43 underway"
+            width={1536}
+            height={1024}
+            fetchPriority="high"
+            decoding="async"
           />
           <div className="home-hero-overlay" />
           <div
