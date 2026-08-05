@@ -166,90 +166,124 @@ function AccountMenu({ onNavigate }: { onNavigate: () => void }) {
             aria-hidden="true"
           />
         )}
-        {user && <span className="account-trigger-name">{user.fullName.split(" ")[0]}</span>}
+        {/* Only the stacked menu shows these: a bare mark in a vertical list
+            gives no clue what it opens, but beside the desktop marks a label
+            would break the row. */}
+        <span className="account-trigger-text">
+          <span className="account-trigger-title">
+            {user ? user.fullName : "My Cresta"}
+          </span>
+          <span className="account-trigger-sub">
+            {user ? "My Cresta account" : "Sign in or register"}
+          </span>
+        </span>
+        <span className="account-chevron" aria-hidden="true" />
       </button>
 
       <div className="account-panel" role="menu">
         {user ? (
-          <>
-            <div className="account-who">
-              <strong>{user.fullName}</strong>
-              <small>{user.email}</small>
+          <div className="account-card">
+            <div className="account-identity">
+              <span className="account-identity-mark" aria-hidden="true">
+                {initials || "?"}
+              </span>
+              <span className="account-identity-who">
+                <strong>{user.fullName}</strong>
+                <small>{user.email}</small>
+              </span>
             </div>
-            <Link
-              href={roleHome[user.role]}
-              role="menuitem"
-              onClick={() => { setOpen(false); onNavigate(); }}
-            >
-              My Cresta
-            </Link>
-            <button
-              className="account-signout"
-              type="button"
-              role="menuitem"
-              onClick={async () => {
-                setOpen(false);
-                onNavigate();
-                await logout();
-              }}
-            >
-              Logout
-            </button>
-          </>
-        ) : (
-          <>
-            <div className="quick-login-form">
-              {error && <div className="login-error">{error}</div>}
-              <input
-                type="email"
-                placeholder="Email address"
-                className="login-input"
-                aria-label="Email address"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                disabled={logging}
-              />
-              <input
-                type="password"
-                placeholder="Password"
-                className="login-input"
-                aria-label="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                disabled={logging}
-                onKeyPress={(e) => {
-                  if (e.key === "Enter" && email && password && !logging) {
-                    handleLogin();
-                  }
-                }}
-              />
-              <button
-                className="login-submit"
-                type="button"
-                onClick={handleLogin}
-                disabled={logging || !email || !password}
-              >
-                {logging ? "Signing in..." : "Sign In"}
-              </button>
-            </div>
-            <div className="account-panel-divider" />
-            <div className="account-panel-footer">
+            <div className="account-actions">
               <Link
-                href="/my-cresta"
-                className="footer-link my-cresta-link"
+                className="account-button account-button--primary"
+                href={roleHome[user.role]}
+                role="menuitem"
                 onClick={() => { setOpen(false); onNavigate(); }}
               >
-                My Cresta
+                Open My Cresta
               </Link>
+              <button
+                className="account-signout"
+                type="button"
+                role="menuitem"
+                onClick={async () => {
+                  setOpen(false);
+                  onNavigate();
+                  await logout();
+                }}
+              >
+                Sign out
+              </button>
+            </div>
+          </div>
+        ) : (
+          <form
+            className="account-card"
+            onSubmit={(event) => {
+              event.preventDefault();
+              void handleLogin();
+            }}
+          >
+            <span className="account-card-eyebrow">My Cresta account</span>
+            <h2 className="account-card-title">Sign in.</h2>
+
+            {error && <p className="login-error" role="alert">{error}</p>}
+
+            <label className="account-field">
+              <span>User ID</span>
+              {/* The server matches on the email address, so this stays a
+                  username field rather than a strict email one — a browser
+                  refusing the value before it is sent would be the worse
+                  failure of the two. */}
+              <input
+                type="text"
+                name="username"
+                autoComplete="username"
+                inputMode="email"
+                placeholder="Enter your user ID"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+                disabled={logging}
+              />
+            </label>
+
+            <label className="account-field">
+              <span>Password</span>
+              <input
+                type="password"
+                name="password"
+                autoComplete="current-password"
+                placeholder="Enter your password"
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                disabled={logging}
+              />
+            </label>
+
+            <div className="account-actions">
+              <button
+                className="account-button account-button--primary"
+                type="submit"
+                disabled={logging || !email || !password}
+              >
+                {logging ? "Signing in…" : "Sign in"}
+              </button>
               <Link
-                href="/my-cresta"
-                className="footer-link register-link"
+                className="account-button account-button--ghost"
+                href="/register"
                 onClick={() => { setOpen(false); onNavigate(); }}
               >
                 Register
               </Link>
             </div>
-          </>
+
+            <Link
+              className="account-forgot"
+              href="/forgot-password"
+              onClick={() => { setOpen(false); onNavigate(); }}
+            >
+              Forgot password?
+            </Link>
+          </form>
         )}
       </div>
     </div>
@@ -419,42 +453,47 @@ export function SiteHeader({
         </Link>
         <div className="nav-divider" />
         <AccountMenu onNavigate={closeAll} />
-        <a
-          className="whatsapp-link"
-          href="https://wa.me/201224212222"
-          target="_blank"
-          rel="noreferrer"
-          aria-label="Chat with Cresta Marine on WhatsApp at +20 122 421 2222"
-          data-label="WhatsApp"
-          onClick={closeAll}
-        >
-          <span className="whatsapp-icon" aria-hidden="true" />
-          <span className="whatsapp-handle">WhatsApp</span>
-        </a>
-        <a
-          className="instagram-link"
-          href="https://www.instagram.com/cresta_marine/"
-          target="_blank"
-          rel="noreferrer"
-          aria-label="Cresta Marine on Instagram"
-          data-label="Instagram"
-          onClick={closeAll}
-        >
-          <span className="instagram-icon" aria-hidden="true" />
-          <span className="instagram-handle">Instagram</span>
-        </a>
-        <a
-          className="facebook-link"
-          href="https://www.facebook.com/share/1ax2jcQLpx/?mibextid=wwXIfr"
-          target="_blank"
-          rel="noreferrer"
-          aria-label="Cresta Marine on Facebook"
-          data-label="Facebook"
-          onClick={closeAll}
-        >
-          <span className="facebook-icon" aria-hidden="true" />
-          <span className="facebook-handle">Facebook</span>
-        </a>
+        {/* display:contents on the desktop row, so the marks stay direct
+            children of the nav flexbox and the header is unchanged; in the
+            stacked menu this becomes the footer strip. */}
+        <div className="nav-social">
+          <a
+            className="whatsapp-link"
+            href="https://wa.me/201224212222"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Chat with Cresta Marine on WhatsApp at +20 122 421 2222"
+            data-label="WhatsApp"
+            onClick={closeAll}
+          >
+            <span className="whatsapp-icon" aria-hidden="true" />
+            <span className="whatsapp-handle">WhatsApp</span>
+          </a>
+          <a
+            className="instagram-link"
+            href="https://www.instagram.com/cresta_marine/"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Cresta Marine on Instagram"
+            data-label="Instagram"
+            onClick={closeAll}
+          >
+            <span className="instagram-icon" aria-hidden="true" />
+            <span className="instagram-handle">Instagram</span>
+          </a>
+          <a
+            className="facebook-link"
+            href="https://www.facebook.com/share/1ax2jcQLpx/?mibextid=wwXIfr"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Cresta Marine on Facebook"
+            data-label="Facebook"
+            onClick={closeAll}
+          >
+            <span className="facebook-icon" aria-hidden="true" />
+            <span className="facebook-handle">Facebook</span>
+          </a>
+        </div>
       </nav>
     </header>
   );

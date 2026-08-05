@@ -7632,232 +7632,345 @@ p {
   position: relative;
 }
 
-.account-trigger-name {
-  display: none;
-  font-size: 0.85rem;
-  white-space: nowrap;
-}
-
 .account-panel {
   background: var(--white);
   border: 1px solid var(--warm-200);
   border-radius: 12px;
   box-shadow: var(--shadow-md, 0 18px 40px rgba(16, 55, 104, 0.16));
   display: none;
-  min-width: 210px;
-  padding: 8px;
+  padding: 4px;
   position: absolute;
   right: 0;
   top: calc(100% + 10px);
+  width: 306px;
   z-index: 40;
 }
 
 .account-menu.is-open .account-panel { display: block; }
 
-.account-who {
-  border-bottom: 1px solid var(--warm-100);
+.account-card {
   display: flex;
   flex-direction: column;
-  margin-bottom: 6px;
-  padding: 8px 10px 10px;
+  gap: 12px;
+  padding: 14px;
 }
 
-.account-who strong { color: var(--navy-900); font-size: 0.82rem; }
-.account-who small { color: var(--warm-500); font-size: 0.7rem; word-break: break-all; }
-
-.account-panel a,
-.account-signout {
-  background: none;
-  border: 0;
-  border-radius: 8px;
-  color: var(--navy-900);
-  cursor: pointer;
-  display: block;
-  font: inherit;
-  font-size: 0.8rem;
-  padding: 9px 10px;
-  text-align: left;
-  text-decoration: none;
-  width: 100%;
-}
-
-.account-panel a:hover,
-.account-signout:hover { background: var(--warm-100); }
-.account-signout { color: #a4291b; }
-
-.quick-login-form {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 0;
-}
-
-.login-error {
-  background: #fee;
-  border: 1px solid #fcc;
-  border-radius: 6px;
-  color: #a4291b;
-  font-size: 0.75rem;
-  padding: 6px 8px;
-  line-height: 1.3;
-}
-
-.login-input {
-  background: var(--warm-50);
-  border: 1px solid var(--warm-200);
-  border-radius: 6px;
-  color: var(--navy-900);
-  font-size: 0.8rem;
-  padding: 8px 10px;
-  font-family: inherit;
-  transition: border-color 150ms ease;
-}
-
-.login-input::placeholder {
+.account-card-eyebrow {
   color: var(--warm-500);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
 
-.login-input:focus {
-  border-color: var(--teal-500);
-  outline: none;
-  background: var(--white);
+.account-card-title {
+  color: var(--navy-900);
+  font-size: 1.25rem;
+  margin: -4px 0 0;
 }
 
-.login-input:disabled {
-  background: var(--warm-100);
-  color: var(--warm-600);
-  cursor: not-allowed;
-}
-
-.login-submit {
-  background: var(--teal-600);
-  color: var(--white);
-  border: 0;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 0.8rem;
-  font-weight: 500;
-  padding: 8px 12px;
-  transition: background 150ms ease;
-  font-family: inherit;
-  margin-top: 4px;
-}
-
-.login-submit:hover:not(:disabled) {
-  background: var(--teal-700);
-}
-
-.login-submit:disabled {
-  background: var(--warm-300);
-  cursor: not-allowed;
-  color: var(--warm-600);
-}
-
-.account-panel-divider {
-  background: var(--warm-100);
-  height: 1px;
-  margin: 8px 0;
-}
-
-.account-panel-footer {
+.account-field {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  padding: 0;
 }
 
-.footer-link {
+.account-field > span {
+  color: var(--navy-900);
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+
+.account-field input {
+  background: var(--warm-50);
+  border: 1px solid var(--warm-200);
+  border-radius: 8px;
+  color: var(--navy-900);
+  font: inherit;
+  font-size: 0.85rem;
+  padding: 10px 12px;
+  transition: background 150ms ease, border-color 150ms ease;
+  width: 100%;
+}
+
+.account-field input::placeholder { color: var(--warm-500); }
+
+.account-field input:focus {
+  background: var(--white);
+  border-color: var(--teal-500);
+  outline: none;
+}
+
+.account-field input:disabled { color: var(--warm-500); cursor: not-allowed; }
+
+.login-error {
+  background: #fdecea;
+  border: 1px solid #f5c6c0;
+  border-radius: 8px;
+  color: #a4291b;
+  font-size: 0.76rem;
+  line-height: 1.35;
+  margin: 0;
+  padding: 8px 10px;
+}
+
+.account-actions {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+}
+
+.account-button {
+  border: 1px solid #0000;
+  border-radius: 8px;
+  cursor: pointer;
+  flex: 1 1 0;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 500;
+  padding: 11px 14px;
+  text-align: center;
+  text-decoration: none;
+  transition: background 150ms ease, border-color 150ms ease;
+}
+
+.account-button--primary {
+  background: var(--navy-900);
+  color: var(--white);
+}
+
+.account-button--primary:hover:not(:disabled) { background: var(--navy-700); }
+
+.account-button--primary:disabled {
+  background: var(--warm-200);
+  color: var(--warm-500);
+  cursor: not-allowed;
+}
+
+.account-button--ghost {
+  border-color: var(--warm-300);
+  color: var(--navy-900);
+}
+
+.account-button--ghost:hover { background: var(--warm-100); }
+
+.account-forgot {
+  align-self: flex-end;
+  color: var(--navy-700);
+  font-size: 0.76rem;
+  text-decoration: underline;
+}
+
+/* ---- signed in ---- */
+
+.account-identity {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+}
+
+.account-identity-mark {
+  align-items: center;
+  border: 1.5px solid currentColor;
+  border-radius: 50%;
+  color: var(--navy-700);
+  display: flex;
+  flex: 0 0 auto;
+  font-size: 0.8rem;
+  font-weight: 600;
+  height: 42px;
+  justify-content: center;
+  width: 42px;
+}
+
+.account-identity-who {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.account-identity-who strong { color: var(--navy-900); font-size: 0.95rem; }
+.account-identity-who small {
+  color: var(--warm-500);
+  font-size: 0.76rem;
+  overflow-wrap: anywhere;
+}
+
+.account-signout {
   background: none;
   border: 0;
-  border-radius: 6px;
-  color: var(--navy-900);
+  color: var(--navy-700);
   cursor: pointer;
-  display: block;
+  flex: 0 0 auto;
+  font: inherit;
   font-size: 0.8rem;
-  padding: 8px 10px;
-  text-align: left;
-  text-decoration: none;
-  transition: background 150ms ease;
-  font-family: inherit;
+  padding: 11px 4px;
+  text-decoration: underline;
 }
 
-.footer-link:hover {
-  background: var(--warm-100);
-}
+.account-signout:hover { color: var(--navy-900); }
 
-.my-cresta-link {
-  font-weight: 500;
-  color: var(--teal-700);
-}
+/* The title, subtitle and chevron belong to the stacked menu only — beside the
+   desktop marks they would break the row. */
+.account-trigger-text,
+.account-chevron,
+.nav-divider { display: none; }
 
-.register-link {
-  background: var(--teal-50);
-  color: var(--navy-900);
-}
-
-.register-link:hover {
-  background: var(--teal-100);
-}
-
-.nav-divider {
-  background: var(--warm-200);
-  height: 1px;
-  margin: 8px 0;
-}
+/* Keeps the marks direct children of the nav flexbox on desktop. */
+.nav-social { display: contents; }
 
 @media (max-width: 820px) {
-  /* In the stacked mobile menu a bare avatar says nothing, so the whole thing
-     becomes a labelled block with the actions always visible — no second tap
-     to discover where "sign out" lives. */
-  .account-menu {
-    border-top: 1px solid var(--warm-200);
-    margin-top: 6px;
-    padding-top: 12px;
+  /* The stacked menu. A bare mark in a vertical list says nothing about what
+     it opens, so the row carries a name, a line of context and a chevron, and
+     the panel expands in place underneath it. */
+  .account-menu { width: 100%; }
+
+  .nav-divider {
+    background: rgba(255, 255, 255, 0.14);
+    display: block;
+    height: 1px;
+    margin: 10px 0 2px;
     width: 100%;
   }
 
-  .account-trigger { width: 100%; }
-  .account-trigger-name { display: inline; font-size: 0.9rem; }
+  .account-trigger {
+    align-items: center;
+    gap: 14px;
+    padding: 12px 2px;
+    width: 100%;
+  }
+
+  .site-nav .account-trigger .account-avatar {
+    height: 38px;
+    width: 38px;
+  }
+
+  .account-trigger-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+    text-align: left;
+  }
+
+  .account-trigger-title {
+    color: var(--white);
+    font-size: 1rem;
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .account-trigger-sub {
+    color: rgba(255, 255, 255, 0.62);
+    font-size: 0.82rem;
+  }
+
+  .account-chevron {
+    border-bottom: 1.6px solid rgba(255, 255, 255, 0.7);
+    border-right: 1.6px solid rgba(255, 255, 255, 0.7);
+    display: block;
+    height: 8px;
+    margin-left: auto;
+    transform: rotate(45deg);
+    transition: transform 180ms ease;
+    width: 8px;
+  }
+
+  .account-menu.is-open .account-chevron { transform: rotate(-135deg); }
 
   .account-panel {
     background: none;
     border: 0;
     box-shadow: none;
-    display: block;
-    padding: 6px 0 0;
+    padding: 0;
     position: static;
+    width: 100%;
   }
 
-  .account-who { display: none; }
-  .account-panel a,
-  .account-signout {
-    padding-left: 38px;
+  .account-card {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 16px;
+    gap: 14px;
+    margin-bottom: 4px;
+    padding: 18px;
   }
 
-  .account-panel-divider {
-    margin: 8px 0;
+  .account-card-eyebrow { color: rgba(255, 255, 255, 0.6); }
+  .account-card-title { color: var(--white); font-size: 1.5rem; }
+  .account-field > span { color: rgba(255, 255, 255, 0.85); font-size: 0.85rem; }
+
+  .account-field input {
+    background: rgba(255, 255, 255, 0.94);
+    border-color: #0000;
+    font-size: 1rem;
+    padding: 14px;
   }
 
-  .quick-login-form {
+  .account-button { font-size: 0.95rem; padding: 14px 16px; }
+
+  .account-button--primary { background: var(--white); color: var(--navy-900); }
+  .account-button--primary:hover:not(:disabled) { background: rgba(255, 255, 255, 0.88); }
+
+  .account-button--primary:disabled {
+    background: rgba(255, 255, 255, 0.35);
+    color: rgba(8, 29, 51, 0.5);
+  }
+
+  .account-button--ghost { border-color: rgba(255, 255, 255, 0.35); color: var(--white); }
+  .account-button--ghost:hover { background: rgba(255, 255, 255, 0.1); }
+
+  .account-forgot { color: rgba(255, 255, 255, 0.85); font-size: 0.85rem; }
+
+  .account-identity-mark {
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 0.95rem;
+    height: 48px;
+    width: 48px;
+  }
+
+  .account-identity-who strong { color: var(--white); font-size: 1.1rem; }
+  .account-identity-who small { color: rgba(255, 255, 255, 0.6); font-size: 0.85rem; }
+  .account-signout { color: rgba(255, 255, 255, 0.9); font-size: 0.9rem; }
+
+  /* The social marks close the menu as a strip of icons, without their
+     labels — the row reads as a footer rather than three more menu items. */
+  .nav-social {
+    border-top: 1px solid rgba(255, 255, 255, 0.14);
+    display: flex;
+    gap: 26px;
+    margin-top: 14px;
+    padding-top: 18px;
+  }
+
+  .site-nav .nav-social a {
+    border-bottom: 0;
     padding: 0;
   }
 
-  .login-input,
-  .login-submit {
-    padding-left: 38px;
-  }
-
-  .account-panel-footer {
+  /* The stacked menu gives every link a divider and a tall hit area. Inside
+     the card the links are buttons and a footnote, and they carry their own. */
+  .site-nav .account-panel a {
+    border-bottom: 0;
+    font-size: inherit;
     padding: 0;
   }
 
-  .footer-link {
-    padding-left: 38px;
+  .site-nav .account-panel a.account-button {
+    font-size: 0.95rem;
+    padding: 14px 16px;
   }
 
-  .nav-divider {
-    display: none;
-  }
+  /* The stacked menu paints its links white. Restate the button colours over
+     it, or the filled one is white text on a white fill. */
+  .site-nav .account-panel a.account-button--primary { color: var(--navy-900); }
+  .site-nav .account-panel a.account-button--ghost { color: var(--white); }
+
+  .instagram-handle,
+  .whatsapp-handle,
+  .facebook-handle { display: none; }
 }
 
 /* ---- portal home: actions, pipeline, quick create ---------------------- */
