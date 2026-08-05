@@ -62,11 +62,10 @@ function NavMenu({
 }
 
 /**
- * Who you are, and the way out.
- *
- * On a wide screen it is an avatar that opens on click; inside the mobile menu
- * the same markup lays out as a labelled block, because a bare icon in a
- * vertical list gives no clue what it does.
+ * User account menu: logged-in shows avatar with My Cresta & sign out,
+ * logged-out shows icon with login/register options.
+ * On wide screen it's an icon that opens on click; on mobile it's a labelled
+ * block in the vertical menu.
  */
 function AccountMenu({ onNavigate }: { onNavigate: () => void }) {
   const { user, logout } = useAuth();
@@ -90,14 +89,14 @@ function AccountMenu({ onNavigate }: { onNavigate: () => void }) {
     };
   }, [open]);
 
-  if (!user) return null;
-
-  const initials = user.fullName
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase() ?? "")
-    .join("");
+  const initials = user
+    ? user.fullName
+        .split(/\s+/)
+        .filter(Boolean)
+        .slice(0, 2)
+        .map((part) => part[0]?.toUpperCase() ?? "")
+        .join("")
+    : "";
 
   return (
     <div className={`account-menu${open ? " is-open" : ""}`} ref={wrap}>
@@ -108,34 +107,63 @@ function AccountMenu({ onNavigate }: { onNavigate: () => void }) {
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
       >
-        <span className="account-avatar" aria-hidden="true">{initials || "?"}</span>
-        <span className="account-trigger-name">{user.fullName.split(" ")[0]}</span>
+        <span className="account-avatar" aria-hidden="true">
+          {user ? (initials || "?") : "👤"}
+        </span>
+        {user && <span className="account-trigger-name">{user.fullName.split(" ")[0]}</span>}
       </button>
 
       <div className="account-panel" role="menu">
-        <div className="account-who">
-          <strong>{user.fullName}</strong>
-          <small>{user.email}</small>
-        </div>
-        <Link
-          href={roleHome[user.role]}
-          role="menuitem"
-          onClick={() => { setOpen(false); onNavigate(); }}
-        >
-          My Cresta
-        </Link>
-        <button
-          className="account-signout"
-          type="button"
-          role="menuitem"
-          onClick={async () => {
-            setOpen(false);
-            onNavigate();
-            await logout();
-          }}
-        >
-          Sign out
-        </button>
+        {user ? (
+          <>
+            <div className="account-who">
+              <strong>{user.fullName}</strong>
+              <small>{user.email}</small>
+            </div>
+            <Link
+              href={roleHome[user.role]}
+              role="menuitem"
+              onClick={() => { setOpen(false); onNavigate(); }}
+            >
+              My Cresta
+            </Link>
+            <button
+              className="account-signout"
+              type="button"
+              role="menuitem"
+              onClick={async () => {
+                setOpen(false);
+                onNavigate();
+                await logout();
+              }}
+            >
+              Logout
+            </button>
+          </>
+        ) : (
+          <>
+            <Link
+              href="/my-cresta"
+              role="menuitem"
+              onClick={() => { setOpen(false); onNavigate(); }}
+              className="account-login"
+            >
+              Login
+            </Link>
+            <Link
+              href="/my-cresta"
+              role="menuitem"
+              onClick={() => { setOpen(false); onNavigate(); }}
+              className="account-register"
+            >
+              Register
+            </Link>
+            <div className="account-panel-divider" />
+            <div className="account-panel-note">
+              Sign in or register to manage your configurations, receive quotes, and access My Cresta.
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
@@ -302,21 +330,15 @@ export function SiteHeader({
         <Link href="/about" onClick={closeAll}>
           Cresta Marine
         </Link>
-        {/* Signed out this is just the marketing page; signed in it becomes
-            the way back to your own area, and the way out. */}
-        {user ? (
-          <AccountMenu onNavigate={closeAll} />
-        ) : (
-          <Link href="/my-cresta" onClick={closeAll}>
-            My Cresta
-          </Link>
-        )}
+        <div className="nav-divider" />
+        <AccountMenu onNavigate={closeAll} />
         <a
           className="whatsapp-link"
           href="https://wa.me/201224212222"
           target="_blank"
           rel="noreferrer"
           aria-label="Chat with Cresta Marine on WhatsApp at +20 122 421 2222"
+          onClick={closeAll}
         >
           <span className="whatsapp-icon" aria-hidden="true" />
           <span className="whatsapp-handle">WhatsApp</span>
@@ -327,6 +349,7 @@ export function SiteHeader({
           target="_blank"
           rel="noreferrer"
           aria-label="Cresta Marine on Instagram"
+          onClick={closeAll}
         >
           <span className="instagram-icon" aria-hidden="true" />
           <span className="instagram-handle">Instagram</span>

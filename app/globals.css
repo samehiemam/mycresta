@@ -7612,6 +7612,38 @@ p {
 .account-signout:hover { background: var(--warm-100); }
 .account-signout { color: #a4291b; }
 
+.account-login {
+  font-weight: 500;
+  color: var(--teal-700);
+}
+
+.account-register {
+  background: var(--teal-50);
+}
+
+.account-register:hover {
+  background: var(--teal-100);
+}
+
+.account-panel-divider {
+  background: var(--warm-100);
+  height: 1px;
+  margin: 6px 0;
+}
+
+.account-panel-note {
+  color: var(--warm-600);
+  font-size: 0.7rem;
+  padding: 8px 10px;
+  line-height: 1.4;
+}
+
+.nav-divider {
+  background: var(--warm-200);
+  height: 1px;
+  margin: 8px 0;
+}
+
 @media (max-width: 820px) {
   /* In the stacked mobile menu a bare avatar says nothing, so the whole thing
      becomes a labelled block with the actions always visible — no second tap
@@ -7637,7 +7669,21 @@ p {
 
   .account-who { display: none; }
   .account-panel a,
-  .account-signout { padding-left: 38px; }
+  .account-signout {
+    padding-left: 38px;
+  }
+
+  .account-panel-divider {
+    margin: 8px 0;
+  }
+
+  .account-panel-note {
+    padding: 10px 38px 8px;
+  }
+
+  .nav-divider {
+    display: none;
+  }
 }
 
 /* ---- portal home: actions, pipeline, quick create ---------------------- */
