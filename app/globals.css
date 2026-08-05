@@ -821,14 +821,21 @@ p {
 /* Masked so the mark takes currentColor, matching the Instagram glyph and the
    menu text on both the light and inverse headers. */
 .whatsapp-icon {
-  background-color: currentColor;
   display: inline-block;
   flex: 0 0 auto;
   height: 20px;
-  mask: url("/images/whatsapp-mark-menu.svg") center / contain no-repeat;
-  -webkit-mask: url("/images/whatsapp-mark-menu.svg") center / contain no-repeat;
   width: 20px;
   transition: transform 150ms ease;
+  object-fit: contain;
+}
+
+/* Color the icon based on header state */
+.site-header .whatsapp-icon {
+  filter: invert(0);
+}
+
+.site-header--inverse .whatsapp-icon {
+  filter: brightness(0) invert(1);
 }
 
 .whatsapp-link:hover .whatsapp-icon {
@@ -971,13 +978,20 @@ p {
 }
 
 .instagram-icon {
-  border: 1.7px solid currentColor;
-  border-radius: 5px;
   display: inline-block;
   height: 20px;
-  position: relative;
   width: 20px;
   transition: transform 150ms ease;
+  object-fit: contain;
+}
+
+/* Color the icon based on header state */
+.site-header .instagram-icon {
+  filter: invert(0);
+}
+
+.site-header--inverse .instagram-icon {
+  filter: brightness(0) invert(1);
 }
 
 .instagram-link:hover .instagram-icon {
@@ -7606,9 +7620,10 @@ p {
 
 .account-avatar {
   align-items: center;
-  background: transparent;
-  border: 1.5px solid currentColor;
-  border-radius: 50%;
+  background-image: url("/images/profile-ring.svg");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
   color: inherit;
   display: flex;
   flex: 0 0 auto;
@@ -7617,37 +7632,20 @@ p {
   width: 20px;
   position: relative;
   flex-shrink: 0;
-  font-size: 0.55rem;
+  font-size: 0.65rem;
   font-weight: 600;
   line-height: 1;
   transition: transform 150ms ease;
+  overflow: visible;
 }
 
 .account-trigger:hover .account-avatar {
   transform: scale(1.15);
 }
 
-/* User icon when logged out - circle with person outline */
-.account-avatar::before {
-  content: "";
-  display: block;
-  width: 3.5px;
-  height: 3.5px;
-  background: currentColor;
-  border-radius: 50%;
-  position: absolute;
-  top: 3px;
-}
-
-.account-avatar::after {
-  content: "";
-  display: block;
-  width: 8px;
-  height: 5px;
-  border: 1.5px solid currentColor;
-  border-radius: 50% 50% 0 0;
-  position: absolute;
-  bottom: 2px;
+/* The SVG uses currentColor for stroke, so it inherits text color */
+.account-avatar {
+  color: inherit;
 }
 
 .account-trigger-name {

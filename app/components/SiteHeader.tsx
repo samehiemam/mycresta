@@ -145,7 +145,10 @@ function AccountMenu({ onNavigate }: { onNavigate: () => void }) {
         onClick={() => setOpen((v) => !v)}
         aria-label={user ? `Account menu for ${user.fullName}` : "Account menu"}
       >
-        <span className="account-avatar" aria-hidden="true">
+        <span
+          className={`account-avatar${user ? " has-initials" : ""}`}
+          aria-hidden="true"
+        >
           {user ? (initials || "?") : ""}
         </span>
         {user && <span className="account-trigger-name">{user.fullName.split(" ")[0]}</span>}
@@ -410,7 +413,12 @@ export function SiteHeader({
           data-label="WhatsApp"
           onClick={closeAll}
         >
-          <span className="whatsapp-icon" aria-hidden="true" />
+          <img
+            src="/images/whatsapp-icon.svg"
+            alt=""
+            className="whatsapp-icon"
+            aria-hidden="true"
+          />
           <span className="whatsapp-handle">WhatsApp</span>
         </a>
         <a
@@ -422,7 +430,12 @@ export function SiteHeader({
           data-label="Instagram"
           onClick={closeAll}
         >
-          <span className="instagram-icon" aria-hidden="true" />
+          <img
+            src="/images/instagram-icon.svg"
+            alt=""
+            className="instagram-icon"
+            aria-hidden="true"
+          />
           <span className="instagram-handle">Instagram</span>
         </a>
       </nav>
