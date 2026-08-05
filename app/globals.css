@@ -7545,9 +7545,10 @@ p {
 
 .account-avatar {
   align-items: center;
-  background: var(--navy-700);
+  background: transparent;
+  border: 2px solid currentColor;
   border-radius: 50%;
-  color: var(--white);
+  color: inherit;
   display: flex;
   flex: 0 0 auto;
   font-size: 0.62rem;
@@ -7556,11 +7557,13 @@ p {
   justify-content: center;
   letter-spacing: 0.04em;
   width: 30px;
+  position: relative;
 }
 
-.site-header--inverse .account-avatar {
-  background: rgba(255, 255, 255, 0.9);
-  color: var(--navy-900);
+.account-avatar::before {
+  content: "👤";
+  font-size: 0.9rem;
+  line-height: 1;
 }
 
 .account-trigger-name { display: none; }
@@ -7612,30 +7615,96 @@ p {
 .account-signout:hover { background: var(--warm-100); }
 .account-signout { color: #a4291b; }
 
-.account-login {
+.quick-login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0;
+}
+
+.login-input {
+  background: var(--warm-50);
+  border: 1px solid var(--warm-200);
+  border-radius: 6px;
+  color: var(--navy-900);
+  font-size: 0.8rem;
+  padding: 8px 10px;
+  font-family: inherit;
+  transition: border-color 150ms ease;
+}
+
+.login-input::placeholder {
+  color: var(--warm-500);
+}
+
+.login-input:focus {
+  border-color: var(--teal-500);
+  outline: none;
+  background: var(--white);
+}
+
+.login-submit {
+  background: var(--teal-600);
+  color: var(--white);
+  border: 0;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.8rem;
   font-weight: 500;
-  color: var(--teal-700);
+  padding: 8px 12px;
+  transition: background 150ms ease;
+  font-family: inherit;
+  margin-top: 4px;
 }
 
-.account-register {
-  background: var(--teal-50);
-}
-
-.account-register:hover {
-  background: var(--teal-100);
+.login-submit:hover {
+  background: var(--teal-700);
 }
 
 .account-panel-divider {
   background: var(--warm-100);
   height: 1px;
-  margin: 6px 0;
+  margin: 8px 0;
 }
 
-.account-panel-note {
-  color: var(--warm-600);
-  font-size: 0.7rem;
+.account-panel-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 0;
+}
+
+.footer-link {
+  background: none;
+  border: 0;
+  border-radius: 6px;
+  color: var(--navy-900);
+  cursor: pointer;
+  display: block;
+  font-size: 0.8rem;
   padding: 8px 10px;
-  line-height: 1.4;
+  text-align: left;
+  text-decoration: none;
+  transition: background 150ms ease;
+  font-family: inherit;
+}
+
+.footer-link:hover {
+  background: var(--warm-100);
+}
+
+.my-cresta-link {
+  font-weight: 500;
+  color: var(--teal-700);
+}
+
+.register-link {
+  background: var(--teal-50);
+  color: var(--navy-900);
+}
+
+.register-link:hover {
+  background: var(--teal-100);
 }
 
 .nav-divider {
@@ -7677,8 +7746,21 @@ p {
     margin: 8px 0;
   }
 
-  .account-panel-note {
-    padding: 10px 38px 8px;
+  .quick-login-form {
+    padding: 0;
+  }
+
+  .login-input,
+  .login-submit {
+    padding-left: 38px;
+  }
+
+  .account-panel-footer {
+    padding: 0;
+  }
+
+  .footer-link {
+    padding-left: 38px;
   }
 
   .nav-divider {

@@ -63,7 +63,7 @@ function NavMenu({
 
 /**
  * User account menu: logged-in shows avatar with My Cresta & sign out,
- * logged-out shows icon with login/register options.
+ * logged-out shows quick login form.
  * On wide screen it's an icon that opens on click; on mobile it's a labelled
  * block in the vertical menu.
  */
@@ -106,9 +106,10 @@ function AccountMenu({ onNavigate }: { onNavigate: () => void }) {
         aria-haspopup="menu"
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
+        aria-label={user ? `Account menu for ${user.fullName}` : "Account menu"}
       >
         <span className="account-avatar" aria-hidden="true">
-          {user ? (initials || "?") : "👤"}
+          {user ? (initials || "?") : ""}
         </span>
         {user && <span className="account-trigger-name">{user.fullName.split(" ")[0]}</span>}
       </button>
@@ -142,25 +143,49 @@ function AccountMenu({ onNavigate }: { onNavigate: () => void }) {
           </>
         ) : (
           <>
-            <Link
-              href="/my-cresta"
-              role="menuitem"
-              onClick={() => { setOpen(false); onNavigate(); }}
-              className="account-login"
-            >
-              Login
-            </Link>
-            <Link
-              href="/my-cresta"
-              role="menuitem"
-              onClick={() => { setOpen(false); onNavigate(); }}
-              className="account-register"
-            >
-              Register
-            </Link>
+            <div className="quick-login-form">
+              <input
+                type="text"
+                placeholder="Username or email"
+                className="login-input"
+                aria-label="Username or email"
+              />
+              <input
+                type="password"
+                placeholder="Password"
+                className="login-input"
+                aria-label="Password"
+              />
+              <button
+                className="login-submit"
+                type="button"
+                onClick={() => {
+                  setOpen(false);
+                  onNavigate();
+                  // Login form submission would be handled here
+                  // For now, redirect to My Cresta for full auth
+                  window.location.href = "/my-cresta";
+                }}
+              >
+                Sign In
+              </button>
+            </div>
             <div className="account-panel-divider" />
-            <div className="account-panel-note">
-              Sign in or register to manage your configurations, receive quotes, and access My Cresta.
+            <div className="account-panel-footer">
+              <Link
+                href="/my-cresta"
+                className="footer-link my-cresta-link"
+                onClick={() => { setOpen(false); onNavigate(); }}
+              >
+                My Cresta
+              </Link>
+              <Link
+                href="/my-cresta"
+                className="footer-link register-link"
+                onClick={() => { setOpen(false); onNavigate(); }}
+              >
+                Register
+              </Link>
             </div>
           </>
         )}
