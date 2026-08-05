@@ -800,15 +800,15 @@ p {
 .account-trigger::after {
   background: var(--navy-900);
   border-radius: 4px;
-  bottom: calc(100% + 10px);
+  bottom: calc(100% + 8px);
   color: var(--white);
   content: attr(data-label);
   font-size: 0.7rem;
   left: 50%;
   opacity: 0;
-  padding: 6px 10px;
+  padding: 4px 8px;
   pointer-events: none;
-  position: fixed;
+  position: absolute;
   transform: translateX(-50%) translateY(4px);
   transition: opacity 150ms ease, transform 150ms ease;
   white-space: nowrap;
@@ -7603,10 +7603,15 @@ p {
   transition: transform 150ms ease;
   overflow: visible;
   object-fit: contain;
+  filter: brightness(0) invert(1);
 }
 
 .account-trigger:hover .account-avatar {
   transform: scale(1.15);
+}
+
+.site-header--inverse .account-avatar {
+  filter: invert(0);
 }
 
 /* Logged-in: profile ring with initials */
