@@ -759,32 +759,6 @@ p {
   color: var(--white);
   position: absolute;
 }
-
-/* The header floats on the picture with nothing behind it, and the hero wash
- * deliberately leaves the top right open — which is exactly where the menu
- * ends up, over bare sunset. Measured there, white on that sky is 1.4:1. The
- * type carries its own shadow instead of the picture being dimmed for it.
- *
- * The marks are shapes cut out of a currentColor fill, not glyphs, so a
- * text-shadow does not touch them; drop-shadow follows the cut-out. */
-.site-header--inverse .site-nav a,
-.site-header--inverse .nav-menu-toggle,
-.site-header--inverse .account-trigger {
-  text-shadow:
-    0 1px 2px rgba(8, 29, 51, 0.92),
-    0 0 6px rgba(8, 29, 51, 0.8),
-    0 0 16px rgba(8, 29, 51, 0.6);
-}
-
-.site-header--inverse .whatsapp-icon,
-.site-header--inverse .instagram-icon,
-.site-header--inverse .facebook-icon,
-.site-header--inverse .account-avatar,
-.site-header--inverse .brand-link img {
-  filter: drop-shadow(0 1px 2px rgba(8, 29, 51, 0.8))
-    drop-shadow(0 0 8px rgba(8, 29, 51, 0.5));
-}
-
 .site-header--solid {
   background: rgba(8, 29, 51, 0.97);
   border-color: rgba(255, 255, 255, 0.14);
