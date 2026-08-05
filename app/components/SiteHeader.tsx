@@ -68,8 +68,12 @@ function NavMenu({
  * block in the vertical menu.
  */
 function AccountMenu({ onNavigate }: { onNavigate: () => void }) {
-  const { user, logout } = useAuth();
+  const { user, logout, api } = useAuth();
   const [open, setOpen] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [logging, setLogging] = useState(false);
+  const [error, setError] = useState("");
   const wrap = useRef<HTMLDivElement>(null);
 
   // Close on an outside click or on Escape, the two things people try.
@@ -97,6 +101,29 @@ function AccountMenu({ onNavigate }: { onNavigate: () => void }) {
         .map((part) => part[0]?.toUpperCase() ?? "")
         .join("")
     : "";
+
+  const handleLogin = async () => {
+    if (!email || !password || logging) return;
+
+    setLogging(true);
+    setError("");
+
+    try {
+      await api("auth.php", "login", { email, password });
+      setEmail("");
+      setPassword("");
+      setOpen(false);
+      onNavigate();
+      // Refresh to show logged-in state
+      window.location.reload();
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Login failed. Please try again."
+      );
+    } finally {
+      setLogging(false);
+    }
+  };
 
   return (
     <div className={`account-menu${open ? " is-open" : ""}`} ref={wrap}>
@@ -144,30 +171,37 @@ function AccountMenu({ onNavigate }: { onNavigate: () => void }) {
         ) : (
           <>
             <div className="quick-login-form">
+              {error && <div className="login-error">{error}</div>}
               <input
-                type="text"
-                placeholder="Username or email"
+                type="email"
+                placeholder="Email address"
                 className="login-input"
-                aria-label="Username or email"
+                aria-label="Email address"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={logging}
               />
               <input
                 type="password"
                 placeholder="Password"
                 className="login-input"
                 aria-label="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                disabled={logging}
+                onKeyPress={(e) => {
+                  if (e.key === "Enter" && email && password && !logging) {
+                    handleLogin();
+                  }
+                }}
               />
               <button
                 className="login-submit"
                 type="button"
-                onClick={() => {
-                  setOpen(false);
-                  onNavigate();
-                  // Login form submission would be handled here
-                  // For now, redirect to My Cresta for full auth
-                  window.location.href = "/my-cresta";
-                }}
+                onClick={handleLogin}
+                disabled={logging || !email || !password}
               >
-                Sign In
+                {logging ? "Signing in..." : "Sign In"}
               </button>
             </div>
             <div className="account-panel-divider" />
