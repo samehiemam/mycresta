@@ -109,17 +109,28 @@ function AccountMenu({ onNavigate }: { onNavigate: () => void }) {
     setError("");
 
     try {
-      await api("auth.php", "login", { email, password });
-      setEmail("");
-      setPassword("");
-      setOpen(false);
-      onNavigate();
-      // Refresh to show logged-in state
-      window.location.reload();
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Login failed. Please try again."
+      const response = await api<{ user?: unknown; success?: boolean }>(
+        "auth.php",
+        "login",
+        { email, password }
       );
+
+      if (response?.success || response?.user) {
+        setEmail("");
+        setPassword("");
+        setOpen(false);
+        onNavigate();
+        // Small delay then refresh to show logged-in state
+        setTimeout(() => window.location.reload(), 500);
+      } else {
+        setError("Login failed. Please check your credentials.");
+      }
+    } catch (err) {
+      const message =
+        err instanceof Error
+          ? err.message
+          : "Login failed. Please try again.";
+      setError(message);
     } finally {
       setLogging(false);
     }

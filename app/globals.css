@@ -7539,50 +7539,56 @@ p {
   cursor: pointer;
   display: flex;
   font: inherit;
-  gap: 8px;
+  gap: 6px;
   padding: 0;
 }
 
 .account-avatar {
   align-items: center;
   background: transparent;
-  border: 1.8px solid currentColor;
+  border: 1.5px solid currentColor;
   border-radius: 50%;
   color: inherit;
   display: flex;
   flex: 0 0 auto;
-  height: 30px;
+  height: 17px;
   justify-content: center;
-  width: 30px;
+  width: 17px;
   position: relative;
   flex-shrink: 0;
+  font-size: 0.55rem;
+  font-weight: 600;
+  line-height: 1;
 }
 
 /* User icon when logged out - circle with person outline */
 .account-avatar::before {
   content: "";
   display: block;
-  width: 6px;
-  height: 6px;
+  width: 3.5px;
+  height: 3.5px;
   background: currentColor;
   border-radius: 50%;
   position: absolute;
-  top: 8px;
-  margin-bottom: 2px;
+  top: 3px;
 }
 
 .account-avatar::after {
   content: "";
   display: block;
-  width: 12px;
-  height: 8px;
-  border: 1.8px solid currentColor;
+  width: 8px;
+  height: 5px;
+  border: 1.5px solid currentColor;
   border-radius: 50% 50% 0 0;
   position: absolute;
-  bottom: 4px;
+  bottom: 2px;
 }
 
-.account-trigger-name { display: none; }
+.account-trigger-name {
+  display: none;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
 
 .account-panel {
   background: var(--white);
