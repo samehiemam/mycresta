@@ -89,13 +89,19 @@ export default function Home() {
 
         <section className="home-thesis" data-reveal>
           <span className="eyebrow">Beyond the day trip</span>
-          <h2>Wake up to the waves.</h2>
+          {/* Broken at the comma: left to wrap it splits after "made" and
+              strands "distinctly yours." from the phrase it belongs to. */}
+          <h2>
+            Yacht ownership,
+            <br />
+            made distinctly yours.
+          </h2>
           <p>
-            Cresta Marine is the Kumbra Yachts dealer at Abu Tig Marina in El
-            Gouna, serving owners across the Red Sea and Egypt&apos;s North
-            Coast. From selecting the right yacht to personalisation, delivery,
-            financing and long-term care, Cresta makes every step considered,
-            connected and distinctly yours.
+            From choosing the right Kumbra yacht to personalisation, delivery,
+            financing and long-term care, Cresta Marine guides every stage of
+            ownership. Based at Abu Tig Marina in El Gouna, we serve clients
+            across the Red Sea and Egypt&apos;s North Coast with thoughtful
+            advice, seamless support and an experience shaped around you.
           </p>
         </section>
 
