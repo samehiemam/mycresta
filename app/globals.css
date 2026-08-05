@@ -8452,11 +8452,16 @@ p {
  * carry a full-bleed crop, and it already looks right. */
 @media (max-width: 820px) {
   .home-hero {
+    /* The height of the header the band hangs off. Both the image and the
+       padding below it are measured from this, so the band cannot drift away
+       from the header and leave a strip of navy between them. */
+    --hero-band-top: 76px;
+
     height: auto;
     min-height: 0;
     /* Room for the band: the image is 100vw wide at 3:2, so it stands
-       100vw/1.5 tall, plus the header it sits below. */
-    padding: calc(66.7vw + 96px) 24px 96px;
+       100vw/1.5 tall, and the copy clears it by 8px. */
+    padding: calc(66.7vw + var(--hero-band-top) + 8px) 24px 96px;
   }
 
   .home-hero > img {
@@ -8464,7 +8469,7 @@ p {
     height: auto;
     object-fit: contain;
     object-position: top center;
-    top: 88px;
+    top: var(--hero-band-top);
   }
 
   /* Rises later and harder than the desktop wash, so the photograph stays
