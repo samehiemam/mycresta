@@ -147,17 +147,22 @@ function AccountMenu({ onNavigate }: { onNavigate: () => void }) {
         data-label="My Cresta Login"
       >
         {user ? (
-          <span className="account-avatar has-initials">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" className="profile-ring">
-              <circle cx="12" cy="12" r="9.25"/>
+          <span className="account-avatar">
+            <svg
+              className="profile-ring"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.4"
+              aria-hidden="true"
+            >
+              <circle cx="12" cy="12" r="9.25" />
             </svg>
             <span className="initials-text">{initials || "?"}</span>
           </span>
         ) : (
-          <img
-            src="/images/profile-icon.svg"
-            alt=""
-            className="account-avatar"
+          <span
+            className="account-avatar account-avatar--anon"
             aria-hidden="true"
           />
         )}
@@ -423,12 +428,7 @@ export function SiteHeader({
           data-label="WhatsApp"
           onClick={closeAll}
         >
-          <img
-            src="/images/whatsapp-icon.svg"
-            alt=""
-            className="whatsapp-icon"
-            aria-hidden="true"
-          />
+          <span className="whatsapp-icon" aria-hidden="true" />
           <span className="whatsapp-handle">WhatsApp</span>
         </a>
         <a
@@ -440,12 +440,7 @@ export function SiteHeader({
           data-label="Instagram"
           onClick={closeAll}
         >
-          <img
-            src="/images/instagram-icon.svg"
-            alt=""
-            className="instagram-icon"
-            aria-hidden="true"
-          />
+          <span className="instagram-icon" aria-hidden="true" />
           <span className="instagram-handle">Instagram</span>
         </a>
         <a
@@ -457,12 +452,7 @@ export function SiteHeader({
           data-label="Facebook"
           onClick={closeAll}
         >
-          <img
-            src="/images/facebook-icon.svg"
-            alt=""
-            className="facebook-icon"
-            aria-hidden="true"
-          />
+          <span className="facebook-icon" aria-hidden="true" />
           <span className="facebook-handle">Facebook</span>
         </a>
       </nav>

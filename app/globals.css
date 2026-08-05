@@ -794,56 +794,84 @@ p {
   position: relative;
 }
 
-.instagram-link::after,
-.whatsapp-link::after,
-.facebook-link::after,
-.account-trigger::after {
+/* Scoped through .site-nav, and re-stating display, so these beat the
+   `.site-nav a::after { display: none }` that clears the nav underline. */
+.site-nav .whatsapp-link::after,
+.site-nav .instagram-link::after,
+.site-nav .facebook-link::after,
+.site-nav .account-trigger::after {
   background: var(--navy-900);
-  border-radius: 4px;
-  bottom: calc(100% + 8px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 6px;
+  bottom: calc(100% + 9px);
   color: var(--white);
   content: attr(data-label);
-  font-size: 0.7rem;
+  display: block;
+  font-size: 0.68rem;
+  font-weight: 500;
   left: 50%;
+  letter-spacing: 0.01em;
   opacity: 0;
-  padding: 4px 8px;
+  padding: 5px 9px;
   pointer-events: none;
   position: absolute;
   transform: translateX(-50%) translateY(4px);
   transition: opacity 150ms ease, transform 150ms ease;
   white-space: nowrap;
-  z-index: 9999;
+  z-index: 60;
 }
 
-.instagram-link:hover::after,
-.whatsapp-link:hover::after,
-.facebook-link:hover::after,
-.account-trigger:hover::after {
+.site-nav .whatsapp-link:hover::after,
+.site-nav .instagram-link:hover::after,
+.site-nav .facebook-link:hover::after,
+.site-nav .account-trigger:hover::after,
+.site-nav .whatsapp-link:focus-visible::after,
+.site-nav .instagram-link:focus-visible::after,
+.site-nav .facebook-link:focus-visible::after,
+.site-nav .account-trigger:focus-visible::after {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
 }
 
-/* Masked so the mark takes currentColor, matching the Instagram glyph and the
-   menu text on both the light and inverse headers. */
-.whatsapp-icon {
+/* Every header mark is the shape cut out of a solid currentColor fill. An
+   <img> renders the SVG in its own document, where currentColor can only ever
+   resolve to black — masking is what actually lets the marks follow the menu
+   text, navy on the light header and white on the inverse one. */
+.whatsapp-icon,
+.instagram-icon,
+.facebook-icon,
+.account-avatar--anon {
+  background-color: currentColor;
   display: inline-block;
   flex: 0 0 auto;
   height: 20px;
-  width: 20px;
   transition: transform 150ms ease;
-  object-fit: contain;
+  width: 20px;
 }
 
-/* Color the icon based on header state */
-.site-header .whatsapp-icon {
-  filter: invert(0);
+.whatsapp-icon {
+  mask: url("/images/whatsapp-icon.svg") center / contain no-repeat;
+  -webkit-mask: url("/images/whatsapp-icon.svg") center / contain no-repeat;
 }
 
-.site-header--inverse .whatsapp-icon {
-  filter: brightness(0) invert(1);
+.instagram-icon {
+  mask: url("/images/instagram-icon.svg") center / contain no-repeat;
+  -webkit-mask: url("/images/instagram-icon.svg") center / contain no-repeat;
 }
 
-.whatsapp-link:hover .whatsapp-icon {
+.facebook-icon {
+  mask: url("/images/facebook-icon.svg") center / contain no-repeat;
+  -webkit-mask: url("/images/facebook-icon.svg") center / contain no-repeat;
+}
+
+.account-avatar--anon {
+  mask: url("/images/profile-icon.svg") center / contain no-repeat;
+  -webkit-mask: url("/images/profile-icon.svg") center / contain no-repeat;
+}
+
+.whatsapp-link:hover .whatsapp-icon,
+.instagram-link:hover .instagram-icon,
+.facebook-link:hover .facebook-icon {
   transform: scale(1.15);
 }
 
@@ -983,30 +1011,6 @@ p {
   padding: 12px 10px 2px;
 }
 
-.instagram-icon,
-.facebook-icon {
-  display: inline-block;
-  height: 20px;
-  width: 20px;
-  transition: transform 150ms ease;
-  object-fit: contain;
-}
-
-/* Color the icons based on header state */
-.site-header .instagram-icon,
-.site-header .facebook-icon {
-  filter: invert(0.2);
-}
-
-.site-header--inverse .instagram-icon,
-.site-header--inverse .facebook-icon {
-  filter: brightness(0) invert(1);
-}
-
-.instagram-link:hover .instagram-icon,
-.facebook-link:hover .facebook-icon {
-  transform: scale(1.15);
-}
 
 
 .site-nav a::after {
@@ -4790,15 +4794,18 @@ p {
   }
 
   .site-nav .instagram-link,
-  .site-nav .whatsapp-link {
+  .site-nav .whatsapp-link,
+  .site-nav .facebook-link {
     color: var(--white);
     gap: 10px;
     margin-top: 7px;
   }
 
-  /* keep both social marks the same size in the mobile menu */
+  /* keep every mark the same size in the mobile menu */
   .site-nav .whatsapp-icon,
-  .site-nav .instagram-icon {
+  .site-nav .instagram-icon,
+  .site-nav .facebook-icon,
+  .site-nav .account-avatar {
     height: 19px;
     width: 19px;
   }
@@ -7587,49 +7594,40 @@ p {
 }
 
 
+/* The 20px box both avatar states share, so the mark stays level with the
+   three social marks whether it is the person glyph or your initials. */
 .account-avatar {
   align-items: center;
   color: inherit;
-  display: flex;
+  display: inline-flex;
   flex: 0 0 auto;
   height: 20px;
   justify-content: center;
-  width: 20px;
   position: relative;
-  flex-shrink: 0;
-  font-size: 0.65rem;
-  font-weight: 600;
-  line-height: 1;
   transition: transform 150ms ease;
-  overflow: visible;
-  object-fit: contain;
-  filter: brightness(0) invert(1);
+  width: 20px;
 }
 
 .account-trigger:hover .account-avatar {
   transform: scale(1.15);
 }
 
-.site-header--inverse .account-avatar {
-  filter: invert(0);
-}
-
-/* Logged-in: profile ring with initials */
-.account-avatar.has-initials {
-  background: transparent;
-}
-
+/* Signed in: the ring is inline SVG, so its stroke follows currentColor on its
+   own — no mask, because a mask would take the initials with it. */
 .profile-ring {
-  width: 100%;
   height: 100%;
+  left: 0;
   position: absolute;
-  stroke: currentColor;
+  top: 0;
+  width: 100%;
 }
 
 .initials-text {
+  font-size: 0.5rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  line-height: 1;
   position: relative;
-  z-index: 1;
-  color: currentColor;
 }
 
 .account-trigger-name {
