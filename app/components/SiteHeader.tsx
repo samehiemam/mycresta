@@ -145,12 +145,21 @@ function AccountMenu({ onNavigate }: { onNavigate: () => void }) {
         onClick={() => setOpen((v) => !v)}
         aria-label={user ? `Account menu for ${user.fullName}` : "Account menu"}
       >
-        <span
-          className={`account-avatar${user ? " has-initials" : ""}`}
-          aria-hidden="true"
-        >
-          {user ? (initials || "?") : ""}
-        </span>
+        {user ? (
+          <span className="account-avatar has-initials">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" className="profile-ring">
+              <circle cx="12" cy="12" r="9.25"/>
+            </svg>
+            <span className="initials-text">{initials || "?"}</span>
+          </span>
+        ) : (
+          <img
+            src="/images/profile-icon.svg"
+            alt=""
+            className="account-avatar"
+            aria-hidden="true"
+          />
+        )}
         {user && <span className="account-trigger-name">{user.fullName.split(" ")[0]}</span>}
       </button>
 

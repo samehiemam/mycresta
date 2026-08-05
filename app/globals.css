@@ -7609,10 +7609,6 @@ p {
 
 .account-avatar {
   align-items: center;
-  background-image: url("/images/profile-ring.svg");
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: contain;
   color: inherit;
   display: flex;
   flex: 0 0 auto;
@@ -7626,15 +7622,29 @@ p {
   line-height: 1;
   transition: transform 150ms ease;
   overflow: visible;
+  object-fit: contain;
 }
 
 .account-trigger:hover .account-avatar {
   transform: scale(1.15);
 }
 
-/* The SVG uses currentColor for stroke, so it inherits text color */
-.account-avatar {
-  color: inherit;
+/* Logged-in: profile ring with initials */
+.account-avatar.has-initials {
+  background: transparent;
+}
+
+.profile-ring {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  stroke: currentColor;
+}
+
+.initials-text {
+  position: relative;
+  z-index: 1;
+  color: currentColor;
 }
 
 .account-trigger-name {
