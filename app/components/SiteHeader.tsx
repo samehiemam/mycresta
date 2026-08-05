@@ -166,16 +166,12 @@ function AccountMenu({ onNavigate }: { onNavigate: () => void }) {
             aria-hidden="true"
           />
         )}
-        {/* Only the stacked menu shows these: a bare mark in a vertical list
+        {/* Only the stacked menu shows this: a bare mark in a vertical list
             gives no clue what it opens, but beside the desktop marks a label
-            would break the row. */}
-        <span className="account-trigger-text">
-          <span className="account-trigger-title">
-            {user ? user.fullName : "My Cresta"}
-          </span>
-          <span className="account-trigger-sub">
-            {user ? "My Cresta account" : "Sign in or register"}
-          </span>
+            would break the row. Everything else about the account waits
+            behind the chevron, the same as Fleet and Configurator. */}
+        <span className="account-trigger-title">
+          {user ? user.fullName : "My Cresta"}
         </span>
         <span className="account-chevron" aria-hidden="true" />
       </button>
@@ -451,7 +447,6 @@ export function SiteHeader({
         <Link href="/about" onClick={closeAll}>
           Cresta Marine
         </Link>
-        <div className="nav-divider" />
         <AccountMenu onNavigate={closeAll} />
         {/* display:contents on the desktop row, so the marks stay direct
             children of the nav flexbox and the header is unchanged; in the

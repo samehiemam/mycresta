@@ -7810,75 +7810,60 @@ p {
 
 .account-signout:hover { color: var(--navy-900); }
 
-/* The title, subtitle and chevron belong to the stacked menu only — beside the
-   desktop marks they would break the row. */
-.account-trigger-text,
-.account-chevron,
-.nav-divider { display: none; }
+/* The title and chevron belong to the stacked menu only — beside the desktop
+   marks they would break the row. */
+.account-trigger-title,
+.account-chevron { display: none; }
 
 /* Keeps the marks direct children of the nav flexbox on desktop. */
 .nav-social { display: contents; }
 
 @media (max-width: 820px) {
-  /* The stacked menu. A bare mark in a vertical list says nothing about what
-     it opens, so the row carries a name, a line of context and a chevron, and
-     the panel expands in place underneath it. */
+  /* The stacked menu. The row reads as one more menu item — the mark, the
+     name at the size the others use, and a chevron that opens the rest in
+     place. Everything it needs to match Fleet and Configurator is taken from
+     those rules: .nav-menu-head's rule, .site-nav a's type and padding, and
+     .nav-menu-toggle's chevron. */
   .account-menu { width: 100%; }
-
-  .nav-divider {
-    background: rgba(255, 255, 255, 0.14);
-    display: block;
-    height: 1px;
-    margin: 10px 0 2px;
-    width: 100%;
-  }
 
   .account-trigger {
     align-items: center;
-    gap: 14px;
-    padding: 12px 2px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+    gap: 12px;
+    padding: 14px 2px;
     width: 100%;
   }
 
   .site-nav .account-trigger .account-avatar {
-    height: 38px;
-    width: 38px;
-  }
-
-  .account-trigger-text {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    min-width: 0;
-    text-align: left;
+    height: 21px;
+    width: 21px;
   }
 
   .account-trigger-title {
     color: var(--white);
-    font-size: 1rem;
-    font-weight: 600;
+    display: block;
+    font-size: 0.88rem;
+    font-weight: 500;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
-  .account-trigger-sub {
-    color: rgba(255, 255, 255, 0.62);
-    font-size: 0.82rem;
-  }
-
+  /* Same geometry as .nav-menu-chevron, so the two sit at the same weight. */
   .account-chevron {
-    border-bottom: 1.6px solid rgba(255, 255, 255, 0.7);
-    border-right: 1.6px solid rgba(255, 255, 255, 0.7);
+    border-bottom: 1.5px solid currentColor;
+    border-right: 1.5px solid currentColor;
     display: block;
-    height: 8px;
+    height: 6px;
     margin-left: auto;
-    transform: rotate(45deg);
+    transform: rotate(45deg) translate(-1px, -1px);
     transition: transform 180ms ease;
-    width: 8px;
+    width: 6px;
   }
 
-  .account-menu.is-open .account-chevron { transform: rotate(-135deg); }
+  .account-menu.is-open .account-chevron {
+    transform: rotate(-135deg) translate(-2px, -2px);
+  }
 
   .account-panel {
     background: none;
@@ -7937,12 +7922,12 @@ p {
 
   /* The social marks close the menu as a strip of icons, without their
      labels — the row reads as a footer rather than three more menu items. */
+  /* No rule of its own: the account row above already closes the list with
+     one, and a second here reads as an empty row between them. */
   .nav-social {
-    border-top: 1px solid rgba(255, 255, 255, 0.14);
     display: flex;
     gap: 26px;
-    margin-top: 14px;
-    padding-top: 18px;
+    padding-top: 20px;
   }
 
   .site-nav .nav-social a {
