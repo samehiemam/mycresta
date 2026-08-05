@@ -760,6 +760,31 @@ p {
   position: absolute;
 }
 
+/* The header floats on the picture with nothing behind it, and the hero wash
+ * deliberately leaves the top right open — which is exactly where the menu
+ * ends up, over bare sunset. Measured there, white on that sky is 1.4:1. The
+ * type carries its own shadow instead of the picture being dimmed for it.
+ *
+ * The marks are shapes cut out of a currentColor fill, not glyphs, so a
+ * text-shadow does not touch them; drop-shadow follows the cut-out. */
+.site-header--inverse .site-nav a,
+.site-header--inverse .nav-menu-toggle,
+.site-header--inverse .account-trigger {
+  text-shadow:
+    0 1px 2px rgba(8, 29, 51, 0.92),
+    0 0 6px rgba(8, 29, 51, 0.8),
+    0 0 16px rgba(8, 29, 51, 0.6);
+}
+
+.site-header--inverse .whatsapp-icon,
+.site-header--inverse .instagram-icon,
+.site-header--inverse .facebook-icon,
+.site-header--inverse .account-avatar,
+.site-header--inverse .brand-link img {
+  filter: drop-shadow(0 1px 2px rgba(8, 29, 51, 0.8))
+    drop-shadow(0 0 8px rgba(8, 29, 51, 0.5));
+}
+
 .site-header--solid {
   background: rgba(8, 29, 51, 0.97);
   border-color: rgba(255, 255, 255, 0.14);
@@ -1128,71 +1153,82 @@ p {
   width: 100%;
 }
 
-/* Shade where the page actually puts things, and nowhere else.
+/* The wash, recovered from the reference by comparing it against the
+ * unshaded frame pixel by pixel and solving for the navy alpha at each point.
  *
- * Three pieces, because there are three places type sits on the photograph:
- * the header across the top, the copy in the lower left, and the foot strip.
- * Between them the picture is left alone.
+ * It is a left-to-right decay that is spent by about 70%, plus a heavy band
+ * across the bottom — measured 0.78 at the left edge, 0.19 by halfway, 0.03
+ * past 75%, and rising again to 0.94 at the very bottom edge.
  *
- * What this replaces washed the whole width on a left-to-right ramp — dark
- * over water where nothing needed help, thin by the time the headline reached
- * the bright sky, and nothing at all at the top. The menu was the worst of
- * it: white text on an open sunset at 1.4:1, effectively unreadable, and no
- * gradient that ramps sideways was ever going to reach it.
- *
- * The ellipse is sized in the box's own axes, so it tracks the copy column as
- * the hero reflows. Every stop set is a smoothstep — a straight ramp shows a
- * seam, because the eye catches the corner rather than the rate.
- *
- * Measured with each block's own colour, which matters: the kicker is pale
- * teal rather than white, so it needs a darker backdrop than the rest to
- * reach the same ratio, and it is the piece that sets how far up the ellipse
- * has to reach.
- *
- * Sampled against the photograph behind each block: menu 5.8 (was 1.4), logo
- * 6.4, kicker 5.3, headline 5.4 (was 2.6), paragraph 6.1, buttons 7.7, foot
- * 4.6 — and the frame reads about 14% brighter than the ramp did. These
- * numbers belong to this photograph; re-measure if it is replaced. */
+ * It deliberately leaves the top right open, so the menu sits on bare sunset
+ * there. That is carried by a shadow on the type instead — see the header
+ * rule below. Worth knowing what that trades: a shadow is not a background,
+ * and WCAG gives it no credit, so the menu is legible but not measurable the
+ * way a scrim would be. */
 .home-hero-overlay {
   background:
-    /* the header */
     linear-gradient(
-      180deg,
-      rgba(8, 29, 51, 0.62) 0%,
-      rgba(8, 29, 51, 0.62) 9%,
-      rgba(8, 29, 51, 0.574) 10%,
-      rgba(8, 29, 51, 0.459) 11%,
-      rgba(8, 29, 51, 0.31) 12%,
-      rgba(8, 29, 51, 0.161) 13%,
-      rgba(8, 29, 51, 0.046) 14%,
-      rgba(8, 29, 51, 0) 15%
+      90deg,
+      rgba(8, 29, 51, 0.775) 0%,
+      rgba(8, 29, 51, 0.746) 5%,
+      rgba(8, 29, 51, 0.707) 10%,
+      rgba(8, 29, 51, 0.663) 15%,
+      rgba(8, 29, 51, 0.606) 20%,
+      rgba(8, 29, 51, 0.542) 25%,
+      rgba(8, 29, 51, 0.474) 30%,
+      rgba(8, 29, 51, 0.403) 35%,
+      rgba(8, 29, 51, 0.329) 40%,
+      rgba(8, 29, 51, 0.253) 45%,
+      rgba(8, 29, 51, 0.189) 50%,
+      rgba(8, 29, 51, 0.128) 55%,
+      rgba(8, 29, 51, 0.082) 60%,
+      rgba(8, 29, 51, 0.059) 65%,
+      rgba(8, 29, 51, 0.043) 70%,
+      rgba(8, 29, 51, 0.033) 75%,
+      rgba(8, 29, 51, 0.03) 80%,
+      rgba(8, 29, 51, 0.023) 90%,
+      rgba(8, 29, 51, 0.017) 100%
     ),
-    /* the copy, lower left */
-    radial-gradient(
-      ellipse 72% 55% at 24% 70%,
-      rgba(8, 29, 51, 0.7) 0%,
-      rgba(8, 29, 51, 0.7) 65%,
-      rgba(8, 29, 51, 0.648) 70.83%,
-      rgba(8, 29, 51, 0.519) 76.67%,
-      rgba(8, 29, 51, 0.35) 82.5%,
-      rgba(8, 29, 51, 0.181) 88.33%,
-      rgba(8, 29, 51, 0.052) 94.17%,
-      rgba(8, 29, 51, 0) 100%
-    ),
-    /* the foot strip */
     linear-gradient(
       0deg,
-      rgba(8, 29, 51, 0.55) 0%,
-      rgba(8, 29, 51, 0.55) 4%,
-      rgba(8, 29, 51, 0.509) 6.33%,
-      rgba(8, 29, 51, 0.407) 8.67%,
-      rgba(8, 29, 51, 0.275) 11%,
-      rgba(8, 29, 51, 0.143) 13.33%,
-      rgba(8, 29, 51, 0.041) 15.67%,
-      rgba(8, 29, 51, 0) 18%
+      rgba(8, 29, 51, 0.94) 0%,
+      rgba(8, 29, 51, 0.78) 4%,
+      rgba(8, 29, 51, 0.62) 8%,
+      rgba(8, 29, 51, 0.42) 12%,
+      rgba(8, 29, 51, 0.27) 16%,
+      rgba(8, 29, 51, 0.1) 20%,
+      rgba(8, 29, 51, 0.03) 25%,
+      rgba(8, 29, 51, 0) 30%
     );
   inset: 0;
   position: absolute;
+}
+
+/* The wash is spent by 70%, and the copy runs to 61% — so its right-hand end,
+ * "sunset." and the tail of the paragraph, sits on open sky. Rather than pull
+ * the wash back across the picture, the type carries its own shadow: a tight
+ * dark edge to separate the glyph, and a wider one to sink the few pixels
+ * around it. Big type needs less of both, so the headline is lighter.
+ *
+ * This is legibility by shadow rather than by background, which is the trade
+ * the design asks for. It reads, but WCAG measures text against a background
+ * and gives a shadow no credit, so these cannot be quoted as passing ratios
+ * the way a scrim can. */
+.home-hero-copy .eyebrow,
+.home-hero-copy > p {
+  text-shadow:
+    0 1px 2px rgba(8, 29, 51, 0.85),
+    0 0 10px rgba(8, 29, 51, 0.6);
+}
+
+.home-hero h1 {
+  text-shadow:
+    0 2px 6px rgba(8, 29, 51, 0.55),
+    0 0 28px rgba(8, 29, 51, 0.42);
+}
+
+.home-hero .button--ghost-light {
+  text-shadow: 0 1px 2px rgba(8, 29, 51, 0.7);
 }
 
 .home-hero-copy {
@@ -4504,47 +4540,6 @@ p {
 }
 
 @media (max-width: 1100px) {
-  /* The copy column is a fixed width inside a shrinking hero, so it reaches
-     76% of the frame here against 61% at 1280, and the foot strip's three
-     items wrap onto two lines and climb. The header band is unchanged; the
-     ellipse widens to follow the copy and the foot reaches higher. */
-  .home-hero-overlay {
-    background:
-      linear-gradient(
-        180deg,
-        rgba(8, 29, 51, 0.62) 0%,
-        rgba(8, 29, 51, 0.62) 9%,
-        rgba(8, 29, 51, 0.574) 10%,
-        rgba(8, 29, 51, 0.459) 11%,
-        rgba(8, 29, 51, 0.31) 12%,
-        rgba(8, 29, 51, 0.161) 13%,
-        rgba(8, 29, 51, 0.046) 14%,
-        rgba(8, 29, 51, 0) 15%
-      ),
-      radial-gradient(
-        ellipse 85% 55% at 30% 70%,
-        rgba(8, 29, 51, 0.78) 0%,
-        rgba(8, 29, 51, 0.78) 55%,
-        rgba(8, 29, 51, 0.722) 62.5%,
-        rgba(8, 29, 51, 0.578) 70%,
-        rgba(8, 29, 51, 0.39) 77.5%,
-        rgba(8, 29, 51, 0.202) 85%,
-        rgba(8, 29, 51, 0.058) 92.5%,
-        rgba(8, 29, 51, 0) 100%
-      ),
-      linear-gradient(
-        0deg,
-        rgba(8, 29, 51, 0.55) 0%,
-        rgba(8, 29, 51, 0.55) 4%,
-        rgba(8, 29, 51, 0.509) 7%,
-        rgba(8, 29, 51, 0.407) 10%,
-        rgba(8, 29, 51, 0.275) 13%,
-        rgba(8, 29, 51, 0.143) 16%,
-        rgba(8, 29, 51, 0.041) 19%,
-        rgba(8, 29, 51, 0) 22%
-      );
-  }
-
   .site-header {
     grid-template-columns: auto 1fr;
     padding: 0 3vw;
