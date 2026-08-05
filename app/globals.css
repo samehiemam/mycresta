@@ -790,6 +790,32 @@ p {
   align-items: center;
   display: inline-flex;
   gap: 7px;
+  position: relative;
+}
+
+.instagram-link::after,
+.whatsapp-link::after {
+  background: var(--navy-900);
+  border-radius: 4px;
+  bottom: calc(100% + 8px);
+  color: var(--white);
+  content: attr(data-label);
+  font-size: 0.7rem;
+  left: 50%;
+  opacity: 0;
+  padding: 4px 8px;
+  pointer-events: none;
+  position: absolute;
+  transform: translateX(-50%) translateY(4px);
+  transition: opacity 150ms ease, transform 150ms ease;
+  white-space: nowrap;
+  z-index: 50;
+}
+
+.instagram-link:hover::after,
+.whatsapp-link:hover::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
 }
 
 /* Masked so the mark takes currentColor, matching the Instagram glyph and the
@@ -798,10 +824,15 @@ p {
   background-color: currentColor;
   display: inline-block;
   flex: 0 0 auto;
-  height: 17px;
+  height: 20px;
   mask: url("/images/whatsapp-mark-menu.svg") center / contain no-repeat;
   -webkit-mask: url("/images/whatsapp-mark-menu.svg") center / contain no-repeat;
-  width: 17px;
+  width: 20px;
+  transition: transform 150ms ease;
+}
+
+.whatsapp-link:hover .whatsapp-icon {
+  transform: scale(1.15);
 }
 
 .instagram-handle,
@@ -943,9 +974,14 @@ p {
   border: 1.7px solid currentColor;
   border-radius: 5px;
   display: inline-block;
-  height: 17px;
+  height: 20px;
   position: relative;
-  width: 17px;
+  width: 20px;
+  transition: transform 150ms ease;
+}
+
+.instagram-link:hover .instagram-icon {
+  transform: scale(1.15);
 }
 
 .instagram-icon::before {
@@ -4765,7 +4801,8 @@ p {
   }
 
   .site-nav .instagram-link::after,
-  .site-nav .whatsapp-link::after {
+  .site-nav .whatsapp-link::after,
+  .site-nav .account-trigger::after {
     display: none;
   }
 
@@ -7541,6 +7578,30 @@ p {
   font: inherit;
   gap: 6px;
   padding: 0;
+  position: relative;
+}
+
+.account-trigger::after {
+  background: var(--navy-900);
+  border-radius: 4px;
+  bottom: calc(100% + 8px);
+  color: var(--white);
+  content: "My Cresta Login";
+  font-size: 0.7rem;
+  left: 50%;
+  opacity: 0;
+  padding: 4px 8px;
+  pointer-events: none;
+  position: absolute;
+  transform: translateX(-50%) translateY(4px);
+  transition: opacity 150ms ease, transform 150ms ease;
+  white-space: nowrap;
+  z-index: 50;
+}
+
+.account-trigger:hover::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
 }
 
 .account-avatar {
@@ -7551,14 +7612,19 @@ p {
   color: inherit;
   display: flex;
   flex: 0 0 auto;
-  height: 17px;
+  height: 20px;
   justify-content: center;
-  width: 17px;
+  width: 20px;
   position: relative;
   flex-shrink: 0;
   font-size: 0.55rem;
   font-weight: 600;
   line-height: 1;
+  transition: transform 150ms ease;
+}
+
+.account-trigger:hover .account-avatar {
+  transform: scale(1.15);
 }
 
 /* User icon when logged out - circle with person outline */

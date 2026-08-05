@@ -408,6 +408,7 @@ export function SiteHeader({
           target="_blank"
           rel="noreferrer"
           aria-label="Chat with Cresta Marine on WhatsApp at +20 122 421 2222"
+          data-label="WhatsApp"
           onClick={closeAll}
         >
           <span className="whatsapp-icon" aria-hidden="true" />
@@ -419,6 +420,7 @@ export function SiteHeader({
           target="_blank"
           rel="noreferrer"
           aria-label="Cresta Marine on Instagram"
+          data-label="Instagram"
           onClick={closeAll}
         >
           <span className="instagram-icon" aria-hidden="true" />
