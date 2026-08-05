@@ -786,7 +786,8 @@ p {
 }
 
 .instagram-link,
-.whatsapp-link {
+.whatsapp-link,
+.facebook-link {
   align-items: center;
   display: inline-flex;
   gap: 7px;
@@ -794,7 +795,8 @@ p {
 }
 
 .instagram-link::after,
-.whatsapp-link::after {
+.whatsapp-link::after,
+.facebook-link::after {
   background: var(--navy-900);
   border-radius: 4px;
   bottom: calc(100% + 8px);
@@ -813,7 +815,8 @@ p {
 }
 
 .instagram-link:hover::after,
-.whatsapp-link:hover::after {
+.whatsapp-link:hover::after,
+.facebook-link:hover::after {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
 }
@@ -843,7 +846,8 @@ p {
 }
 
 .instagram-handle,
-.whatsapp-handle {
+.whatsapp-handle,
+.facebook-handle {
   display: none;
 }
 
@@ -977,7 +981,8 @@ p {
   padding: 12px 10px 2px;
 }
 
-.instagram-icon {
+.instagram-icon,
+.facebook-icon {
   display: inline-block;
   height: 20px;
   width: 20px;
@@ -985,40 +990,22 @@ p {
   object-fit: contain;
 }
 
-/* Color the icon based on header state */
-.site-header .instagram-icon {
-  filter: invert(0);
+/* Color the icons based on header state */
+.site-header .instagram-icon,
+.site-header .facebook-icon {
+  filter: invert(0.2);
 }
 
-.site-header--inverse .instagram-icon {
+.site-header--inverse .instagram-icon,
+.site-header--inverse .facebook-icon {
   filter: brightness(0) invert(1);
 }
 
-.instagram-link:hover .instagram-icon {
+.instagram-link:hover .instagram-icon,
+.facebook-link:hover .facebook-icon {
   transform: scale(1.15);
 }
 
-.instagram-icon::before {
-  border: 1.6px solid currentColor;
-  border-radius: 50%;
-  content: "";
-  height: 6px;
-  left: 3.7px;
-  position: absolute;
-  top: 3.7px;
-  width: 6px;
-}
-
-.instagram-icon::after {
-  background: currentColor;
-  border-radius: 50%;
-  content: "";
-  height: 2px;
-  position: absolute;
-  right: 2.4px;
-  top: 2.4px;
-  width: 2px;
-}
 
 .site-nav a::after {
   display: none;
@@ -4816,12 +4803,14 @@ p {
 
   .site-nav .instagram-link::after,
   .site-nav .whatsapp-link::after,
+  .site-nav .facebook-link::after,
   .site-nav .account-trigger::after {
     display: none;
   }
 
   .instagram-handle,
-  .whatsapp-handle {
+  .whatsapp-handle,
+  .facebook-handle {
     display: inline;
   }
 

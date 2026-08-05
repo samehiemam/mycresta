@@ -438,6 +438,23 @@ export function SiteHeader({
           />
           <span className="instagram-handle">Instagram</span>
         </a>
+        <a
+          className="facebook-link"
+          href="https://www.facebook.com/cresta.marine"
+          target="_blank"
+          rel="noreferrer"
+          aria-label="Cresta Marine on Facebook"
+          data-label="Facebook"
+          onClick={closeAll}
+        >
+          <img
+            src="/images/facebook-icon.svg"
+            alt=""
+            className="facebook-icon"
+            aria-hidden="true"
+          />
+          <span className="facebook-handle">Facebook</span>
+        </a>
       </nav>
     </header>
   );
