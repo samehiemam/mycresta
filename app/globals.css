@@ -8521,44 +8521,58 @@ p {
  * loses the bow, which is the part of the boat worth showing. */
 @media (max-width: 820px) {
   .home-hero {
-    /* Top, not bottom. Desktop separates the copy from the boat across the
-       width; a portrait crop has no width to spare, so the split goes the
-       other way — type in the sky, boat underneath it. */
+    /* The photograph sits at its own shape along the bottom, so the whole
+       boat is in frame — at 375px a cover crop can only ever show 250/height
+       of the width, which is a third of it once the copy has its room.
+       Above the frame the sky is carried on in the flat, sampled from the
+       picture's own top row so the seam does not read as an edge. */
     align-items: flex-start;
+    background: linear-gradient(
+      90deg,
+      rgb(169, 198, 232) 0%,
+      rgb(171, 197, 234) 20%,
+      rgb(175, 199, 232) 50%,
+      rgb(187, 205, 231) 70%,
+      rgb(202, 215, 233) 90%,
+      rgb(208, 219, 234) 100%
+    );
     height: auto;
     min-height: 0;
     padding: 116px 24px 0;
   }
 
   .home-hero > img {
-    bottom: 0;
-    height: 100%;
-    object-fit: cover;
-    /* Dead centre lands on the helm and cuts the bow off; this holds the bow
-       and the sweep of the hull, which is what reads as a boat at this size. */
-    object-position: 82% center;
-    top: 0;
+    /* Held clear of the foot strip, which is pinned to the bottom of the
+       section and would otherwise be printed across the hull. */
+    bottom: 92px;
+    height: auto;
+    object-fit: contain;
+    object-position: center bottom;
+    top: auto;
     width: 100%;
   }
 
+  /* Clears the copy of the frame below it. */
   .home-hero-copy {
-    padding-bottom: 150px;
+    padding-bottom: 268px;
   }
 
-  /* Down from the top, because that is where the type is now. It is clear of
-     the hull by two thirds, so the boat keeps its own light, and lifts again
-     at the very bottom only far enough to carry the foot strip. */
+  /* Heavy over the continued sky, because that is pale and the type is white,
+     and gone by the time the frame starts so the boat keeps its own light.
+     It lifts once more at the very bottom, only far enough for the foot. */
   .home-hero-overlay {
     background: linear-gradient(
       180deg,
-      rgba(8, 29, 51, 0.72) 0%,
-      rgba(8, 29, 51, 0.64) 22%,
-      rgba(8, 29, 51, 0.48) 40%,
-      rgba(8, 29, 51, 0.24) 55%,
-      rgba(8, 29, 51, 0.08) 66%,
-      rgba(8, 29, 51, 0.06) 76%,
-      rgba(8, 29, 51, 0.34) 88%,
-      rgba(8, 29, 51, 0.62) 100%
+      rgba(8, 29, 51, 0.82) 0%,
+      rgba(8, 29, 51, 0.8) 30%,
+      rgba(8, 29, 51, 0.76) 50%,
+      rgba(8, 29, 51, 0.7) 63%,
+      rgba(8, 29, 51, 0.42) 69%,
+      rgba(8, 29, 51, 0.12) 74%,
+      rgba(8, 29, 51, 0.06) 79%,
+      rgba(8, 29, 51, 0.06) 86%,
+      rgba(8, 29, 51, 1) 89.5%,
+      rgba(8, 29, 51, 1) 100%
     );
   }
 }
