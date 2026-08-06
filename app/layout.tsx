@@ -30,24 +30,29 @@ export async function generateMetadata(): Promise<Metadata> {
       shortcut: "/images/cresta-mark-navy.png",
     },
     openGraph: {
-      title: "Beyond the day trip. Wake up to the waves.",
-      description: "Distinctive yachts. One Cresta standard.",
+      title: "Cresta Marine | Beyond the Day Trip",
+      description:
+        "Cresta Marine is the Kumbra Yachts dealer at Abu Tig Marina, El Gouna. Island-hop the Red Sea, anchor somewhere quiet, and stay the night on board.",
       type: "website",
       url: origin,
       images: [
         {
-          url: `${origin}/og-cover-2.jpg`,
-          width: 1730,
-          height: 909,
-          alt: "Cresta Marine — Beyond the day trip. Wake up to the waves.",
+          // The card is 1200x630. It was declared as 1730x909, which is the
+          // size of a card two versions ago; a scraper that trusts the numbers
+          // reserves the wrong box for it.
+          url: `${origin}/og-cover-3.jpg`,
+          width: 1200,
+          height: 630,
+          alt: "Cresta Marine — the best days do not end at sunset.",
         },
       ],
     },
     twitter: {
       card: "summary_large_image",
-      title: "Beyond the day trip. Wake up to the waves.",
-      description: "Distinctive yachts. One Cresta standard.",
-      images: [`${origin}/og-cover-2.jpg`],
+      title: "Cresta Marine | Beyond the Day Trip",
+      description:
+        "Cresta Marine is the Kumbra Yachts dealer at Abu Tig Marina, El Gouna. Island-hop the Red Sea, anchor somewhere quiet, and stay the night on board.",
+      images: [`${origin}/og-cover-3.jpg`],
     },
   };
 }

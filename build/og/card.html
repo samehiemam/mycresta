@@ -31,19 +31,44 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    /* The boat sits right of centre in the frame; nudging the crop that way
-       keeps it clear of the copy rather than behind it. */
-    object-position: 62% 55%;
+    /* The card is wider than the photograph, so the crop is vertical only and
+       the horizontal figure does nothing. 58% down keeps the whole hull and
+       its wake inside the frame while leaving the sunset above it. */
+    object-position: 50% 58%;
   }
 
   /* The desktop hero's own wash, copied so a shared link and the page it opens
-     read as the same design rather than two takes on it. */
+     read as the same design rather than two takes on it.
+
+     It is much lighter than the wash the previous card used, and deliberately:
+     over a sunset a 0.95 navy left edge turns the sky the colour of the navy
+     and the headline ends up naming a sunset the picture no longer shows. The
+     hero solves that by spending the wash by 70% and letting the type carry
+     its own shadow instead, so that is what happens here too. */
   .scrim {
     position: absolute;
     inset: 0;
     background:
-      linear-gradient(90deg, rgba(8,29,51,0.95) 0%, rgba(8,29,51,0.72) 44%, rgba(8,29,51,0.14) 78%),
-      linear-gradient(0deg, rgba(8,29,51,0.74), transparent 44%);
+      linear-gradient(
+        90deg,
+        rgba(8, 29, 51, 0.775) 0%,
+        rgba(8, 29, 51, 0.663) 15%,
+        rgba(8, 29, 51, 0.474) 30%,
+        rgba(8, 29, 51, 0.329) 40%,
+        rgba(8, 29, 51, 0.189) 50%,
+        rgba(8, 29, 51, 0.082) 60%,
+        rgba(8, 29, 51, 0.043) 70%,
+        rgba(8, 29, 51, 0.03) 80%,
+        rgba(8, 29, 51, 0.017) 100%
+      ),
+      linear-gradient(
+        0deg,
+        rgba(8, 29, 51, 0.94) 0%,
+        rgba(8, 29, 51, 0.62) 8%,
+        rgba(8, 29, 51, 0.27) 16%,
+        rgba(8, 29, 51, 0.03) 25%,
+        rgba(8, 29, 51, 0) 30%
+      );
   }
 
   .content {
@@ -55,7 +80,28 @@
     max-width: 720px;
   }
 
-  .logo { width: 390px; display: block; }
+  /* The type below carries the hero's own shadows, for the same reason it does
+     there: past 60% the wash is nearly gone and the words are sitting on the
+     sky. The logo gets the equivalent as a filter, since a PNG cannot take a
+     text-shadow. */
+  .logo {
+    width: 390px;
+    display: block;
+    filter: drop-shadow(0 2px 6px rgba(8, 29, 51, 0.55));
+  }
+
+  .kicker,
+  .sub {
+    text-shadow:
+      0 1px 2px rgba(8, 29, 51, 0.85),
+      0 0 10px rgba(8, 29, 51, 0.6);
+  }
+
+  h1 {
+    text-shadow:
+      0 2px 6px rgba(8, 29, 51, 0.55),
+      0 0 28px rgba(8, 29, 51, 0.42);
+  }
 
   .rule {
     width: 92px;
@@ -75,8 +121,8 @@
   }
 
   h1 {
-    /* Sized to hold on one line: wrapped, the second line ran down into the
-       hull and the headline started competing with the boat behind it. */
+    /* Broken by hand at the clause, exactly as the hero breaks it, and held
+       there by nowrap so neither line can find its own place to split. */
     font-size: 60px;
     font-weight: 500;
     line-height: 1.04;
@@ -95,15 +141,15 @@
 </head>
 <body>
   <div class="card">
-    <img class="photo" src="/images/hero-home-k43-side-Dk6eFIXz.jpg" alt="" />
+    <img class="photo" src="/images/hero-home-k43-sunset-bright.webp" alt="" />
     <div class="scrim"></div>
 
     <div class="content">
       <img class="logo" src="/images/cresta-logo-white.png" alt="Cresta Marine" />
       <div class="rule"></div>
       <span class="kicker">Beyond the day trip</span>
-      <h1>Wake up to the waves.</h1>
-      <p class="sub">Kumbra Yachts · Abu Tig Marina, El Gouna</p>
+      <h1>The best days<br />do not end at sunset.</h1>
+      <p class="sub">Exclusive Kumbra Yachts Dealer in Egypt</p>
     </div>
   </div>
 </body>

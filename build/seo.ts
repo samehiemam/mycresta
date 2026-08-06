@@ -35,7 +35,7 @@ export const SITE = "https://crestamarine.com";
  *
  * then downsample to 1200x630 and save as JPEG. It is a JPEG because the
  * original card was a 1.2 MB PNG, heavy enough that a slow scraper fetch drops
- * the preview altogether; this is ~113 KB.
+ * the preview altogether; this is ~99 KB.
  *
  * The number in the filename goes up whenever the artwork changes, and that is
  * not decoration. Files in public/ are served with a year of immutable caching
@@ -43,7 +43,7 @@ export const SITE = "https://crestamarine.com";
  * CDN, and WhatsApp's own preview store — serving the old picture indefinitely.
  * A new name is the only reliable bust.
  */
-const OG_COVER = "/og-cover-2.jpg";
+const OG_COVER = "/og-cover-3.jpg";
 
 /** Real, verifiable contact details; these appear in the structured data. */
 const CONTACT = {
@@ -235,8 +235,11 @@ export const routes: SeoRoute[] = [
   {
     path: "/",
     title: "Cresta Marine | Beyond the Day Trip",
+    // The hero's own promise, in the hero's own words. The line it replaced
+    // listed services; this one says what owning the boat is for, which is
+    // what the shared card is read for.
     description:
-      "Cresta Marine is the Kumbra Yachts dealer at Abu Tig Marina, El Gouna. Curated yachts, personal configuration and full ownership support on the Red Sea.",
+      "Cresta Marine is the Kumbra Yachts dealer at Abu Tig Marina, El Gouna. Island-hop the Red Sea, anchor somewhere quiet, and stay the night on board.",
     changefreq: "monthly",
     priority: 1.0,
     preloadImages: [
