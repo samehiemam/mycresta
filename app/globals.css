@@ -4934,6 +4934,10 @@ p {
     white-space: normal;
   }
 
+  .hero-foot {
+    min-height: var(--hero-foot-h);
+  }
+
   /* Stacked here — the column is too narrow to carry the pair on one line. */
   .hero-foot br {
     display: inline;
@@ -8545,11 +8549,15 @@ p {
        of the width, which is a third of it once the copy has its room.
        Above the frame the sky is carried on in the flat, sampled from the
        picture's own top row so the seam does not read as an edge. */
-    /* How far the frame is held off the bottom. The navy under the foot strip
-       is measured from the same value, so the two cannot drift apart and
-       leave a strip of pale sky showing between them — which is what
-       percentages did as the foot changed height. */
-    --hero-frame-lift: 92px;
+    /* The foot strip's height, and the distance the frame is held off the
+       bottom — one number, because they describe the same edge. Set them
+       apart and whatever is left over shows as a band of navy between the
+       water and the strip's rule, which is what 92px against a 60px strip
+       was doing.
+       The strip is two hard-broken lines plus its padding at every width, so
+       its height is fixed rather than a function of how the copy wraps. */
+    --hero-foot-h: 60px;
+    --hero-frame-lift: var(--hero-foot-h);
 
     align-items: flex-start;
     background:
