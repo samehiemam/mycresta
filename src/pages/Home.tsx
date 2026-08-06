@@ -81,9 +81,9 @@ export default function Home() {
           {/* Three items, not four: .hero-foot is a fixed three-column grid,
               and a fourth drops to a second row on its own. */}
           <div className="hero-foot">
-            <span>El Gouna, Egypt</span>
-            <span>Red Sea & North Coast</span>
-            <span>Ownership, management & financing</span>
+            <span>Red Sea | North Coast</span>
+            <span>Ownership | Financing</span>
+            <span>Management | Concierge</span>
           </div>
         </section>
 

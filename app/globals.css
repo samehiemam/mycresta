@@ -8526,16 +8526,29 @@ p {
        of the width, which is a third of it once the copy has its room.
        Above the frame the sky is carried on in the flat, sampled from the
        picture's own top row so the seam does not read as an edge. */
+    /* How far the frame is held off the bottom. The navy under the foot strip
+       is measured from the same value, so the two cannot drift apart and
+       leave a strip of pale sky showing between them — which is what
+       percentages did as the foot changed height. */
+    --hero-frame-lift: 92px;
+
     align-items: flex-start;
-    background: linear-gradient(
-      90deg,
-      rgb(169, 198, 232) 0%,
-      rgb(171, 197, 234) 20%,
-      rgb(175, 199, 232) 50%,
-      rgb(187, 205, 231) 70%,
-      rgb(202, 215, 233) 90%,
-      rgb(208, 219, 234) 100%
-    );
+    background:
+      linear-gradient(
+        0deg,
+        var(--navy-900) 0,
+        var(--navy-900) var(--hero-frame-lift),
+        rgba(8, 29, 51, 0) var(--hero-frame-lift)
+      ),
+      linear-gradient(
+        90deg,
+        rgb(169, 198, 232) 0%,
+        rgb(171, 197, 234) 20%,
+        rgb(175, 199, 232) 50%,
+        rgb(187, 205, 231) 70%,
+        rgb(202, 215, 233) 90%,
+        rgb(208, 219, 234) 100%
+      );
     height: auto;
     min-height: 0;
     padding: 116px 24px 0;
@@ -8544,7 +8557,7 @@ p {
   .home-hero > img {
     /* Held clear of the foot strip, which is pinned to the bottom of the
        section and would otherwise be printed across the hull. */
-    bottom: 92px;
+    bottom: var(--hero-frame-lift);
     height: auto;
     object-fit: contain;
     object-position: center bottom;
@@ -8570,9 +8583,7 @@ p {
       rgba(8, 29, 51, 0.42) 69%,
       rgba(8, 29, 51, 0.12) 74%,
       rgba(8, 29, 51, 0.06) 79%,
-      rgba(8, 29, 51, 0.06) 86%,
-      rgba(8, 29, 51, 1) 89.5%,
-      rgba(8, 29, 51, 1) 100%
+      rgba(8, 29, 51, 0.06) 100%
     );
   }
 }
