@@ -81,9 +81,23 @@ export default function Home() {
           {/* Three items, not four: .hero-foot is a fixed three-column grid,
               and a fourth drops to a second row on its own. */}
           <div className="hero-foot">
-            <span>Red Sea | North Coast</span>
-            <span>Ownership | Financing</span>
-            <span>Management | Concierge</span>
+            {/* Broken by hand so each pair stacks as written, rather than
+                wrapping wherever the column happens to run out. */}
+            <span>
+              Red Sea
+              <br />
+              North Coast
+            </span>
+            <span>
+              Ownership
+              <br />
+              Financing
+            </span>
+            <span>
+              Management
+              <br />
+              Concierge
+            </span>
           </div>
         </section>
 
