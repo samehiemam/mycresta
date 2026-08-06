@@ -1201,8 +1201,12 @@ p {
     0 0 28px rgba(8, 29, 51, 0.42);
 }
 
+/* The outlined button has no fill of its own, so on a phone it lands on the
+   hull where the wash is deliberately thin. Same weight as the body copy. */
 .home-hero .button--ghost-light {
-  text-shadow: 0 1px 2px rgba(8, 29, 51, 0.7);
+  text-shadow:
+    0 1px 2px rgba(8, 29, 51, 0.85),
+    0 0 10px rgba(8, 29, 51, 0.6);
 }
 
 .home-hero-copy {
@@ -8504,55 +8508,57 @@ p {
 
 /* The home hero on a phone.
  *
- * The photograph is 3:2 and the hero box on a 375px screen is roughly 1:2, so
- * object-fit: cover scaled it to 1170px wide inside a 375px column and threw
- * away two thirds of it. What survived was the middle third — the helm — so
- * the boat the page is selling was cropped out of its own hero.
+ * Full bleed, like the desktop, with the copy over the picture rather than
+ * beneath it on navy.
  *
- * No crop can fix that: a landscape photograph cannot fill a portrait box and
- * still show a boat. So on a phone the image keeps its own shape as a band at
- * the top and the copy sits beneath it on the brand navy, with the gradient
- * carrying one into the other. Desktop is untouched — it has the width to
- * carry a full-bleed crop, and it already looks right. */
+ * The catch this replaces was real: the photograph is 3:2 and a phone hero is
+ * portrait, so object-fit: cover crops to a narrow vertical window. How
+ * narrow depends entirely on how tall the hero is, which is what the earlier
+ * band layout did not exploit — the copy only needs 421px, so the hero can
+ * stop well short of the viewport and keep a much wider slice of the frame.
+ *
+ * The window is centred right of middle: dead centre lands on the helm and
+ * loses the bow, which is the part of the boat worth showing. */
 @media (max-width: 820px) {
   .home-hero {
-    /* The height of the header the band hangs off. Both the image and the
-       padding below it are measured from this, so the band cannot drift away
-       from the header and leave a strip of navy between them. */
-    --hero-band-top: 76px;
-
+    /* Top, not bottom. Desktop separates the copy from the boat across the
+       width; a portrait crop has no width to spare, so the split goes the
+       other way — type in the sky, boat underneath it. */
+    align-items: flex-start;
     height: auto;
     min-height: 0;
-    /* Room for the band: the image is 100vw wide at 3:2, so it stands
-       100vw/1.5 tall, and the copy clears it by 8px. */
-    padding: calc(66.7vw + var(--hero-band-top) + 8px) 24px 96px;
+    padding: 116px 24px 0;
   }
 
   .home-hero > img {
-    bottom: auto;
-    height: auto;
-    object-fit: contain;
-    object-position: top center;
-    top: var(--hero-band-top);
+    bottom: 0;
+    height: 100%;
+    object-fit: cover;
+    /* Dead centre lands on the helm and cuts the bow off; this holds the bow
+       and the sweep of the hull, which is what reads as a boat at this size. */
+    object-position: 82% center;
+    top: 0;
+    width: 100%;
   }
 
-  /* Measured off the band, not the section.
-   *
-   * In percentages these stops were read against the whole hero — copy and
-   * padding included — while the photograph only occupies the top third of
-   * it. The ramp meant to land underneath the picture was sweeping across it
-   * instead, putting 38% navy over the middle of the shot and 69% over the
-   * bottom, which is what made it look dark on a phone.
-   *
-   * Below the band there is nothing to dim — the section is already navy —
-   * so the wash has one job here: feather the last 64px of the photograph
-   * into that navy so it does not end on a hard line. The rest stays clear. */
+  .home-hero-copy {
+    padding-bottom: 150px;
+  }
+
+  /* Down from the top, because that is where the type is now. It is clear of
+     the hull by two thirds, so the boat keeps its own light, and lifts again
+     at the very bottom only far enough to carry the foot strip. */
   .home-hero-overlay {
     background: linear-gradient(
       180deg,
-      rgba(8, 29, 51, 0) 0,
-      rgba(8, 29, 51, 0) calc(var(--hero-band-top) + 66.7vw - 64px),
-      rgba(8, 29, 51, 0.95) calc(var(--hero-band-top) + 66.7vw + 6px)
+      rgba(8, 29, 51, 0.72) 0%,
+      rgba(8, 29, 51, 0.64) 22%,
+      rgba(8, 29, 51, 0.48) 40%,
+      rgba(8, 29, 51, 0.24) 55%,
+      rgba(8, 29, 51, 0.08) 66%,
+      rgba(8, 29, 51, 0.06) 76%,
+      rgba(8, 29, 51, 0.34) 88%,
+      rgba(8, 29, 51, 0.62) 100%
     );
   }
 }
