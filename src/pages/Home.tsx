@@ -28,9 +28,17 @@ export default function Home() {
         <section className="home-hero">
           {/* The hero is the largest thing on the page and the one the browser
               waits on, so it is decoded eagerly and given its ratio up front
-              to keep the copy below from jumping. */}
+              to keep the copy below from jumping.
+
+              Two widths: the frame runs the full width at every size, so a
+              375px phone at 2x needs 750 and was being sent 1536 — 189kB to
+              paint 62kB worth of pixels. The preload in index.html carries
+              the same srcset and sizes, or the browser would start the wrong
+              one before this tag exists. */}
           <img
             src="/images/hero-home-k43-sunset-bright.webp"
+            srcSet="/images/hero-home-k43-sunset-bright-768.webp 768w, /images/hero-home-k43-sunset-bright.webp 1536w"
+            sizes="100vw"
             alt="Kumbra 43 underway at sunset"
             width={1536}
             height={1024}

@@ -80,6 +80,25 @@ export type SeoRoute = {
   changefreq?: "daily" | "weekly" | "monthly" | "yearly";
   priority?: number;
   jsonLd?: unknown[];
+  /**
+   * Images to start fetching before the bundle has run.
+   *
+   * The page is client-rendered, so nothing in the markup exists until React
+   * has parsed and executed — including whichever image turns out to be the
+   * largest thing on screen. Left alone the browser cannot begin that fetch
+   * until the very end of a serial chain: HTML, then JS, then render, then
+   * the request. A preload here is the only way to tell it up front.
+   *
+   * Per route rather than in index.html, because the template is copied to
+   * every page and the home page's hero is dead weight on /fleet.
+   */
+  preloadImages?: {
+    href: string;
+    /** Must match the tag's own srcset, or the browser fetches both. */
+    imagesrcset?: string;
+    imagesizes?: string;
+    type?: string;
+  }[];
 };
 
 const absolute = (path: string) => (path.startsWith("http") ? path : SITE + path);
@@ -220,6 +239,15 @@ export const routes: SeoRoute[] = [
       "Cresta Marine is the Kumbra Yachts dealer at Abu Tig Marina, El Gouna. Curated yachts, personal configuration and full ownership support on the Red Sea.",
     changefreq: "monthly",
     priority: 1.0,
+    preloadImages: [
+      {
+        href: "/images/hero-home-k43-sunset-bright.webp",
+        imagesrcset:
+          "/images/hero-home-k43-sunset-bright-768.webp 768w, /images/hero-home-k43-sunset-bright.webp 1536w",
+        imagesizes: "100vw",
+        type: "image/webp",
+      },
+    ],
     jsonLd: [
       localBusiness,
       {
@@ -375,6 +403,18 @@ export function renderHead(template: string, route: SeoRoute): string {
     `<meta name="twitter:title" content="${escapeAttr(route.title)}" />`,
     `<meta name="twitter:description" content="${escapeAttr(route.description)}" />`,
     `<meta name="twitter:image" content="${escapeAttr(image)}" />`,
+    ...(route.preloadImages ?? []).map((image) =>
+      [
+        `<link rel="preload" as="image" fetchpriority="high"`,
+        `href="${escapeAttr(image.href)}"`,
+        image.imagesrcset ? `imagesrcset="${escapeAttr(image.imagesrcset)}"` : "",
+        image.imagesizes ? `imagesizes="${escapeAttr(image.imagesizes)}"` : "",
+        image.type ? `type="${escapeAttr(image.type)}"` : "",
+        `/>`,
+      ]
+        .filter(Boolean)
+        .join(" ")
+    ),
     ...(route.jsonLd ?? []).map(
       (block) => `<script type="application/ld+json">${escapeJson(block)}</script>`
     ),

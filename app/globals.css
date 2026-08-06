@@ -1,4 +1,7 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Jost:wght@400;500;600&display=swap");
+/* The webfonts are requested from index.html, not from here. An @import makes
+   the browser fetch and parse this file before it can even discover the font
+   host, which puts three serial round trips in front of the first painted
+   word. See the comment in index.html. */
 @import "tailwindcss";
 
 :root {

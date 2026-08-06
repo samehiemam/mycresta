@@ -8,6 +8,24 @@
     />
     <link rel="icon" href="/images/cresta-mark-navy.png" />
     <link rel="shortcut icon" href="/images/cresta-mark-navy.png" />
+
+    <!--
+      The fonts were reached by an @import at the top of globals.css, which is
+      the slowest way to ask for them: the browser has to fetch the stylesheet
+      and parse it before it even learns fonts.gstatic.com exists, then open
+      two more connections in series before any text can be painted.
+
+      Asking here instead means the request goes out with the stylesheet
+      rather than after it, and the preconnects open both third-party
+      connections while the CSS is still in flight. Same 104kB, three
+      round trips earlier.
+    -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Jost:wght@400;500;600&display=swap"
+    />
     <title>Cresta Marine | Beyond the Day Trip</title>
     <meta
       name="description"
