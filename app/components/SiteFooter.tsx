@@ -5,7 +5,12 @@ export function SiteFooter() {
     <footer className="site-footer">
       <div className="footer-main">
         <div className="footer-brand">
-          <img src="/images/cresta-logo-white.png" alt="Cresta Marine" />
+          <img
+            src="/images/cresta-logo-white.png"
+            alt="Cresta Marine"
+            width={2106}
+            height={474}
+          />
           <p>Beyond the day trip</p>
         </div>
         <div>

@@ -349,6 +349,8 @@ export function SiteHeader({
         .join(" ")}
     >
       <Link className="brand-link" href="/" aria-label="Cresta Marine home">
+        {/* Intrinsic size, so the row has its height before the file lands
+            and the nav beside it does not jump. CSS still sets the width. */}
         <img
           src={
             inverse
@@ -356,6 +358,8 @@ export function SiteHeader({
               : "/images/cresta-logo-navy.png"
           }
           alt="Cresta Marine"
+          width={2106}
+          height={474}
         />
       </Link>
       <button

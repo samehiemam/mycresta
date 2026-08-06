@@ -5,10 +5,14 @@ import { boats } from "../../app/data";
 import { useTitle } from "../lib/useTitle";
 import { useScrollOffset } from "../lib/motion";
 
-const homeFleetImages: Record<string, string> = {
-  "kumbra-34": "/images/home/kumbra-34-featured.jpg",
-  "kumbra-36": "/images/home/kumbra-36-featured.jpg",
-  "kumbra-43": "/images/home/kumbra-43-featured.jpg",
+/* Intrinsic sizes travel with the paths: the three cards are cropped
+   differently — one is portrait — so the card cannot reserve its space from a
+   single shared ratio. Without them the row has no height until each file
+   lands, which is what "images without explicit width and height" reports. */
+const homeFleetImages: Record<string, { src: string; width: number; height: number }> = {
+  "kumbra-34": { src: "/images/home/kumbra-34-featured.jpg", width: 2200, height: 1466 },
+  "kumbra-36": { src: "/images/home/kumbra-36-featured.jpg", width: 941, height: 1672 },
+  "kumbra-43": { src: "/images/home/kumbra-43-featured.jpg", width: 2200, height: 1648 },
 };
 
 export default function Home() {
@@ -148,7 +152,9 @@ export default function Home() {
                   <div className="boat-card-image">
                     <img
                       className={`home-fleet-image home-fleet-image--${boat.slug}`}
-                      src={homeFleetImages[boat.slug] ?? boat.hero}
+                      src={homeFleetImages[boat.slug]?.src ?? boat.hero}
+                      width={homeFleetImages[boat.slug]?.width}
+                      height={homeFleetImages[boat.slug]?.height}
                       alt={`${boat.name} on the water`}
                       loading="lazy"
                       decoding="async"
@@ -246,18 +252,24 @@ export default function Home() {
                 className="home-app-phone home-app-phone--catalog"
                 src="/images/my-cresta-app/boat-detail.png"
                 alt="My Cresta App boat specifications screen"
+                width={680}
+                height={1472}
                 loading="lazy"
               />
               <img
                 className="home-app-phone home-app-phone--status"
                 src="/images/my-cresta-app/boat-status.png"
                 alt="My Cresta App boat status screen"
+                width={680}
+                height={1472}
                 loading="lazy"
               />
               <img
                 className="home-app-phone home-app-phone--trip"
                 src="/images/my-cresta-app/trip-preparation.png"
                 alt="My Cresta App trip preparation screen"
+                width={680}
+                height={1472}
                 loading="lazy"
               />
             </div>
