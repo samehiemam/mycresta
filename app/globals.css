@@ -1257,12 +1257,19 @@ p {
   z-index: 2;
 }
 
-.hero-foot span:nth-child(2) {
+.hero-foot > span:nth-child(2) {
   text-align: center;
 }
 
-.hero-foot span:last-child {
+.hero-foot > span:last-child {
   text-align: right;
+}
+
+/* Wide enough for the pair on one line: the ampersand joins it and the break
+   is suppressed. The stacked version is restored on a phone, where a single
+   line would run out of column mid-pair. */
+.hero-foot br {
+  display: none;
 }
 
 .home-thesis {
@@ -4918,21 +4925,30 @@ p {
     padding: 17px 20px;
   }
 
-  .hero-foot span {
+  .hero-foot > span {
     line-height: 1.45;
     min-width: 0;
     white-space: normal;
   }
 
-  .hero-foot span:first-child {
+  /* Stacked here — the column is too narrow to carry the pair on one line. */
+  .hero-foot br {
+    display: inline;
+  }
+
+  .hero-foot-amp {
+    display: none;
+  }
+
+  .hero-foot > span:first-child {
     text-align: left !important;
   }
 
-  .hero-foot span:nth-child(2) {
+  .hero-foot > span:nth-child(2) {
     text-align: center !important;
   }
 
-  .hero-foot span:last-child {
+  .hero-foot > span:last-child {
     text-align: right !important;
   }
 

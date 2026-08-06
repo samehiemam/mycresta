@@ -81,20 +81,24 @@ export default function Home() {
           {/* Three items, not four: .hero-foot is a fixed three-column grid,
               and a fourth drops to a second row on its own. */}
           <div className="hero-foot">
-            {/* Broken by hand so each pair stacks as written, rather than
-                wrapping wherever the column happens to run out. */}
+            {/* Each pair carries both joins: the ampersand shows on a wide
+                screen and the break on a narrow one, so the pair reads on one
+                line or two without the column deciding where to split it. */}
             <span>
               Red Sea
+              <span className="hero-foot-amp"> &amp; </span>
               <br />
               North Coast
             </span>
             <span>
               Ownership
+              <span className="hero-foot-amp"> &amp; </span>
               <br />
               Financing
             </span>
             <span>
               Management
+              <span className="hero-foot-amp"> &amp; </span>
               <br />
               Concierge
             </span>
