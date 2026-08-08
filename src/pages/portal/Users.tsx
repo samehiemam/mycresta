@@ -58,7 +58,12 @@ function PriceToggle({
         checked={user.canSeePrices}
         onChange={(event) => onChange(user, event.target.checked)}
       />
-      <span>{user.canSeePrices ? "Can see prices" : "Hidden"}</span>
+      {/* The label names the permission, and the box says whether this
+          account has it. Swapping the wording as well left two things
+          changing at once and neither reading as the control's state:
+          "Hidden" beside an empty box says the same thing twice, and gives
+          no clue what ticking it would do. */}
+      <span>Can see prices</span>
     </label>
   );
 }
